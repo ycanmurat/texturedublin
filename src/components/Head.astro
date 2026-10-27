@@ -1,0 +1,127 @@
+---
+import { withBase } from '../lib/paths.ts';
+import { Font } from 'astro:assets';
+import type { L10n, Locale } from '../data/types.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { abs } from '../lib/schema.ts';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  alternates: L10n | null;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  schema?: object;
+  noindex?: boolean;
+}
+
+const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType = 'website', schema, noindex = false } = Astro.props;
+const t = ui[locale];
+const canonical = abs(path);
+const preventIndexing = noindex || site.preview;
+const image = abs(ogImage ?? (locale === 'ga' ? '/og-default-ga.png' : '/og-default.png'));
+const other: Locale = locale === 'en' ? 'ga' : 'en';
+
+const analytics = {
+  ga4: site.analytics.ga4,
+  gtm: site.analytics.gtm,
+  ads: site.analytics.googleAds,
+  adsWa: site.analytics.googleAdsWhatsappLabel,
+  pixel: site.analytics.metaPixel,
+  mode: site.analytics.consentMode,
+};
+
+const speculation = {
+  prerender: [
+    {
+      where: {
+        and: [
+          { href_matches: withBase('/*') },
+          { not: { href_matches: ['/og/*', '/*.png', '/*.xml', '/*.txt', '/*.ico'].map(withBase) } },
+          { not: { selector_matches: '[rel~=nofollow], [data-no-prerender], [target=_blank]' } },
+        ],
+      },
+      eagerness: 'moderate',
+    },
+  ],
+};
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={preventIndexing ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+{
+  alternates && !noindex && (
+    <>
+      <link rel="alternate" hreflang="en-IE" href={abs(alternates.en)} />
+      <link rel="alternate" hreflang="ga-IE" href={abs(alternates.ga)} />
+      <link rel="alternate" hreflang="x-default" href={abs(alternates.en)} />
+    </>
+  )
+}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogImageAlt ?? title} />
+<meta property="og:locale" content={t.meta.locale} />
+<meta property="og:locale:alternate" content={ui[other].meta.locale} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+
+<meta name="theme-color" content="#15120f" />
+<meta name="color-scheme" content="light" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="geo.region" content="IE-D" />
+<meta name="geo.placename" content="Dublin" />
+<meta name="geo.position" content={`${site.geo.lat};${site.geo.lng}`} />
+<meta name="ICBM" content={`${site.geo.lat}, ${site.geo.lng}`} />
+{site.verification.google && <meta name="google-site-verification" content={site.verification.google} />}
+{site.verification.bing && <meta name="msvalidate.01" content={site.verification.bing} />}
+{site.verification.facebook && <meta name="facebook-domain-verification" content={site.verification.facebook} />}
+
+<link rel="icon" href={withBase('/favicon.ico')} sizes="32x32" />
+<link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+<link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+<link rel="manifest" href={withBase('/site.webmanifest')} />
+<link rel="alternate" type="text/plain" title="LLM summary" href={withBase('/llms.txt')} />
+
+<Font cssVariable="--font-jost" preload />
+<Font cssVariable="--font-fraunces" preload={[{ style: 'normal' }]} />
+
+<!-- Consent Mode v2 defaults: everything denied until the visitor chooses (EU/GDPR) -->
+<script is:inline define:vars={{ analytics }}>
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted', wait_for_update: 500 });
+  gtag('set', 'ads_data_redaction', true);
+  window.__td = { cfg: analytics, consent: null };
+  try {
+    var c = JSON.parse(localStorage.getItem('td-consent') || 'null');
+    if (c && c.v === 1 && Date.now() - c.t < 1000 * 60 * 60 * 24 * 182) {
+      window.__td.consent = c;
+      gtag('consent', 'update', { analytics_storage: c.a ? 'granted' : 'denied', ad_storage: c.m ? 'granted' : 'denied', ad_user_data: c.m ? 'granted' : 'denied', ad_personalization: c.m ? 'granted' : 'denied' });
+    }
+  } catch (e) {}
+  var d = document.documentElement;
+  d.classList.add('js');
+  setTimeout(function () { if (!window.__tdReady) d.classList.add('reveal-all'); }, 3500);
+</script>
+
+<script type="speculationrules" is:inline set:html={JSON.stringify(speculation)} />
+
+{schema && <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />}

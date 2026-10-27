@@ -1,0 +1,121 @@
+---
+import type { Area, Locale, Service, ZoneId } from '../data/types.ts';
+import { ui, fmt } from '../i18n/ui.ts';
+import { site } from '../config/site.ts';
+import { euro, leadItem, priceFrom, priceTo, unitText, vatText } from '../lib/pricing.ts';
+import { href, inPlace } from '../lib/routes.ts';
+import { waHref, lowerName } from '../lib/wa.ts';
+
+interface Props {
+  locale: Locale;
+  /** one or many services; several render as groups */
+  services: Service[];
+  zone?: ZoneId;
+  area?: Area;
+  caption?: string;
+  /** render each service as an open/close group (long local price lists) */
+  collapsible?: boolean;
+  /** services whose group starts open */
+  open?: string[];
+  showAsk?: boolean;
+}
+const { locale, services, zone, area, caption, collapsible = false, open = [], showAsk = true } = Astro.props;
+const t = ui[locale];
+const grouped = services.length > 1;
+const reviewed = new Date(site.pricesReviewed).toLocaleDateString(locale === 'ga' ? 'ga-IE' : 'en-IE', { month: 'long', year: 'numeric' });
+const anyInc = services.some((s) => s.vat === 'inc');
+const anyEx = services.some((s) => s.vat === 'ex');
+
+const ask = (s: Service, itemName: string) => {
+  const inArea = area ? ` ${inPlace(area, locale)}` : '';
+  return waHref(fmt(t.wa.item, { item: `${lowerName(s.name[locale])} — ${itemName}`, inArea }));
+};
+const groupHref = (s: Service) => (area && s.areaPages ? href(locale, 'areaService', { area: area.id, service: s.id }) : href(locale, 'service', { service: s.id }));
+const rows = (s: Service) =>
+  s.items.map((it) => {
+    const from = priceFrom(it, zone);
+    const to = priceTo(it, zone);
+    return { it, from, to, u: unitText(locale, it) };
+  });
+---
+
+<div class="price-wrap">
+  {caption && <h3 class="h-s price-caption">{caption}</h3>}
+  {
+    collapsible && grouped ? (
+      services.map((s) => (
+        <details class="price-group" open={open.includes(s.id) ? true : undefined}>
+          <summary>
+            <span class="pg-name">{s.name[locale]}</span>
+            <span class="pg-from num">{t.price.from} {euro(priceFrom(leadItem(s), zone))}</span>
+            <i aria-hidden="true" />
+          </summary>
+          <table class="price-table">
+            <thead>
+              <tr><th scope="col">{t.price.item}</th><th scope="col">{t.price.price}</th></tr>
+            </thead>
+            <tbody>
+              {rows(s).map(({ it, from, to, u }) => (
+                <tr>
+                  <td>
+                    {it.name[locale]}
+                    {showAsk && (
+                      <a class="ask" href={ask(s, it.name[locale])} target="_blank" rel="noopener" data-track="whatsapp" data-placement="price-row" data-service={s.id} data-area={area?.id}>
+                        {t.price.ask} ↗
+                      </a>
+                    )}
+                  </td>
+                  <td>
+                    <span class="p num">{t.price.from} {euro(from)}</span>
+                    <span class="u">{u}{u ? ' · ' : ''}{vatText(locale, s)}</span>
+                    {to && to > from && <span class="range num">{t.price.typical}: {euro(from)}–{euro(to)}</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <a class="arrow-link pg-link" href={groupHref(s)}>{s.name[locale]}{area ? ` — ${area.name[locale]}` : ''} →</a>
+        </details>
+      ))
+    ) : (
+      <table class="price-table">
+        <thead>
+          <tr><th scope="col">{t.price.item}</th><th scope="col">{t.price.price}</th></tr>
+        </thead>
+        <tbody>
+          {services.map((s) => (
+            <>
+              {grouped && (
+                <tr class="row-group">
+                  <th colspan="2" scope="rowgroup"><a href={groupHref(s)}>{s.name[locale]} →</a></th>
+                </tr>
+              )}
+              {rows(s).map(({ it, from, to, u }) => (
+                <tr>
+                  <td>
+                    {it.name[locale]}
+                    {showAsk && (
+                      <a class="ask" href={ask(s, it.name[locale])} target="_blank" rel="noopener" data-track="whatsapp" data-placement="price-row" data-service={s.id} data-area={area?.id}>
+                        {t.price.ask} ↗
+                      </a>
+                    )}
+                  </td>
+                  <td>
+                    <span class="p num">{t.price.from} {euro(from)}</span>
+                    <span class="u">{u}{u ? ' · ' : ''}{vatText(locale, s)}</span>
+                    {to && to > from && <span class="range num">{t.price.typical}: {euro(from)}–{euro(to)}</span>}
+                  </td>
+                </tr>
+              ))}
+            </>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+  <p class="price-note">
+    {fmt(t.price.note, { date: reviewed })}
+    {anyInc && ` ${t.price.vatInc}`}
+    {anyEx && ` ${t.price.vatEx}`}
+  </p>
+</div>

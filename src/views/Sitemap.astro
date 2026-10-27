@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry, StaticKey } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { services } from '../data/services.ts';
+import { areas } from '../data/areas.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'sitemap');
+const title = `${t.legal.sitemap} | Texture Dublin`;
+const description = locale === 'en' ? 'Every page on the Texture Dublin website: services, local area prices, guides and policies.' : 'Gach leathanach ar shuíomh gréasáin Texture Dublin: seirbhísí, praghsanna áitiúla, treoracha agus polasaithe.';
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.legal.sitemap, href: path }];
+const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs)]);
+const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale);
+const label: Partial<Record<StaticKey, string>> = {
+  services: t.nav.services, areas: t.nav.areas, pricing: t.nav.pricing, quote: t.nav.quote, projects: t.nav.projects, about: t.nav.about,
+  contact: t.nav.contact, standards: t.nav.standards, guides: t.nav.guides, privacy: t.legal.privacy, cookies: t.legal.cookies,
+  terms: t.legal.terms, accessibility: t.legal.accessibility,
+};
+const sorted = [...areas].sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale));
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="sitemap" cta={false}>
+  <PageHero {locale} title={t.legal.sitemap} {crumbs} size="l" />
+  <section class="section section--tight" style="padding-top:0">
+    <div class="container sitemap-cols">
+      <section>
+        <h2>Texture Dublin</h2>
+        <ul>
+          <li><a href={href(locale, 'home')}>{t.nav.home}</a></li>
+          {(Object.keys(label) as StaticKey[]).map((k) => <li><a href={href(locale, k)}>{label[k]}</a></li>)}
+        </ul>
+      </section>
+      <section>
+        <h2>{t.nav.services}</h2>
+        <ul>{services.map((s) => <li><a href={href(locale, 'service', { service: s.id })}>{s.name[locale]}</a></li>)}</ul>
+      </section>
+      <section>
+        <h2>{t.nav.guides}</h2>
+        <ul>{guides.map((g) => <li><a href={href(locale, 'guide', { guide: { en: g.data.slug, ga: g.data.slug } })}>{g.data.title}</a></li>)}</ul>
+      </section>
+      {sorted.map((a) => (
+        <section>
+          <h2><a href={href(locale, 'area', { area: a.id })}>{a.name[locale]}</a></h2>
+          <ul>
+            {services.filter((s) => s.areaPages).map((s) => <li><a href={href(locale, 'areaService', { area: a.id, service: s.id })}>{s.name[locale]}</a></li>)}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

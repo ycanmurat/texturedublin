@@ -1,0 +1,52 @@
+---
+import type { Locale } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale].consent;
+---
+
+<section class="consent" id="consent" role="region" aria-labelledby="consent-title" hidden>
+  <h2 id="consent-title">{t.title}</h2>
+  <p>{t.body} <a href={href(locale, 'cookies')}>{t.policy}</a>.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--outline" data-consent="reject">{t.reject}</button>
+    <button type="button" class="btn btn--light" data-consent="accept">{t.accept}</button>
+  </div>
+  <button type="button" class="link small" style="justify-self:start;color:#cfc4b5" data-consent-open>{t.customise}</button>
+</section>
+
+<dialog class="consent-dialog" id="consent-dialog" aria-labelledby="consent-dialog-title">
+  <form method="dialog">
+    <h2 id="consent-dialog-title">{t.title}</h2>
+    <div class="consent-opt">
+      <strong>{t.necessary}</strong>
+      <p>{t.necessaryDesc}</p>
+      <label class="switch"><input type="checkbox" checked disabled aria-label={t.alwaysOn} /><span></span></label>
+    </div>
+    <div class="consent-opt">
+      <strong>{t.analytics}</strong>
+      <p>{t.analyticsDesc}</p>
+      <label class="switch"><input type="checkbox" name="analytics" aria-label={t.analytics} /><span></span></label>
+    </div>
+    <div class="consent-opt">
+      <strong>{t.marketing}</strong>
+      <p>{t.marketingDesc}</p>
+      <label class="switch"><input type="checkbox" name="marketing" aria-label={t.marketing} /><span></span></label>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost btn--sm" data-consent="reject">{t.reject}</button>
+      <button type="button" class="btn btn--ghost btn--sm" data-consent="save">{t.save}</button>
+      <button type="button" class="btn btn--ink btn--sm" data-consent="accept">{t.accept}</button>
+    </div>
+    <p class="small muted"><a class="link" href={href(locale, 'cookies')}>{t.policy}</a></p>
+  </form>
+</dialog>
+
+<script>
+  import '../scripts/consent.ts';
+</script>

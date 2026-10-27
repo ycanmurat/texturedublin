@@ -1,0 +1,55 @@
+---
+import { markInner, viewBox as markViewBox } from '../brand/mark.mjs';
+import wordmark from '../brand/wordmark.generated.json';
+import type { Locale } from '../data/types.ts';
+
+interface Props {
+  variant?: 'compact' | 'horizontal' | 'stacked' | 'mark';
+  locale?: Locale;
+  class?: string;
+  draw?: boolean;
+  title?: string;
+  /** id on the wordmark group, so other SVGs can <use> it */
+  textId?: string;
+  /** id on the mark group, so other SVGs can <use> it */
+  markId?: string;
+}
+
+const { variant = 'compact', locale = 'en', class: cls = '', draw = false, title = 'Texture Dublin', textId, markId } = Astro.props;
+
+// unique ids for masks / clip paths when several logos share a page
+const g = globalThis as unknown as { __logoN?: number };
+g.__logoN = (g.__logoN ?? 0) + 1;
+const id = `lg${g.__logoN}`;
+
+const L =
+  variant === 'compact'
+    ? wordmark.compact
+    : variant === 'horizontal'
+      ? wordmark.horizontal[locale]
+      : variant === 'stacked'
+        ? wordmark.stacked[locale]
+        : null;
+
+const classes = ['logo', variant === 'mark' ? 'logo-mark' : '', draw ? 'draw' : '', cls].filter(Boolean).join(' ');
+const inner = markInner({ id });
+---
+
+{
+  L ? (
+    <svg class={classes} viewBox={`0 0 ${L.w} ${L.h}`} role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
+      <title>{title}</title>
+      <g id={markId} transform={`translate(${L.mark.x} ${L.mark.y})`} set:html={inner} />
+      <g fill="currentColor" id={textId}>
+        {L.parts.map((p) => (
+          <path class={p.cls} d={p.d} transform={p.shift ? `translate(${p.shift} 0)` : undefined} />
+        ))}
+      </g>
+    </svg>
+  ) : (
+    <svg class={classes} viewBox={markViewBox} role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
+      <title>{title}</title>
+      <g set:html={inner} />
+    </svg>
+  )
+}

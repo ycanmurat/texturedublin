@@ -1,0 +1,49 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import { signage, woodworks } from '../data/services.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { abs, breadcrumbs, business, graph, offerCatalog, webPage, website } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'services');
+const title = locale === 'en' ? 'Carpentry, Furniture & Signage Services Dublin | Texture Dublin' : 'Seirbhísí Siúinéireachta agus Comharthaíochta | Texture Dublin';
+const description =
+  locale === 'en'
+    ? 'Fitted wardrobes, kitchens, built-in units, cabinets, flat-pack assembly, installation, carpentry, shop signs, LED signs and branding in Dublin.'
+    : 'Vardrúis fheistithe, cistineacha, aonaid ionsuite, caibinéid, cóimeáil, suiteáil, siúinéireacht, comharthaí siopa, comharthaí LED agus brandáil i mBaile Átha Cliath.';
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.services, href: path }];
+const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs), { ...offerCatalog(locale), '@id': `${abs(path)}#catalog` }]);
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="services">
+  <PageHero {locale} eyebrow={`${woodworks.length + signage.length} ${t.nav.services.toLowerCase()}`} title={locale === 'en' ? 'Everything we *make and fit*' : 'Gach rud a *dhéanaimid agus a fheistímid*'} lede={t.home.servicesLede} {crumbs} illustration="plan" />
+  <section class="section section--tight" aria-labelledby="wood-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <h2 id="wood-title" class="h-xl words" data-words set:html={words(t.nav.woodworks)} />
+        <p class="muted" data-reveal>{t.home.woodworksDesc}</p>
+      </div>
+      <div class="grid grid--3">{woodworks.map((s, i) => <ServiceCard {locale} service={s} index={i} />)}</div>
+    </div>
+  </section>
+  <section class="section dark" aria-labelledby="sign-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <h2 id="sign-title" class="h-xl words" data-words set:html={words(t.nav.signage)} />
+        <p class="muted" data-reveal>{t.home.signageDesc}</p>
+      </div>
+      <div class="grid grid--3">{signage.map((s, i) => <ServiceCard {locale} service={s} index={i} />)}</div>
+    </div>
+  </section>
+</BaseLayout>

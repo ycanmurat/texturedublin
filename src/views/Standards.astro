@@ -1,0 +1,88 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { standards, standardGroups, visibleCredentials, type StandardGroup } from '../data/standards.ts';
+import { serviceById } from '../data/services.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'standards');
+const title = locale === 'en' ? 'EU Standards, Certifications & Compliance | Texture Dublin' : 'Caighdeáin an AE, Deimhnithe agus Comhlíonadh | Texture Dublin';
+const description = locale === 'en'
+  ? 'CE marking, E1 / EU REACH formaldehyde limits, EN 14749 furniture safety, Safe Electric connections, planning, GDPR and accessibility.'
+  : 'Marc CE, teorainneacha formaildéad E1 / REACH an AE, sábháilteacht troscáin EN 14749, naisc Safe Electric, rialacha pleanála, GDPR agus inrochtaineacht.';
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.standards.title, href: path }];
+const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs)]);
+const dev = import.meta.env.DEV;
+const creds = visibleCredentials(dev);
+const groups = Object.keys(standardGroups) as StandardGroup[];
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="standards">
+  <PageHero {locale} eyebrow={t.standards.title} title={t.standards.h1} lede={t.standards.lede} {crumbs} illustration="cabinet" size="l" />
+
+  {
+    groups.map((g, gi) => (
+      <section class={`section section--tight ${gi % 2 ? 'section--cream' : ''}`} aria-labelledby={`g-${g}`}>
+        <div class="container">
+          <h2 id={`g-${g}`} class="h-l words" data-words set:html={words(standardGroups[g][locale])} style="margin-bottom:24px" />
+          {standards.filter((s) => s.group === g).map((s) => (
+            <article class="std" data-reveal>
+              <div>
+                <h3>{s.title[locale]}</h3>
+                <p class="ref">{t.standards.reference}: {s.ref}</p>
+              </div>
+              <div class="stack" style="--stack:10px">
+                <p>{s.body[locale]}</p>
+                {s.services.length > 0 && (
+                  <p class="small muted">
+                    {t.standards.appliesTo}:{' '}
+                    {s.services.map((id, i) => (
+                      <>
+                        {i > 0 && ', '}
+                        <a class="link" href={href(locale, 'service', { service: id })}>{serviceById[id].name[locale]}</a>
+                      </>
+                    ))}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    creds.length > 0 && (
+      <section class="section dark" aria-labelledby="creds-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="creds-title" class="h-l words" data-words set:html={words(t.standards.credentialsTitle)} />
+            <p class="muted" data-reveal>{t.standards.credentialsLede}</p>
+          </div>
+          <div class="grid grid--3">
+            {creds.map((c, i) => (
+              <div class="cred" data-reveal style={`--d:${i % 3}`}>
+                <h3>{c.name[locale]}</h3>
+                <p class="small muted">{c.description[locale]}</p>
+                {c.detail && <p class="small" style="color:var(--accent)">{c.issuer} · {c.detail}</p>}
+                {c.status !== 'verified' && <span class="todo-badge">{t.standards.pending}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

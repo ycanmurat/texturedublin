@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Illustration from '../components/Illustration.astro';
+import { ui } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+
+const t = ui.en;
+const g = ui.ga;
+const links = [
+  ['home', t.nav.home, g.nav.home],
+  ['services', t.nav.services, g.nav.services],
+  ['areas', t.nav.areas, g.nav.areas],
+  ['pricing', t.nav.pricing, g.nav.pricing],
+  ['contact', t.nav.contact, g.nav.contact],
+] as const;
+---
+
+<BaseLayout locale="en" title="Page not found | Texture Dublin" description="This page could not be found." path="/404/" alternates={null} noindex page="404">
+  <section class="page-hero">
+    <div class="container split">
+      <div class="stack" style="--stack:20px">
+        <p class="eyebrow" style="margin-top:28px">404</p>
+        <h1 class="h-xl">{t.notFound.title} <em lang="ga-IE">/ {g.notFound.title}</em></h1>
+        <p class="lede">{t.notFound.lede}</p>
+        <p class="muted" lang="ga-IE">{g.notFound.lede}</p>
+        <div class="cluster">
+          {links.map(([k, en, ga]) => <a class="chip" href={href('en', k)}>{en}</a>)}
+        </div>
+        <div class="cluster" lang="ga-IE">
+          {links.map(([k, en, ga]) => <a class="chip" href={href('ga', k)}>{ga}</a>)}
+        </div>
+      </div>
+      <Illustration name="assembly" />
+    </div>
+  </section>
+</BaseLayout>

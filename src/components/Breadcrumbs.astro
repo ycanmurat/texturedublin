@@ -1,0 +1,26 @@
+---
+import type { Locale } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+  items: Array<{ name: string; href: string }>;
+}
+const { locale, items } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label={ui[locale].nav.breadcrumb}>
+  <ol>
+    {
+      items.map((it, i) =>
+        i === items.length - 1 ? (
+          <li aria-current="page">{it.name}</li>
+        ) : (
+          <li>
+            <a href={it.href}>{it.name}</a>
+          </li>
+        ),
+      )
+    }
+  </ol>
+</nav>

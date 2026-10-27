@@ -1,0 +1,80 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import DublinMap from '../components/DublinMap.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+import { waLink } from '../lib/wa.ts';
+import { words } from '../lib/text.ts';
+import { metaDesc } from '../lib/seo.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'contact');
+const title = locale === 'en' ? 'Contact Texture Dublin — WhatsApp, Phone & Email' : 'Déan Teagmháil le Texture Dublin — WhatsApp, Fón agus Ríomhphost';
+const description = metaDesc(t.contact.lede);
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.contact, href: path }];
+const schema = graph([business(locale, true), website(), webPage({ path, title, description, locale, breadcrumb: true, type: 'ContactPage' }), breadcrumbs(path, crumbs)]);
+const wa = waLink(locale);
+const dayName = (d: string) => t.days[d as keyof typeof t.days];
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="contact" cta={false}>
+  <PageHero {locale} eyebrow={t.contact.title} title={t.contact.h1} lede={t.contact.lede} {crumbs} size="l" />
+
+  <section class="section section--tight" style="padding-top:0">
+    <div class="container grid grid--4">
+      <a class="card" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="contact-card" data-reveal style="background:var(--wa);color:var(--wa-ink);border-color:transparent">
+        <Icon name="whatsapp" class="card-icon" />
+        <h3>{t.contact.whatsapp}</h3>
+        <p style="color:inherit">{t.wa.fabHint}</p>
+        <span class="arrow-link" style="margin-top:auto">{t.wa.cta} <Icon name="arrow" /></span>
+      </a>
+      <a class="card" href={`tel:${site.phone.e164}`} data-reveal style="--d:1">
+        <Icon name="phone" class="card-icon" />
+        <h3>{t.contact.phone}</h3>
+        <p>{site.phone.display}</p>
+      </a>
+      <a class="card" href={`mailto:${site.email}`} data-reveal style="--d:2">
+        <Icon name="mail" class="card-icon" />
+        <h3>{t.contact.email}</h3>
+        <p>{site.email}</p>
+      </a>
+      <div class="card" data-reveal style="--d:3">
+        <Icon name="clock" class="card-icon" />
+        <h3>{t.contact.hours}</h3>
+        <ul class="small" style="list-style:none;padding:0">
+          {site.hours.map((h) => <li>{h.days.map(dayName).join(', ')}: {h.opens}–{h.closes}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper2" aria-labelledby="form-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <h2 id="form-title" class="h-l words" data-words set:html={words(t.quote.h1)} />
+        <p class="muted" data-reveal>{t.quote.lede}</p>
+        <div data-reveal="fade"><DublinMap {locale} /></div>
+        <p class="small muted"><Icon name="pin" class="inline-icon" /> {t.contact.area}: {t.footer.serviceArea}
+          {site.showAddress && site.address.street && <><br />{t.contact.address}: {site.address.street}, {site.address.locality} {site.address.postalCode}</>}
+        </p>
+      </div>
+      <div class="card" style="padding:clamp(24px,3vw,40px)" data-reveal><QuoteForm {locale} /></div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .card-icon { width: 28px; height: 28px; }
+</style>

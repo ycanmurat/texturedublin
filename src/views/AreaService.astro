@@ -1,0 +1,169 @@
+---
+import { ogPath } from '../lib/paths.ts';
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import PriceTable from '../components/PriceTable.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import FAQ from '../components/FAQ.astro';
+import Icon from '../components/Icon.astro';
+import { areaById, nearby } from '../data/areas.ts';
+import { serviceById, services } from '../data/services.ts';
+import { zones } from '../data/zones.ts';
+import { ui, fmt } from '../i18n/ui.ts';
+import { alternates, href, inPlace, placeVars } from '../lib/routes.ts';
+import { euro, fromLabel, leadItem, priceFrom, renderTokens, typicalProject, vatText } from '../lib/pricing.ts';
+import { breadcrumbs, business, faqPage, graph, serviceNode, webPage, website, placeNode } from '../lib/schema.ts';
+import { waHref, waLink, waData, lowerName } from '../lib/wa.ts';
+import { areaFaqs, housingAdvice } from '../lib/local.ts';
+import { fitTitle, metaDesc, shortPrice } from '../lib/seo.ts';
+import { words } from '../lib/text.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const a = areaById[route.area!];
+const s = serviceById[route.service!];
+const v = placeVars(a, locale);
+const z = zones[a.zone];
+const lead = leadItem(s);
+const path = href(locale, 'areaService', { area: a.id, service: s.id });
+const wa = waLink(locale, { service: s, area: a });
+
+const tn = s.titleName ?? s.name;
+const aShort = a.name.en.replace(/ & .*$/, '');
+const title =
+  locale === 'en'
+    ? fitTitle(`${s.name.en} ${a.name.en} | From ${shortPrice('en', lead, a.zone)}`, `${tn.en} ${a.name.en} | From ${shortPrice('en', lead, a.zone)}`, `${tn.en} ${aShort} | From ${shortPrice('en', lead, a.zone)}`)
+    : fitTitle(`${s.name.ga} ${a.inGa} | Ó ${shortPrice('ga', lead, a.zone)}`, `${tn.ga} ${a.inGa} | Ó ${shortPrice('ga', lead, a.zone)}`, `${tn.ga} ${a.inGa}`);
+const description = metaDesc(
+  locale === 'en'
+    ? `${s.name.en} in ${a.name.en} (${a.postal}) from ${fromLabel('en', lead, a.zone, false)} ${vatText('en', s)}. ${s.short.en} Free survey — WhatsApp us.`
+    : `${s.name.ga} ${a.inGa} (${a.postal}) ó ${fromLabel('ga', lead, a.zone, false)}. ${s.short.ga}`,
+);
+const crumbs = [
+  { name: t.nav.home, href: href(locale, 'home') },
+  { name: t.nav.areas, href: href(locale, 'areas') },
+  { name: a.name[locale], href: href(locale, 'area', { area: a.id }) },
+  { name: s.name[locale], href: path },
+];
+
+const local = areaFaqs(a, locale, { service: s });
+const faqData = [...s.faqs.slice(0, 3), ...local];
+const faqs = faqData.map((f) => ({ q: f.q[locale], a: renderTokens(f.a[locale], s, locale, a.zone) }));
+const schema = graph([
+  business(locale),
+  website(),
+  webPage({ path, title, description, locale, breadcrumb: true, about: placeNode(a, locale) }),
+  breadcrumbs(path, crumbs),
+  serviceNode(s, locale, { path, area: a }),
+  faqPage(path, faqData, locale, { service: s, zone: a.zone }),
+]);
+
+const advice = housingAdvice(a, s, locale);
+const typical = typicalProject(s, a);
+const near = nearby(a, 6);
+const others = services.filter((x) => x.areaPages && x.id !== s.id);
+const h1 = locale === 'en' ? `${s.name.en} in *${a.name.en}*` : `${s.name.ga} *${a.inGa}*`;
+const lede = locale === 'en'
+  ? `${s.short.en} Local guide prices for ${a.name.en} (${a.postal}) below — Zone ${a.zone}, ${z.name.en}.`
+  : `${s.short.ga} Praghsanna treorach áitiúla ${a.inGa} (${a.postal}) thíos — Crios ${a.zone}, ${z.name.ga}.`;
+const typicalMsg = typical
+  ? waHref(fmt(t.wa.item, { item: `${typical.label[locale]} (${euro(typical.low)}–${euro(typical.high)})`, inArea: ` ${inPlace(a, locale)}` }))
+  : wa;
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} service={s} area={a} page="area-service" ogImage={ogPath(href(locale, 'area', { area: a.id }))}>
+  <PageHero {locale} eyebrow={`${a.postal} · ${t.common.zone} ${a.zone} — ${z.name[locale]}`} title={h1} {lede} {crumbs} illustration={s.illustration}>
+    <div class="meta-row" data-reveal style="--d:3">
+      <span class="price-badge"><small>{t.common.from}</small><strong class="num">{euro(priceFrom(lead, a.zone))}</strong><small>{t.units[lead.unit]} · {vatText(locale, s)}</small></span>
+      <span class="chip">{t.price.minVisit}: {euro(z.minVisit)}</span>
+    </div>
+    <div class="btn-row" data-reveal style="--d:4;margin-top:22px">
+      <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('area-service-hero', { service: s, area: a })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>
+      <a class="btn btn--ghost btn--lg" href={href(locale, 'service', { service: s.id })}>{s.name[locale]} →</a>
+    </div>
+  </PageHero>
+
+  <section class="section section--cream" aria-labelledby="prices-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>{t.nav.pricing} · {a.postal}</span>
+        <h2 id="prices-title" class="h-l words" data-words set:html={words(`${fmt(t.service.pricesTitle, { service: s.name[locale] })} — ${a.name[locale]}`)} />
+        <p class="muted" data-reveal>{z.description[locale]}</p>
+        {
+          typical && (
+            <div class="finder-card" data-reveal style="--d:1">
+              <p class="eyebrow">{fmt(t.area.typicalTitle, v)}</p>
+              <h3 style="font-size:1.35rem">{typical.label[locale]}</h3>
+              <p class="total num" style="font-family:var(--f-serif);font-size:2.2rem;line-height:1;color:var(--oak)">
+                {euro(typical.low)} – {euro(typical.high)}
+              </p>
+              <p class="small" style="color:#bdb2a3">{vatText(locale, s)} · {t.estimator.disclaimer}</p>
+              <a class="btn btn--wa" style="justify-self:start" href={typicalMsg} target="_blank" rel="noopener" {...waData('typical-project', { service: s, area: a })}><Icon name="whatsapp" />{t.price.ask}</a>
+            </div>
+          )
+        }
+      </div>
+      <div data-reveal style="--d:1"><PriceTable {locale} services={[s]} zone={a.zone} area={a} /></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="local-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>{t.area.localTitle}</span>
+        <h2 id="local-title" class="h-l words" data-words set:html={words(`${lowerName(s.name[locale]).replace(/^./, (c) => c.toUpperCase())} — ${a.name[locale]}`)} />
+        <p class="lede" data-reveal>{a.insight[locale]}</p>
+        {advice.map((p, i) => <p class="muted" data-reveal style={`--d:${i + 1}`}>{p}</p>)}
+      </div>
+      <div class="card" data-reveal style="--d:1">
+        <h2 class="h-s">{t.common.included}</h2>
+        <ul class="ticks">{s.includes[locale].map((x) => <li>{x}</li>)}</ul>
+        <p class="small muted">{t.common.timescale}: {s.leadTime[locale]}</p>
+        <h3 class="h-s" style="margin-top:10px">{t.common.factors}</h3>
+        <ul class="dots small">{s.factors[locale].map((x) => <li>{x}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight section--paper2" aria-labelledby="near-title">
+    <div class="container">
+      <h2 id="near-title" class="h-l words" data-words set:html={words(fmt(t.area.sameServiceNearby, { service: s.name[locale] }))} style="margin-bottom:28px" />
+      <div class="cluster" style="--gap:10px" data-reveal>
+        {near.map((n) => (
+          <a class="chip" href={href(locale, 'areaService', { area: n.id, service: s.id })}>
+            {n.name[locale]} <small>{t.price.from} {euro(priceFrom(lead, n.zone))}</small>
+          </a>
+        ))}
+        <a class="chip" href={href(locale, 'service', { service: s.id })}><strong>{s.name[locale]} — {t.nav.allAreas} →</strong></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>FAQ · {a.name[locale]}</span>
+        <h2 id="faq-title" class="h-l words" data-words set:html={words(t.common.faq)} />
+      </div>
+      <FAQ {locale} items={faqs} openFirst />
+    </div>
+  </section>
+
+  <section class="section section--tight section--cream" aria-labelledby="other-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <h2 id="other-title" class="h-l words" data-words set:html={words(fmt(t.area.otherServices, v))} />
+        <a class="arrow-link" href={href(locale, 'area', { area: a.id })} style="justify-self:end">{fmt(t.area.allServices, v)} <Icon name="arrow" /></a>
+      </div>
+      <div class="grid grid--3">
+        {others.slice(0, 3).map((o, i) => <ServiceCard {locale} service={o} area={a} index={i} compact />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

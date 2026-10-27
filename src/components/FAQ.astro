@@ -1,0 +1,26 @@
+---
+import type { Locale } from '../data/types.ts';
+
+interface Props {
+  locale: Locale;
+  items: Array<{ q: string; a: string }>;
+  openFirst?: boolean;
+}
+const { items, openFirst = false } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((f, i) => (
+      <details open={openFirst && i === 0 ? true : undefined} data-reveal style={`--d:${Math.min(i, 4)}`}>
+        <summary>
+          <span>{f.q}</span>
+          <i aria-hidden="true" />
+        </summary>
+        <div class="answer">
+          <p>{f.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>

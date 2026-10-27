@@ -1,0 +1,25 @@
+---
+/** Live price for MDX guides: <Price s="fitted-wardrobes" i="hinged" /> or range="1" */
+import { serviceById } from '../data/services.ts';
+import { euro, priceFrom, priceTo, unitText } from '../lib/pricing.ts';
+import { localeFromPath } from '../lib/routes.ts';
+
+interface Props {
+  s: string;
+  i: string;
+  range?: boolean | string;
+  unit?: boolean | string;
+  times?: number;
+}
+const { s, i, range = false, unit = true, times = 1 } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const item = serviceById[s]?.items.find((x) => x.id === i);
+if (!item) throw new Error(`<Price>: unknown item ${s}.${i}`);
+const from = priceFrom(item) * times;
+const to = (priceTo(item) ?? priceFrom(item)) * times;
+const round = (n: number) => (n >= 1000 ? Math.round(n / 50) * 50 : Math.round(n / 5) * 5);
+const u = unit && unit !== 'false' && times === 1 ? unitText(locale, item) : '';
+const show = range && range !== 'false' ? `${euro(round(from))}–${euro(round(to))}` : euro(round(from));
+---
+
+<span class="price-inline">{show}{u ? ` ${u}` : ''}</span>

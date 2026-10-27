@@ -1,0 +1,88 @@
+---
+/**
+ * Stylised service-area map: real coordinates for every area page, Dublin Bay
+ * coastline, and the four pricing zones. Every pin is a crawlable link.
+ */
+import type { Locale } from '../data/types.ts';
+import { areas, CITY_CENTRE } from '../data/areas.ts';
+import { zones } from '../data/zones.ts';
+import { smoothPath } from '../brand/mark.mjs';
+import { ui, fmt } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+
+interface Props {
+  locale: Locale;
+  current?: string;
+  labels?: string[];
+  class?: string;
+}
+const { locale, current, labels = ['dublin-city-centre', 'swords', 'malahide', 'howth', 'blanchardstown', 'lucan', 'tallaght', 'dundrum', 'dun-laoghaire', 'bray', 'maynooth', 'naas', 'ashbourne', 'skerries', 'greystones', 'clondalkin'], class: cls = '' } = Astro.props;
+const t = ui[locale];
+
+const W = 640;
+const H = 800;
+const LNG0 = -6.72;
+const LAT0 = 53.64;
+const K = 1532.6;
+const COS = 0.5966;
+const px = (lat: number, lng: number): [number, number] => [(lng - LNG0) * COS * K, (LAT0 - lat) * K];
+
+const coast: Array<[number, number]> = [
+  [53.64, -6.19], [53.612, -6.175], [53.585, -6.1], [53.523, -6.085], [53.49, -6.1], [53.46, -6.13], [53.425, -6.125],
+  [53.392, -6.11], [53.395, -6.06], [53.378, -6.04], [53.36, -6.07], [53.375, -6.11], [53.372, -6.15], [53.362, -6.19],
+  [53.35, -6.215], [53.345, -6.19], [53.342, -6.15], [53.338, -6.205], [53.32, -6.205], [53.3, -6.17], [53.296, -6.13],
+  [53.276, -6.095], [53.255, -6.11], [53.22, -6.105], [53.2, -6.095], [53.18, -6.075], [53.145, -6.06], [53.12, -6.06],
+].map(([la, ln]) => px(la, ln));
+const coastPath = smoothPath(coast);
+const landPath = `M0 0L${coast[0][0].toFixed(1)} 0` + coastPath.replace(/^M[^C]+/, `L${coast[0][0].toFixed(1)} ${coast[0][1].toFixed(1)}`) + `L${coast[coast.length - 1][0].toFixed(1)} ${H}L0 ${H}Z`;
+
+const [cx, cy] = px(CITY_CENTRE.lat, CITY_CENTRE.lng);
+const km = K / 111;
+const rings = [
+  { r: 3.4 * km, z: 1 },
+  { r: 9.5 * km, z: 2 },
+  { r: 21 * km, z: 3 },
+];
+
+const pins = areas.map((a) => {
+  const [x, y] = px(a.lat, a.lng);
+  const right = x > 470;
+  return { a, x, y, right };
+});
+---
+
+<div class={`dmap ${cls}`}>
+  <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label={current ? fmt(t.area.mapLabel, { name: areas.find((a) => a.id === current)?.name[locale] ?? '' }) : t.home.mapTitle}>
+    <rect class="sea" width={W} height={H} />
+    <path class="land" d={landPath} />
+    <path class="coast" d={coastPath} />
+    <text class="sea-label" x="560" y="490" text-anchor="middle">{locale === 'en' ? 'Dublin Bay' : 'Cuan Bhaile Átha Cliath'}</text>
+    <text class="sea-label" x="612" y="300" text-anchor="middle" transform="rotate(90 612 300)">{locale === 'en' ? 'Irish Sea' : 'Muir Éireann'}</text>
+    {
+      rings.map((r) => (
+        <>
+          <circle class="ring" cx={cx} cy={cy} r={r.r.toFixed(1)} />
+          <text class="ring-label" x={(cx - r.r * 0.72).toFixed(1)} y={(cy - r.r * 0.72).toFixed(1)}>
+            {t.common.zone} {r.z}
+          </text>
+        </>
+      ))
+    }
+    <text class="ring-label" x="24" y="40">{t.common.zone} 4 · {zones[4].name[locale]}</text>
+    {
+      pins.map(({ a, x, y, right }) => (
+        <a
+          href={href(locale, 'area', { area: a.id })}
+          class={`pin${labels.includes(a.id) ? ' show-label' : ''}${a.id === current ? ' is-current' : ''}`}
+          aria-label={`${a.name[locale]} — ${t.common.zone} ${a.zone}`}
+        >
+          {a.id === current && <circle class="pulse" cx={x.toFixed(1)} cy={y.toFixed(1)} r="8" />}
+          <circle cx={x.toFixed(1)} cy={y.toFixed(1)} r="5" />
+          <text x={(right ? x - 10 : x + 10).toFixed(1)} y={(y + 4).toFixed(1)} text-anchor={right ? 'end' : 'start'}>
+            {a.name[locale]}
+          </text>
+        </a>
+      ))
+    }
+  </svg>
+</div>

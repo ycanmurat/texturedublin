@@ -1,0 +1,33 @@
+---
+import type { Area, Locale, Service } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+import { leadLabel, vatText } from '../lib/pricing.ts';
+import Illustration from './Illustration.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  service: Service;
+  area?: Area;
+  index?: number;
+  compact?: boolean;
+}
+const { locale, service: s, area, index = 0, compact = false } = Astro.props;
+const t = ui[locale];
+const link = area && s.areaPages ? href(locale, 'areaService', { area: area.id, service: s.id }) : href(locale, 'service', { service: s.id });
+---
+
+<a class="card service-card" href={link} data-reveal style={`--d:${index % 4}`}>
+  <span class="corner corner--tl"></span><span class="corner corner--br"></span>
+  {!compact && <Illustration name={s.illustration} />}
+  <div class="card-top">
+    <h3>{s.name[locale]}</h3>
+    <Icon name="arrow-up-right" />
+  </div>
+  <p>{s.short[locale]}</p>
+  <div class="card-price">
+    <span>{t.common.from}</span>
+    <span><strong class="num">{leadLabel(locale, s, area?.zone, false)}</strong> <small class="muted">{vatText(locale, s)}</small></span>
+  </div>
+</a>

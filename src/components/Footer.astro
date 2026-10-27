@@ -1,0 +1,107 @@
+---
+import type { L10n, Locale } from '../data/types.ts';
+import { services } from '../data/services.ts';
+import { areaById } from '../data/areas.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+import Icon from './Icon.astro';
+import wordmark from '../brand/wordmark.generated.json';
+
+interface Props {
+  locale: Locale;
+  alternates: L10n | null;
+  wa: string;
+}
+const { locale, alternates, wa } = Astro.props;
+const t = ui[locale];
+const other: Locale = locale === 'en' ? 'ga' : 'en';
+
+const footerAreas = ['dublin-city-centre', 'rathmines', 'ranelagh', 'ballsbridge', 'clontarf', 'dundrum', 'blackrock', 'dun-laoghaire', 'howth', 'malahide', 'swords', 'castleknock', 'lucan', 'tallaght'].map((id) => areaById[id]);
+const socials = (Object.entries(site.socials) as Array<[string, string]>).filter(([, u]) => u);
+const socialIcon: Record<string, 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'pinterest' | 'google'> = {
+  instagram: 'instagram', facebook: 'facebook', tiktok: 'tiktok', linkedin: 'linkedin', pinterest: 'pinterest', googleBusiness: 'google',
+};
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href={href(locale, 'home')} aria-label={site.name}>
+          <svg class="logo" viewBox={`0 0 ${wordmark.compact.w} ${wordmark.compact.h}`} aria-hidden="true"><use href="#td-markg" /><use href="#td-wordmark" /></svg>
+        </a>
+        <p class="footer-tagline">{t.home.eyebrow.split('·')[1]?.trim() ?? ''}</p>
+        <p>{t.footer.serviceArea}</p>
+        <div class="footer-contact">
+          <a href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="footer">WhatsApp · {site.phone.display}</a>
+          <a href={`tel:${site.phone.e164}`}>{t.contact.phone} · {site.phone.display}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
+        {
+          socials.length > 0 && (
+            <div class="socials" aria-label={t.footer.follow}>
+              {socials.map(([k, u]) => (
+                <a href={u} target="_blank" rel="noopener me" aria-label={k}>
+                  <Icon name={socialIcon[k]} />
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <div>
+        <h2>{t.footer.services}</h2>
+        <ul>
+          {services.map((s) => <li><a href={href(locale, 'service', { service: s.id })}>{s.name[locale]}</a></li>)}
+        </ul>
+      </div>
+
+      <div>
+        <h2>{t.footer.areas}</h2>
+        <ul>
+          {footerAreas.map((a) => <li><a href={href(locale, 'area', { area: a.id })}>{a.name[locale]}</a></li>)}
+          <li><a href={href(locale, 'areas')}><strong>{t.nav.allAreas} →</strong></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>{t.footer.company}</h2>
+        <ul>
+          <li><a href={href(locale, 'about')}>{t.nav.about}</a></li>
+          <li><a href={href(locale, 'projects')}>{t.nav.projects}</a></li>
+          <li><a href={href(locale, 'pricing')}>{t.nav.pricing}</a></li>
+          <li><a href={href(locale, 'quote')}>{t.nav.quote}</a></li>
+          <li><a href={href(locale, 'guides')}>{t.nav.guides}</a></li>
+          <li><a href={href(locale, 'standards')}>{t.nav.standards}</a></li>
+          <li><a href={href(locale, 'contact')}>{t.nav.contact}</a></li>
+        </ul>
+        <h2 style="margin-top:28px">{t.footer.hours}</h2>
+        <ul class="small">
+          {site.hours.map((h) => (
+            <li>{h.days.length > 1 ? `${t.daysShort[h.days[0] as keyof typeof t.daysShort]}–${t.daysShort[h.days[h.days.length - 1] as keyof typeof t.daysShort]}` : t.days[h.days[0] as keyof typeof t.days]} · {h.opens}–{h.closes}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-giant" aria-hidden="true">
+      <svg viewBox="742 318 1952 172"><use href="#td-wordmark" /></svg>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {year} {site.legalName}. {t.footer.rights}{site.vatNumber && ` ${t.footer.vat} ${site.vatNumber}.`}{site.croNumber && ` ${t.footer.cro} ${site.croNumber}.`}</p>
+      <nav aria-label={t.footer.legal}>
+        <a href={href(locale, 'privacy')}>{t.legal.privacy}</a>
+        <a href={href(locale, 'cookies')}>{t.legal.cookies}</a>
+        <a href={href(locale, 'terms')}>{t.legal.terms}</a>
+        <a href={href(locale, 'accessibility')}>{t.legal.accessibility}</a>
+        <a href={href(locale, 'sitemap')}>{t.footer.sitemap}</a>
+        <button type="button" data-consent-open>{t.footer.cookies}</button>
+        <a href={alternates ? alternates[other] : href(other, 'home')} hreflang={ui[other].meta.htmlLang} lang={ui[other].meta.htmlLang}>{ui[other].meta.name}</a>
+      </nav>
+    </div>
+  </div>
+</footer>

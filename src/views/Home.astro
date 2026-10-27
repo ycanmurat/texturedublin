@@ -1,0 +1,212 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import Illustration from '../components/Illustration.astro';
+import AreaFinder from '../components/AreaFinder.astro';
+import DublinMap from '../components/DublinMap.astro';
+import Process from '../components/Process.astro';
+import Estimator from '../components/Estimator.astro';
+import FAQ from '../components/FAQ.astro';
+import { services, signage, woodworks } from '../data/services.ts';
+import { homeFaqs } from '../data/faqs.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { leadLabel } from '../lib/pricing.ts';
+import { business, faqPage, graph, webPage, website } from '../lib/schema.ts';
+import { waLink } from '../lib/wa.ts';
+import { words } from '../lib/text.ts';
+import { metaDesc } from '../lib/seo.ts';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'home');
+const wa = waLink(locale);
+
+const title = locale === 'en' ? 'Carpenter & Sign Maker in Dublin | Texture Dublin' : 'Siúinéir agus Comharthaí i mBaile Átha Cliath | Texture Dublin';
+const description = metaDesc(
+  locale === 'en'
+    ? 'Bespoke fitted wardrobes, kitchens, built-in units, flat-pack assembly and shop signs across Dublin. Local prices for 50+ areas — WhatsApp for a free quote.'
+    : 'Vardrúis fheistithe, cistineacha, aonaid ionsuite, cóimeáil troscáin agus comharthaí siopa ar fud Bhaile Átha Cliath. Praghsanna áitiúla do 50+ ceantar.',
+);
+const faqs = homeFaqs.map((x) => ({ q: x.q[locale], a: x.a[locale] }));
+const schema = graph([
+  business(locale, true),
+  website(),
+  webPage({ path, title, description, locale }),
+  faqPage(path, homeFaqs, locale),
+]);
+
+const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale).slice(0, 3);
+const marquee = services.map((s) => s.name[locale]);
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} tone="dark" page="home">
+  <!-- HERO -->
+  <section class="hero dark" aria-labelledby="hero-title">
+    <canvas class="hero-canvas" data-grain aria-hidden="true"></canvas>
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow hero-in" style="--d:0">{t.home.eyebrow}</p>
+        <h1 id="hero-title" class="h-xxl words" set:html={words(`${t.home.titleA} *${t.home.titleB}*`)} />
+        <p class="lede hero-in" style="--d:2">{t.home.lede}</p>
+        <div class="btn-row hero-in" style="--d:3;margin-top:34px">
+          <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="hero" data-magnetic>
+            <Icon name="whatsapp" />
+            {t.wa.ctaLong}
+          </a>
+          <a class="btn btn--ghost btn--lg" href="#prices-near-you" data-magnetic>{t.cta.pricesArea}</a>
+        </div>
+        <ul class="hero-trust hero-in" style="--d:4">
+          {t.home.trust.map((x) => <li>{x}</li>)}
+        </ul>
+      </div>
+      <div class="hero-mark" data-parallax="-0.06">
+        <Logo variant="mark" draw title="Texture Dublin" />
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><span>{t.home.scroll}</span><i></i></div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        {[...marquee, ...marquee].map((m) => <span>{m}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 SERVICES -->
+  <section class="section" aria-labelledby="services-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <div class="stack" style="--stack:18px">
+          <span class="eyebrow" data-reveal>(01) · {t.nav.services}</span>
+          <h2 id="services-title" class="h-xl words" data-words set:html={words(t.home.servicesTitle)} />
+        </div>
+        <p class="lede" data-reveal style="--d:2">{t.home.servicesLede}</p>
+      </div>
+      <div class="worlds">
+        <article class="world world--wood" data-reveal>
+          <div class="world-head">
+            <div class="stack" style="--stack:10px">
+              <span class="badge">{woodworks.length} {t.nav.services.toLowerCase()}</span>
+              <h3>{t.nav.woodworks}</h3>
+              <p class="muted">{t.home.woodworksDesc}</p>
+            </div>
+            <Illustration name="wardrobe" />
+          </div>
+          <ul>
+            {woodworks.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{leadLabel(locale, s)}</span></a></li>)}
+          </ul>
+        </article>
+        <article class="world world--sign" data-reveal style="--d:1">
+          <div class="world-head">
+            <div class="stack" style="--stack:10px">
+              <span class="badge">{signage.length} {t.nav.services.toLowerCase()}</span>
+              <h3>{t.nav.signage}</h3>
+              <p class="muted">{t.home.signageDesc}</p>
+            </div>
+            <Illustration name="lightbox" />
+          </div>
+          <ul>
+            {signage.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{leadLabel(locale, s)}</span></a></li>)}
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 LOCAL PRICES -->
+  <section class="section section--paper2" id="prices-near-you" aria-labelledby="finder-title">
+    <div class="container split">
+      <div class="stack" style="--stack:22px">
+        <span class="eyebrow" data-reveal>(02) · {t.nav.areas}</span>
+        <h2 id="finder-title" class="h-xl words" data-words set:html={words(t.home.finderTitle)} />
+        <p class="lede" data-reveal style="--d:2">{t.home.finderLede}</p>
+        <div data-reveal style="--d:3"><AreaFinder {locale} /></div>
+      </div>
+      <div data-reveal="fade" style="--d:2">
+        <DublinMap {locale} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 PROCESS -->
+  <Process {locale} />
+
+  <!-- 04 WHY -->
+  <section class="section dark" aria-labelledby="why-title">
+    <div class="container split">
+      <div class="stack" style="--stack:22px">
+        <span class="eyebrow" data-reveal>(04) · Texture</span>
+        <h2 id="why-title" class="h-xl words" data-words set:html={words(t.home.whyTitle)} />
+        <div data-reveal style="--d:2"><Illustration name="plan" /></div>
+      </div>
+      <div class="why">
+        {t.why.map((w, i) => (
+          <div class="why-item" data-reveal style={`--d:${i}`}>
+            <h3>{w.t}</h3>
+            <p class="muted">{w.d}</p>
+          </div>
+        ))}
+        <a class="arrow-link" href={href(locale, 'standards')} data-reveal style="margin-top:28px">{t.nav.standards} <Icon name="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 ESTIMATOR -->
+  <section class="section" aria-labelledby="est-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal>(05) · {t.nav.pricing}</span>
+        <h2 id="est-title" class="h-xl words" data-words set:html={words(t.home.estimateTitle)} />
+        <p class="lede" data-reveal style="--d:2">{t.home.estimateLede}</p>
+      </div>
+      <div data-reveal><Estimator {locale} /></div>
+    </div>
+  </section>
+
+  <!-- 06 GUIDES -->
+  {
+    guides.length > 0 && (
+      <section class="section section--paper2 section--tight" aria-labelledby="guides-title">
+        <div class="container">
+          <div class="section-head section-head--row">
+            <h2 id="guides-title" class="h-l words" data-words set:html={words(t.home.guidesTitle)} />
+            <a class="arrow-link" href={href(locale, 'guides')} style="justify-self:end">{t.guides.all} <Icon name="arrow" /></a>
+          </div>
+          <div class="grid grid--3">
+            {guides.map((g, i) => (
+              <a class="card" href={href(locale, 'guide', { guide: { en: g.data.slug, ga: g.data.slug } })} data-reveal style={`--d:${i}`}>
+                <span class="badge">{g.data.readingMinutes} {t.guides.read}</span>
+                <h3>{g.data.title}</h3>
+                <p>{g.data.description}</p>
+                <span class="arrow-link" style="margin-top:auto">{t.cta.readGuide} <Icon name="arrow" /></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 07 FAQ -->
+  <section class="section" aria-labelledby="faq-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:22px">
+        <span class="eyebrow" data-reveal>FAQ</span>
+        <h2 id="faq-title" class="h-xl words" data-words set:html={words(t.home.faqTitle)} />
+      </div>
+      <FAQ {locale} items={faqs} openFirst />
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import '../scripts/grain.ts';
+</script>

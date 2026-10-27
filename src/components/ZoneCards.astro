@@ -1,0 +1,35 @@
+---
+import type { Locale, ZoneId } from '../data/types.ts';
+import { zones } from '../data/zones.ts';
+import { ui } from '../i18n/ui.ts';
+import { euro } from '../lib/pricing.ts';
+
+interface Props {
+  locale: Locale;
+  current?: ZoneId;
+}
+const { locale, current } = Astro.props;
+const t = ui[locale];
+---
+
+<div class="zones">
+  {
+    Object.values(zones).map((z, i) => (
+      <div class="zone-card" data-z={z.id} data-reveal style={`--d:${i};${current === z.id ? 'border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)' : ''}`}>
+        <span class="zn">{z.id}</span>
+        <h3 class="h-s">{z.name[locale]}</h3>
+        <p class="small muted">{z.description[locale]}</p>
+        <dl class="facts" style="margin-top:8px">
+          <div>
+            <dt>{t.price.minVisit}</dt>
+            <dd class="num">{euro(z.minVisit)}</dd>
+          </div>
+          <div>
+            <dt>{t.price.travel}</dt>
+            <dd class="num">{z.multiplier === 1 ? '0%' : `${Math.round((z.multiplier - 1) * 100)}%`}</dd>
+          </div>
+        </dl>
+      </div>
+    ))
+  }
+</div>

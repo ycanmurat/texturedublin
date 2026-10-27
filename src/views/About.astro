@@ -1,0 +1,115 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Logo from '../components/Logo.astro';
+import DublinMap from '../components/DublinMap.astro';
+import Icon from '../components/Icon.astro';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
+import { metaDesc } from '../lib/seo.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'about');
+const title = locale === 'en' ? 'About Texture Dublin — Bespoke Wood Works & Branding' : 'Faoi Texture Dublin — Obair Adhmaid agus Brandáil';
+const description = metaDesc(t.about.lede);
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.about, href: path }];
+const schema = graph([business(locale, true), website(), webPage({ path, title, description, locale, breadcrumb: true, type: 'AboutPage' }), breadcrumbs(path, crumbs)]);
+
+const copy = {
+  en: {
+    crafts: 'Two crafts, one team',
+    p1: 'Texture Dublin is a joinery workshop and a branding studio under one name. On the woodworks side we design, build and install fitted wardrobes, kitchens, built-in units and made-to-measure cabinets — and we take on the practical jobs too: flat-pack assembly, installation and general carpentry.',
+    p2: 'On the branding side we design logos and make the signs that carry them: shop fascias, illuminated letters, carved timber signs, office signage and window graphics.',
+    p3: 'Keeping both crafts together means fewer handovers and better results. A café can get its counter, menu boards and fascia from one team; a homeowner can get a kitchen, a matching utility and a carved house sign without managing three suppliers.',
+    valuesTitle: 'What we care about',
+    values: [
+      ['Precision', 'We measure twice, scribe on site and finish every edge. Good joinery lives in the details nobody notices.'],
+      ['Honest pricing', 'Published guide prices, a fixed written quote and no surprises when the invoice arrives.'],
+      ['Materials that last', 'Quality boards, solid timber, proven European hardware and finishes that meet EU standards.'],
+      ['Respect for your home', 'Floor protection, dust control, tidy working — and all the packaging taken away.'],
+    ],
+    logoTitle: 'The mark',
+    logoText: 'Our logo brings the two crafts together: timber grain flowing through a frame that becomes a “D” for Dublin, with the set square and dividers every design starts with.',
+  },
+  ga: {
+    crafts: 'Dhá cheird, foireann amháin',
+    p1: 'Is ceardlann siúinéireachta agus stiúideo brandála faoi aon ainm amháin é Texture Dublin. Ar thaobh na hoibre adhmaid dearaimid, tógaimid agus suiteálaimid vardrúis fheistithe, cistineacha, aonaid ionsuite agus caibinéid de réir tomhais — agus glacaimid leis na jabanna praiticiúla freisin: cóimeáil flat-pack, suiteáil agus siúinéireacht ghinearálta.',
+    p2: 'Ar thaobh na brandála dearaimid lógónna agus déanaimid na comharthaí a iompraíonn iad: cláir aghaidhe siopaí, litreacha soilsithe, comharthaí adhmaid snoite, comharthaíocht oifige agus grafaicí fuinneoige.',
+    p3: 'Má choinnítear an dá cheird le chéile, bíonn níos lú aistrithe agus torthaí níos fearr ann. Is féidir le caifé a chuntar, a chláir bhiachláir agus a chlár aghaidhe a fháil ó fhoireann amháin; is féidir le húinéir tí cistin, seomra fóntais meaitseáilte agus comhartha tí snoite a fháil gan trí sholáthraí a bhainistiú.',
+    valuesTitle: 'Cad atá tábhachtach dúinn',
+    values: [
+      ['Beachtas', 'Tomhaisimid faoi dhó, oiriúnaímid ar an láthair agus críochnaímid gach imeall. Bíonn siúinéireacht mhaith sna mionsonraí nach dtugann aon duine faoi deara.'],
+      ['Praghsáil mhacánta', 'Praghsanna treorach foilsithe, luachan scríofa seasta agus gan iontas ar bith nuair a thagann an sonrasc.'],
+      ['Ábhair a mhaireann', 'Cláir ardchaighdeáin, adhmad soladach, crua-earraí Eorpacha cruthaithe agus bailchríocha a chomhlíonann caighdeáin an AE.'],
+      ['Meas ar do theach', 'Cosaint urláir, rialú deannaigh, obair néata — agus an pacáistiú ar fad tógtha chun siúil.'],
+    ],
+    logoTitle: 'An lógó',
+    logoText: 'Tugann ár lógó an dá cheird le chéile: gráin adhmaid ag sileadh trí fhráma a dhéanann “D” do Bhaile Átha Cliath, leis an gcearnóg shocraithe agus an roinnteoir a dtosaíonn gach dearadh leo.',
+  },
+}[locale];
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="about">
+  <PageHero {locale} eyebrow={t.about.title} title={t.about.h1} lede={t.about.lede} {crumbs} illustration="brand" />
+
+  <section class="section section--tight" style="padding-top:0">
+    <div class="container split" style="align-items:start">
+      <h2 class="h-xl words" data-words set:html={words(copy.crafts)} />
+      <div class="stack prose">
+        <p class="lede" data-reveal>{copy.p1}</p>
+        <p data-reveal style="--d:1">{copy.p2}</p>
+        <p data-reveal style="--d:2">{copy.p3}</p>
+        <div class="btn-row" data-reveal style="--d:3">
+          <a class="btn btn--ink" href={href(locale, 'services')}>{t.nav.services} <Icon name="arrow" /></a>
+          <a class="btn btn--ghost" href={href(locale, 'standards')}>{t.nav.standards}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="values-title">
+    <div class="container">
+      <h2 id="values-title" class="h-xl words" data-words set:html={words(copy.valuesTitle)} style="margin-bottom:40px" />
+      <div class="grid grid--4 why">
+        {copy.values.map(([h, p], i) => (
+          <div class="why-item" data-reveal style={`--d:${i}`}>
+            <h3>{h}</h3>
+            <p class="muted">{p}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="mark-title">
+    <div class="container split">
+      <div class="stack" style="--stack:20px">
+        <h2 id="mark-title" class="h-l words" data-words set:html={words(copy.logoTitle)} />
+        <p class="lede" data-reveal>{copy.logoText}</p>
+      </div>
+      <div data-reveal="fade" style="max-width:520px;--logo-grain:var(--oak-deep);--logo-accent:var(--oak-deep);--logo-sub:var(--muted)">
+        <Logo variant="stacked" {locale} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper2" aria-labelledby="where-title">
+    <div class="container split">
+      <div class="stack" style="--stack:20px">
+        <h2 id="where-title" class="h-l words" data-words set:html={words(t.home.mapTitle)} />
+        <p class="lede" data-reveal>{t.home.mapLede}</p>
+        <a class="arrow-link" href={href(locale, 'areas')} data-reveal>{t.nav.allAreas} <Icon name="arrow" /></a>
+      </div>
+      <div data-reveal="fade"><DublinMap {locale} /></div>
+    </div>
+  </section>
+</BaseLayout>

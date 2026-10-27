@@ -1,0 +1,68 @@
+---
+/**
+ * One router for the whole bilingual site. Every URL (EN at the root, GA
+ * under /ga/ with Irish slugs) is generated from src/lib/routes.ts, so the
+ * pages, hreflang alternates and sitemap can never drift apart.
+ */
+import { withoutBase } from '../lib/paths.ts';
+import type { GetStaticPaths } from 'astro';
+import type { Locale } from '../data/types.ts';
+import { allRoutes, href, LOCALES, type RouteEntry } from '../lib/routes.ts';
+import { guideSlugs } from '../lib/guides.ts';
+import Home from '../views/Home.astro';
+import ServicesIndex from '../views/ServicesIndex.astro';
+import Service from '../views/Service.astro';
+import AreasIndex from '../views/AreasIndex.astro';
+import Area from '../views/Area.astro';
+import AreaService from '../views/AreaService.astro';
+import Pricing from '../views/Pricing.astro';
+import Quote from '../views/Quote.astro';
+import Projects from '../views/Projects.astro';
+import About from '../views/About.astro';
+import Contact from '../views/Contact.astro';
+import Standards from '../views/Standards.astro';
+import GuidesIndex from '../views/GuidesIndex.astro';
+import Guide from '../views/Guide.astro';
+import Legal from '../views/Legal.astro';
+import Sitemap from '../views/Sitemap.astro';
+
+export const getStaticPaths = (async () => {
+  const routes = allRoutes(await guideSlugs());
+  return LOCALES.flatMap((locale) =>
+    routes.map((route) => {
+      const slug = withoutBase(href(locale, route.key, route)).replace(/^\/|\/$/g, '');
+      return { params: { slug: slug || undefined }, props: { locale, route } };
+    }),
+  );
+}) satisfies GetStaticPaths;
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const views = {
+  home: Home,
+  services: ServicesIndex,
+  service: Service,
+  areas: AreasIndex,
+  area: Area,
+  areaService: AreaService,
+  pricing: Pricing,
+  quote: Quote,
+  projects: Projects,
+  about: About,
+  contact: Contact,
+  standards: Standards,
+  guides: GuidesIndex,
+  guide: Guide,
+  privacy: Legal,
+  cookies: Legal,
+  terms: Legal,
+  accessibility: Legal,
+  sitemap: Sitemap,
+} as const;
+const View = views[route.key];
+---
+
+<View {locale} {route} />

@@ -1,0 +1,38 @@
+---
+import type { Locale } from '../data/types.ts';
+import { words } from '../lib/text.ts';
+import Breadcrumbs from './Breadcrumbs.astro';
+import Illustration from './Illustration.astro';
+
+interface Props {
+  locale: Locale;
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  crumbs?: Array<{ name: string; href: string }>;
+  illustration?: string;
+  size?: 'xl' | 'l';
+}
+const { locale, eyebrow, title, lede, crumbs, illustration, size = 'xl' } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="container">
+    {crumbs && <Breadcrumbs {locale} items={crumbs} />}
+    <div class={illustration ? 'split' : ''}>
+      <div>
+        {eyebrow && <p class="eyebrow" data-reveal style="margin-top:28px">{eyebrow}</p>}
+        <h1 class={`${size === 'xl' ? 'h-xl' : 'h-l'} words`} data-words set:html={words(title)} />
+        {lede && <p class="lede" data-reveal style="--d:2">{lede}</p>}
+        <slot />
+      </div>
+      {
+        illustration && (
+          <div class="page-hero-art" data-reveal="fade" style="--d:2">
+            <Illustration name={illustration} />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import type { Locale } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  wa: string;
+  service?: string;
+  area?: string;
+}
+const { locale, wa, service, area } = Astro.props;
+const t = ui[locale].wa;
+---
+
+<div class="wa-fab" id="wa-fab">
+  <div class="wa-bubble" id="wa-bubble" aria-live="polite">
+    <strong>{t.fab}</strong>
+    {t.fabHint}
+    <button type="button" aria-label={ui[locale].nav.close} data-wa-dismiss><Icon name="close" /></button>
+  </div>
+  <a class="wa-fab-btn" href={wa} target="_blank" rel="noopener" aria-label={t.fab} data-track="whatsapp" data-placement="fab" data-service={service} data-area={area}>
+    <Icon name="whatsapp" />
+  </a>
+</div>

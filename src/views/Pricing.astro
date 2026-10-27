@@ -1,0 +1,68 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import PriceTable from '../components/PriceTable.astro';
+import ZoneCards from '../components/ZoneCards.astro';
+import Estimator from '../components/Estimator.astro';
+import FAQ from '../components/FAQ.astro';
+import { signage, woodworks } from '../data/services.ts';
+import { pricingFaqs } from '../data/faqs.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { abs, breadcrumbs, business, faqPage, graph, offerCatalog, webPage, website } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'pricing');
+const title = locale === 'en' ? 'Carpentry & Signage Prices Dublin 2026 | Texture Dublin' : 'Praghsanna Siúinéireachta agus Comharthaíochta 2026 | Texture Dublin';
+const description =
+  locale === 'en'
+    ? 'Full 2026 price list for fitted wardrobes, kitchens, alcove units, cabinets, assembly, carpentry, shop signs, LED signs and branding in Dublin.'
+    : 'Liosta iomlán praghsanna 2026: vardrúis, cistineacha, aonaid chuasa, caibinéid, cóimeáil, siúinéireacht, comharthaí siopa, comharthaí LED agus brandáil.';
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.pricing, href: path }];
+const faqs = pricingFaqs.map((f) => ({ q: f.q[locale], a: f.a[locale] }));
+const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs), { ...offerCatalog(locale), '@id': `${abs(path)}#catalog` }, faqPage(path, pricingFaqs, locale)]);
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="pricing">
+  <PageHero {locale} eyebrow={t.pricing.title} title={t.pricing.h1} lede={t.pricing.lede} {crumbs} illustration="cabinet" size="l" />
+
+  <section class="section section--tight section--paper2" aria-labelledby="est-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal>{t.pricing.estimatorTitle}</span>
+        <h2 id="est-title" class="h-l words" data-words set:html={words(t.home.estimateTitle)} />
+      </div>
+      <div data-reveal><Estimator {locale} /></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="list-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <h2 id="list-title" class="h-l words" data-words set:html={words(t.cta.allPrices)} />
+        <p class="muted" data-reveal>{t.areas.zonesLede}</p>
+        <h3 class="h-s" data-reveal style="margin-top:20px">{t.pricing.zonesTitle}</h3>
+        <ZoneCards {locale} />
+      </div>
+      <div class="stack" style="--stack:48px">
+        <PriceTable {locale} services={woodworks} collapsible open={['fitted-wardrobes', 'bespoke-kitchens']} caption={t.nav.woodworks} />
+        <PriceTable {locale} services={signage} collapsible open={['shop-signs']} caption={t.nav.signage} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--cream" aria-labelledby="faq-title">
+    <div class="container split" style="align-items:start">
+      <h2 id="faq-title" class="h-l words" data-words set:html={words(t.common.faq)} />
+      <FAQ {locale} items={faqs} openFirst />
+    </div>
+  </section>
+</BaseLayout>

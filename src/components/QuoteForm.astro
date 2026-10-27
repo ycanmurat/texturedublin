@@ -1,0 +1,75 @@
+---
+import type { Locale } from '../data/types.ts';
+import { areas } from '../data/areas.ts';
+import { signage, woodworks } from '../data/services.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { href } from '../lib/routes.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  service?: string;
+  area?: string;
+}
+const { locale, service, area } = Astro.props;
+const t = ui[locale];
+const q = t.quote;
+const sorted = [...areas].sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale));
+---
+
+<form class="quote-form stack" style="--stack:20px" data-quote data-wa={site.whatsapp} data-email={site.email} novalidate>
+  <div class="grid grid--2" style="--gap:20px">
+    <div class="field">
+      <label for="q-service">{q.service}</label>
+      <select class="select" id="q-service" name="service" required>
+        <option value="">—</option>
+        <optgroup label={t.nav.woodworks}>
+          {woodworks.map((s) => <option value={s.name[locale]} selected={s.id === service}>{s.name[locale]}</option>)}
+        </optgroup>
+        <optgroup label={t.nav.signage}>
+          {signage.map((s) => <option value={s.name[locale]} selected={s.id === service}>{s.name[locale]}</option>)}
+        </optgroup>
+      </select>
+    </div>
+    <div class="field">
+      <label for="q-area">{q.area}</label>
+      <select class="select" id="q-area" name="area">
+        <option value="">—</option>
+        {sorted.map((a) => <option value={`${a.name[locale]} (${a.postal})`} selected={a.id === area}>{a.name[locale]} · {a.postal}</option>)}
+        <option value={q.otherArea}>{q.otherArea}</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label for="q-details">{q.details}</label>
+    <textarea class="textarea" id="q-details" name="details" placeholder={q.detailsPh} maxlength="800"></textarea>
+  </div>
+  <div class="grid grid--2" style="--gap:20px">
+    <div class="field">
+      <label for="q-size">{q.size}</label>
+      <input class="input" id="q-size" name="size" type="text" placeholder={q.sizePh} maxlength="120" />
+    </div>
+    <div class="field">
+      <label for="q-when">{q.when}</label>
+      <select class="select" id="q-when" name="when">
+        {q.whenOptions.map((o) => <option value={o}>{o}</option>)}
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label for="q-name">{q.name}</label>
+    <input class="input" id="q-name" name="name" type="text" autocomplete="name" maxlength="80" />
+  </div>
+  <p class="small" data-q-error role="alert" hidden style="color:#b42318">{q.required}</p>
+  <div class="btn-row">
+    <button class="btn btn--wa btn--lg" type="submit" data-magnetic><Icon name="whatsapp" />{q.send}</button>
+    <a class="arrow-link" href={`mailto:${site.email}`} data-q-mail>{q.email} <Icon name="arrow" /></a>
+  </div>
+  <p class="small muted">{q.privacy.replace(/\.?$/, '')} — <a class="link" href={href(locale, 'privacy')}>{t.legal.privacy}</a>.</p>
+  <script type="application/json" data-q-labels set:html={JSON.stringify({ intro: q.msgIntro, service: q.msgService, area: q.msgArea, details: q.msgDetails, size: q.msgSize, when: q.msgWhen, name: q.msgName })} />
+</form>
+
+<script>
+  import '../scripts/quote.ts';
+</script>

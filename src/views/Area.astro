@@ -1,0 +1,187 @@
+---
+import { ogPath } from '../lib/paths.ts';
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import PriceTable from '../components/PriceTable.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import DublinMap from '../components/DublinMap.astro';
+import FAQ from '../components/FAQ.astro';
+import Icon from '../components/Icon.astro';
+import { areaById, nearby } from '../data/areas.ts';
+import { serviceById, signage, woodworks } from '../data/services.ts';
+import { housing, commercial } from '../data/housing.ts';
+import { councils, zones } from '../data/zones.ts';
+import { ui, fmt } from '../i18n/ui.ts';
+import { alternates, href, inPlace, placeVars } from '../lib/routes.ts';
+import { euro, leadItem } from '../lib/pricing.ts';
+import { breadcrumbs, business, faqPage, graph, offerCatalog, placeNode, webPage, website, BUSINESS_ID, abs } from '../lib/schema.ts';
+import { waLink, waData } from '../lib/wa.ts';
+import { areaFaqs, popularServices } from '../lib/local.ts';
+import { fitTitle, metaDesc, shortPrice } from '../lib/seo.ts';
+import { words } from '../lib/text.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const a = areaById[route.area!];
+const v = placeVars(a, locale);
+const z = zones[a.zone];
+const path = href(locale, 'area', { area: a.id });
+const wa = waLink(locale, { area: a });
+const postalShort = a.postal.replace(/^Dublin /, 'D').replace(/ & /, '/');
+
+const W = serviceById['fitted-wardrobes'];
+const K = serviceById['bespoke-kitchens'];
+const B = serviceById['built-in-units'];
+const title =
+  locale === 'en'
+    ? fitTitle(`Carpenter & Sign Maker ${a.name.en} (${postalShort})`, `Carpenter & Sign Maker ${a.name.en.replace(/ & .*$/, '')} (${postalShort})`, `Carpenter ${a.name.en} (${postalShort})`)
+    : fitTitle(`Siúinéir agus Comharthaí ${a.inGa}`, `Siúinéir ${a.inGa}`);
+const description = metaDesc(
+  locale === 'en'
+    ? `Fitted wardrobes from ${shortPrice('en', leadItem(W), a.zone)}, kitchens from ${shortPrice('en', leadItem(K), a.zone)}, alcove units & shop signs in ${a.name.en}. Local prices, free survey — WhatsApp Texture Dublin.`
+    : `Vardrúis fheistithe ó ${shortPrice('ga', leadItem(W), a.zone)}, cistineacha ó ${shortPrice('ga', leadItem(K), a.zone)}, aonaid chuasa agus comharthaí siopa ${a.inGa}. Praghsanna áitiúla.`,
+);
+const crumbs = [
+  { name: t.nav.home, href: href(locale, 'home') },
+  { name: t.nav.areas, href: href(locale, 'areas') },
+  { name: a.name[locale], href: path },
+];
+const faqList = areaFaqs(a, locale);
+const faqs = faqList.map((f) => ({ q: f.q[locale], a: f.a[locale] }));
+const og = ogPath(path);
+const schema = graph([
+  business(locale),
+  website(),
+  webPage({ path, title, description, locale, breadcrumb: true, about: placeNode(a, locale), image: og }),
+  breadcrumbs(path, crumbs),
+  {
+    '@type': 'Service',
+    '@id': `${abs(path)}#service`,
+    name: locale === 'en' ? `Carpentry, furniture & signage in ${a.name.en}` : `Siúinéireacht, troscán agus comharthaíocht ${a.inGa}`,
+    serviceType: 'Carpentry and signage',
+    provider: { '@id': BUSINESS_ID },
+    areaServed: placeNode(a, locale),
+    hasOfferCatalog: offerCatalog(locale, a.zone, a),
+  },
+  faqPage(path, faqList, locale),
+]);
+
+const popular = popularServices(a).filter((s) => s.areaPages).slice(0, 6);
+const cards = popular.length >= 3 ? popular : [W, K, B];
+const near = nearby(a, 8);
+const h1 = locale === 'en' ? `${t.area.titleA} in *${a.name.en}*` : `${t.area.titleA} *${a.inGa}*`;
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} area={a} page="area" ogImage={og}>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumbs {locale} items={crumbs} />
+      <div class="split">
+        <div>
+          <p class="eyebrow" data-reveal style="margin-top:28px">{a.postal} · {t.common.zone} {a.zone} — {z.name[locale]}</p>
+          <h1 class="h-xl words" data-words set:html={words(h1)} />
+          <p class="lede" data-reveal style="--d:2">{a.intro[locale]}</p>
+          <div class="btn-row" data-reveal style="--d:3;margin-top:28px">
+            <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('area-hero', { area: a })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>
+            <a class="btn btn--ghost btn--lg" href="#local-prices">{fmt(t.area.pricesTitle, v)}</a>
+          </div>
+          <dl class="facts" data-reveal style="--d:4;margin-top:36px">
+            <div><dt>{t.common.postcode}</dt><dd>{a.postal}</dd></div>
+            {a.eircode && <div><dt>{t.common.eircode}</dt><dd>{a.eircode}</dd></div>}
+            <div><dt>{t.price.minVisit}</dt><dd class="num">{euro(z.minVisit)}</dd></div>
+            <div><dt>{t.price.travel}</dt><dd class="num">{z.multiplier === 1 ? t.price.noTravel : `${Math.round((z.multiplier - 1) * 100)}%`}</dd></div>
+          </dl>
+        </div>
+        <div data-reveal="fade" style="--d:2">
+          <DublinMap {locale} current={a.id} labels={[a.id, 'dublin-city-centre']} />
+          <p class="small muted" style="margin-top:8px">{councils[a.council][locale]}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight section--cream" aria-labelledby="popular-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <h2 id="popular-title" class="h-l words" data-words set:html={words(fmt(t.area.popularTitle, v))} />
+        <p class="muted" data-reveal>{t.area.lede.replace('{area}', v.area)}</p>
+      </div>
+      <div class="grid grid--3">
+        {cards.map((s, i) => <ServiceCard {locale} service={s} area={a} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="local-prices" aria-labelledby="prices-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>{t.nav.pricing} · {a.postal}</span>
+        <h2 id="prices-title" class="h-l words" data-words set:html={words(fmt(t.area.pricesTitle, v))} />
+        <p class="muted" data-reveal>{z.description[locale]}</p>
+        <div class="zone-card" data-z={a.zone} data-reveal>
+          <span class="zn">{a.zone}</span>
+          <h3 class="h-s">{t.common.zone} {a.zone} — {z.name[locale]}</h3>
+          <dl class="facts">
+            <div><dt>{t.price.minVisit}</dt><dd class="num">{euro(z.minVisit)}</dd></div>
+            <div><dt>{t.price.travel}</dt><dd class="num">{z.multiplier === 1 ? '0%' : `${Math.round((z.multiplier - 1) * 100)}%`}</dd></div>
+          </dl>
+          <a class="arrow-link small" href={href(locale, 'areas')}>{t.areas.zonesTitle} <Icon name="arrow" /></a>
+        </div>
+      </div>
+      <div class="stack" style="--stack:48px">
+        <div data-reveal><PriceTable {locale} services={woodworks} zone={a.zone} area={a} collapsible open={cards.slice(0, 2).map((s) => s.id)} caption={t.nav.woodworks} /></div>
+        <div data-reveal><PriceTable {locale} services={signage} zone={a.zone} area={a} collapsible open={['shop-signs']} caption={t.nav.signage} /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="homes-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>{t.area.localTitle}</span>
+        <h2 id="homes-title" class="h-l words" data-words set:html={words(fmt(t.area.homesTitle, v))} />
+        <p class="lede" data-reveal>{a.insight[locale]}</p>
+        <div class="cluster" data-reveal>{a.housing.map((h) => <span class="chip">{housing[h].name[locale]}</span>)}</div>
+      </div>
+      <div class="stack why" style="--stack:28px">
+        {a.housing.slice(0, 2).map((h, i) => (
+          <div class="why-item" data-reveal style={`--d:${i}`}>
+            <h3>{housing[h].name[locale]}</h3>
+            <p class="muted">{housing[h].advice.wardrobes[locale]}</p>
+            <p class="muted">{housing[h].advice.builtins[locale]}</p>
+          </div>
+        ))}
+        <div class="why-item" data-reveal>
+          <h3>{fmt(t.area.signsTitle, v)}</h3>
+          <p class="muted">{commercial[a.commercial].advice[locale]}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight section--paper2" aria-labelledby="near-title">
+    <div class="container">
+      <h2 id="near-title" class="h-l words" data-words set:html={words(t.area.nearbyTitle)} style="margin-bottom:28px" />
+      <div class="cluster" style="--gap:10px" data-reveal>
+        {near.map((n) => <a class="chip" href={href(locale, 'area', { area: n.id })}>{n.name[locale]} <small>{n.postal}</small></a>)}
+        <a class="chip" href={href(locale, 'areas')}><strong>{t.nav.allAreas} →</strong></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
+    <div class="container split" style="align-items:start">
+      <div class="stack" style="--stack:20px">
+        <span class="eyebrow" data-reveal>FAQ · {a.name[locale]}</span>
+        <h2 id="faq-title" class="h-l words" data-words set:html={words(t.common.faq)} />
+      </div>
+      <FAQ {locale} items={faqs} openFirst />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,85 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Illustration from '../components/Illustration.astro';
+import Icon from '../components/Icon.astro';
+import { services } from '../data/services.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { alternates, href } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
+import { metaDesc } from '../lib/seo.ts';
+
+interface Props {
+  locale: Locale;
+  route: RouteEntry;
+}
+const { locale, route } = Astro.props;
+const t = ui[locale];
+const path = href(locale, 'projects');
+const title = locale === 'en' ? 'Our Work — Wardrobes, Kitchens & Signs | Texture Dublin' : 'Ár Saothar — Vardrúis, Cistineacha agus Comharthaí | Texture Dublin';
+const description = metaDesc(t.projects.lede);
+const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.projects, href: path }];
+const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true, type: 'CollectionPage' }), breadcrumbs(path, crumbs)]);
+
+// Real project photos: drop files in src/assets/projects/ named like
+// "fitted-wardrobe-rathmines.jpg" — the file name becomes the caption & alt text.
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const photos = Object.entries(files).map(([p, m]) => {
+  const name = p.split('/').pop()!.replace(/\.\w+$/, '').replace(/[-_]+/g, ' ');
+  return { src: m.default, alt: name.charAt(0).toUpperCase() + name.slice(1) };
+});
+const dev = import.meta.env.DEV;
+---
+
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="projects">
+  <PageHero {locale} eyebrow={t.projects.title} title={t.projects.h1} lede={t.projects.lede} {crumbs} />
+
+  {
+    photos.length > 0 && (
+      <section class="section section--tight" style="padding-top:0">
+        <div class="container grid grid--3">
+          {photos.map((ph, i) => (
+            <figure class="tile" data-reveal style={`--d:${i % 3}`}>
+              <Image src={ph.src} alt={ph.alt} widths={[480, 800, 1200]} sizes="(min-width: 1000px) 33vw, 100vw" loading={i < 3 ? 'eager' : 'lazy'} />
+              <figcaption><strong>{ph.alt}</strong></figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--tight" style={photos.length ? '' : 'padding-top:0'} aria-labelledby="concepts-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="concepts-title" class="h-l words" data-words set:html={words(t.projects.conceptsTitle)} />
+        <p class="muted" data-reveal>{t.projects.conceptsNote}</p>
+        {dev && photos.length === 0 && <p class="todo-badge">{t.projects.pending}</p>}
+      </div>
+      <div class="grid grid--3">
+        {services.map((s, i) => (
+          <a class="tile" href={href(locale, 'service', { service: s.id })} data-reveal style={`--d:${i % 3};text-decoration:none`}>
+            <Illustration name={s.illustration} />
+            <figcaption>
+              <strong>{s.name[locale]}</strong>
+              <span>{s.short[locale]}</span>
+            </figcaption>
+          </a>
+        ))}
+      </div>
+      {
+        site.socials.instagram && (
+          <div class="btn-row" style="margin-top:40px">
+            <a class="btn btn--ink" href={site.socials.instagram} target="_blank" rel="noopener me"><Icon name="instagram" />{t.projects.instagram}</a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

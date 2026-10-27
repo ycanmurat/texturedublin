@@ -1,0 +1,43 @@
+---
+import type { Area, Locale, Service } from '../data/types.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { waveField } from '../lib/waves.ts';
+import { words } from '../lib/text.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  wa: string;
+  service?: Service;
+  area?: Area;
+}
+const { locale, wa, service, area } = Astro.props;
+const t = ui[locale];
+const lines = waveField(1600, 700, { count: 13, amp: 26, wave: 640, seed: 1.2, step: 90 });
+---
+
+<section class="cta-band dark" aria-labelledby="cta-title">
+  <svg class="cta-lines" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#c9925a" stroke-opacity="0.22" stroke-width="1.4" class="drift">
+      {lines.map((d) => <path d={d} />)}
+    </g>
+  </svg>
+  <div class="container">
+    <span class="eyebrow" data-reveal>{t.wa.fab}</span>
+    <h2 id="cta-title" class="words" data-words set:html={words(t.ctaBand.title)} />
+    <p class="lede" data-reveal style="--d:2">{t.ctaBand.lede}</p>
+    <div class="btn-row" data-reveal style="--d:3">
+      <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="cta-band" data-service={service?.id} data-area={area?.id} data-magnetic>
+        <Icon name="whatsapp" />
+        {t.wa.ctaLong}
+      </a>
+      <span class="phone">{t.ctaBand.or} <a href={`tel:${site.phone.e164}`}>{site.phone.display}</a></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .drift { animation: drift 30s linear infinite alternate; }
+  @keyframes drift { to { transform: translateX(-120px); } }
+</style>

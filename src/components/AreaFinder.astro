@@ -1,0 +1,64 @@
+---
+import type { Locale } from '../data/types.ts';
+import { areas, areaById } from '../data/areas.ts';
+import { serviceById } from '../data/services.ts';
+import { zones } from '../data/zones.ts';
+import { ui, fmt } from '../i18n/ui.ts';
+import { href, placeIn } from '../lib/routes.ts';
+import { euro, leadLabel } from '../lib/pricing.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale];
+const showcase = ['fitted-wardrobes', 'bespoke-kitchens', 'built-in-units', 'shop-signs'].map((id) => serviceById[id]);
+
+const data = areas.map((a) => ({
+  n: a.name[locale],
+  s: [a.name.en, a.name.ga, a.postal, a.eircode ?? '', a.id.replace(/-/g, ' ')].join(' | '),
+  p: a.postal,
+  h: href(locale, 'area', { area: a.id }),
+  z: a.zone,
+  zn: zones[a.zone].name[locale],
+  mv: euro(zones[a.zone].minVisit),
+  see: fmt(t.finder.see, { area: placeIn(a, locale) }),
+  pr: showcase.map((s) => leadLabel(locale, s, a.zone)),
+}));
+const popular = ['rathmines', 'ranelagh', 'clontarf', 'dundrum', 'blackrock', 'malahide', 'swords', 'lucan', 'tallaght', 'dublin-city-centre'].map((id) => areaById[id]);
+const labels = { zone: t.common.zone, min: t.finder.minVisit, none: t.finder.none, names: showcase.map((s) => s.name[locale]) };
+---
+
+<div class="finder" data-finder>
+  <label class="field" for="finder-input">
+    <span class="label">{t.finder.label}</span>
+  </label>
+  <div class="finder-input">
+    <Icon name="search" />
+    <input
+      id="finder-input"
+      class="input"
+      type="text"
+      inputmode="search"
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls="finder-list"
+      placeholder={t.finder.placeholder}
+    />
+    <ul class="finder-list" id="finder-list" role="listbox" hidden></ul>
+  </div>
+  <div class="finder-result" aria-live="polite"></div>
+  <p class="small muted" style="margin-top:18px">{t.finder.popular}</p>
+  <div class="cluster" style="--gap:8px;margin-top:10px">
+    {popular.map((a) => <a class="chip" href={href(locale, 'area', { area: a.id })}>{a.name[locale]} <small>{a.postal}</small></a>)}
+  </div>
+  <script type="application/json" data-finder-data set:html={JSON.stringify({ areas: data, labels })} />
+</div>
+
+<script>
+  import '../scripts/finder.ts';
+</script>

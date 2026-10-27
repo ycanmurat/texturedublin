@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+import type { Area, L10n, Locale, Service } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+import { waLink } from '../lib/wa.ts';
+import Head from '../components/Head.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFab from '../components/WhatsAppFab.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  alternates: L10n | null;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  schema?: object;
+  noindex?: boolean;
+  tone?: 'dark' | 'light';
+  service?: Service;
+  area?: Area;
+  cta?: boolean;
+  /** page type, sent with conversion events */
+  page?: string;
+}
+
+const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType, schema, noindex, tone = 'light', service, area, cta = true, page = 'page' } = Astro.props;
+const t = ui[locale];
+const wa = waLink(locale, { service, area });
+---
+
+<!doctype html>
+<html lang={t.meta.htmlLang} dir="ltr">
+  <head>
+    <Head {locale} {title} {description} {path} {alternates} {ogImage} {ogImageAlt} {ogType} {schema} {noindex} />
+  </head>
+  <body data-page={page} data-service={service?.id} data-area={area?.id}>
+    <a class="skip-link" href="#main">{t.nav.skip}</a>
+    <Header {locale} {path} {alternates} {tone} {wa} />
+    <main id="main">
+      <slot />
+      {cta && <CtaBand {locale} {wa} {service} {area} />}
+    </main>
+    <Footer {locale} {alternates} {wa} />
+    <WhatsAppFab {locale} {wa} service={service?.id} area={area?.id} />
+    <CookieConsent {locale} />
+    <script>
+      import '../scripts/app.ts';
+    </script>
+  </body>
+</html>

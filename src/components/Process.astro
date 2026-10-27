@@ -1,0 +1,41 @@
+---
+import type { Locale } from '../data/types.ts';
+import { ui } from '../i18n/ui.ts';
+import { words } from '../lib/text.ts';
+import Illustration from './Illustration.astro';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale];
+---
+
+<section class="section process" data-process aria-labelledby="process-title">
+  <div class="container process-grid">
+    <div>
+      <div class="section-head">
+        <span class="eyebrow" data-reveal>(03) · {locale === 'en' ? 'Process' : 'Próiseas'}</span>
+        <h2 id="process-title" class="h-xl words" data-words set:html={words(t.home.processTitle)} />
+        <p class="lede" data-reveal style="--d:2">{t.home.processLede}</p>
+      </div>
+      <ol class="steps">
+        {
+          t.process.map((s, i) => (
+            <li class="step" data-step={i}>
+              <span class="n">0{i + 1}</span>
+              <div>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+    <div class="process-art">
+      <Illustration name="wardrobe" class="process-ill" draw={false} />
+      <div class="progress-line" aria-hidden="true"><i></i></div>
+    </div>
+  </div>
+</section>
