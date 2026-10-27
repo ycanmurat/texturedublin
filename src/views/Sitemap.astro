@@ -23,7 +23,7 @@ const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.lega
 const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs)]);
 const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale);
 const label: Partial<Record<StaticKey, string>> = {
-  furnitureHub:t.nav.woodworks, signageHub:t.nav.signage, shop:t.nav.shop, services: t.nav.services, areas: t.nav.areas, pricing: t.nav.pricing, quote: t.nav.quote, projects: t.nav.projects, about: t.nav.about,
+  furnitureHub:t.nav.woodworks, signageHub:t.nav.signage, services: t.nav.services, areas: t.nav.areas, pricing: t.nav.pricing, quote: t.nav.quote, projects: t.nav.projects, about: t.nav.about,
   contact: t.nav.contact, standards: t.nav.standards, guides: t.nav.guides, privacy: t.legal.privacy, cookies: t.legal.cookies,
   terms: t.legal.terms, accessibility: t.legal.accessibility,
 };

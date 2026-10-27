@@ -6,12 +6,13 @@ description: Conas a bhailíonn, a úsáideann agus a chosnaíonn Texture Dublin
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 Míníonn an polasaí seo conas a úsáideann **{site.legalName}** ("Texture Dublin", "sinn") sonraí pearsanta nuair a thugann tú cuairt ar an suíomh gréasáin seo, nuair a dhéanann tú teagmháil linn nó nuair is custaiméir thú. Cloímid leis an Rialachán Ginearálta maidir le Cosaint Sonraí (GDPR), leis an Acht um Chosaint Sonraí 2018 agus leis na Rialacháin ríPhríobháideachta (I.R. Uimh. 336 de 2011).
 
 ## Cé sinne
 
-Is é {site.legalName} an rialaitheoir sonraí{site.croNumber ? `, uimhir CRO ${site.croNumber}` : ''}, {site.showAddress && site.address.street ? `${site.address.street}, ${site.address.locality} ${site.address.postalCode}` : 'Baile Átha Cliath, Éire'}. Déan teagmháil linn faoi aon rud sa pholasaí seo ag <a href={`mailto:${site.email}`}>{site.email}</a> nó {site.phone.display}.
+Is é {site.legalName} an rialaitheoir sonraí{site.croNumber ? `, uimhir CRO ${site.croNumber}` : ''}, {site.showAddress && site.address.street ? `${site.address.street}, ${site.address.locality} ${site.address.postalCode}` : 'Baile Átha Cliath, Éire'}. Déan teagmháil linn faoi aon rud sa pholasaí seo ag <ContactLink />.
 
 ## Cad a bhailímid agus cén fáth
 
@@ -28,7 +29,7 @@ Ní dhíolaimid do shonraí riamh agus ní úsáidimid iad le haghaidh cinnteoir
 
 ## WhatsApp
 
-Nuair a sheolann tú teachtaireacht chugainn ar WhatsApp, is é WhatsApp Ireland Limited a sholáthraíonn an tseirbhís agus próiseálann sé do theachtaireachtaí faoina théarmaí agus faoina pholasaí príobháideachta féin. Ní stórálann an fhoirm luachana ar an suíomh seo aon rud: osclaíonn sí WhatsApp (nó d’aip ríomhphoist) le do theachtaireacht líonta isteach.
+Nuair a sheolann tú teachtaireacht chugainn ar WhatsApp, is é WhatsApp Ireland Limited a sholáthraíonn an tseirbhís agus próiseálann sé do theachtaireachtaí faoina théarmaí agus faoina pholasaí príobháideachta féin. Ní stórálann an fhoirm luachana ar an suíomh seo aon rud: osclaíonn sí WhatsApp le do theachtaireacht líonta isteach.
 
 ## Cé leis a roinnimid sonraí
 
@@ -43,16 +44,10 @@ Ach amháin leis na daoine a chabhraíonn linn an tseirbhís a sholáthar, agus 
 
 ## Do chearta
 
-Is féidir leat iarraidh orainn rochtain a thabhairt ar do shonraí, iad a cheartú nó a scriosadh, a n-úsáid a shrianadh nó agóid a dhéanamh ina coinne, iad a fháil i bhformáid iniompartha, nó do thoiliú a tharraingt siar am ar bith (úsáid **Socruithe fianán** sa bhuntásc d’fhianáin). Déan teagmháil linn ag <a href={`mailto:${site.email}`}>{site.email}</a> — freagróimid laistigh de mhí.
+Is féidir leat iarraidh orainn rochtain a thabhairt ar do shonraí, iad a cheartú nó a scriosadh, a n-úsáid a shrianadh nó agóid a dhéanamh ina coinne, iad a fháil i bhformáid iniompartha, nó do thoiliú a tharraingt siar am ar bith (úsáid **Socruithe fianán** sa bhuntásc d’fhianáin). Déan teagmháil linn ag <ContactLink /> — freagróimid laistigh de mhí.
 
 Más míshásta thú leis an gcaoi a láimhseálaimid do shonraí, is féidir leat gearán a dhéanamh leis an **gCoimisiún um Chosaint Sonraí**, 21 Cearnóg Mhic Liam Theas, Baile Átha Cliath 2, D02 RD28 — [www.dataprotection.ie](https://www.dataprotection.ie).
 
 ## Slándáil, leanaí agus athruithe
 
 Cosnaímid gléasanna agus cuntais le pasfhocail agus le fíordheimhniú dhá fhachtóir, agus freastalaítear an suíomh seo thar HTTPS. Níl ár seirbhísí dírithe ar dhaoine faoi 18. D’fhéadfaimis an polasaí seo a nuashonrú; taispeánann an dáta thuas an leagan is déanaí. Má bhíonn aon difríocht idir an leagan Gaeilge agus an leagan Béarla, beidh forlámhas ag an leagan Béarla.
-
-## An siopa agus riarachán
-
-Ullmhaítear réimsí fiosrúcháin an tsiopa mar nasc WhatsApp i do bhrabhsálaí. Ní stórálann an suíomh an fiosrúchán, ní ghlacann sé íocaíocht agus ní chruthaíonn sé cuntas custaiméara. Seiceálann agus seolann tú an teachtaireacht in WhatsApp.
-
-Stórálann an painéal príobháideach ábhar táirgí, hais phasfhocail agus seisiúin riarthóra. Éagann seisiúin tar éis ocht n-uaire; coinnítear iarrachtaí teipthe suas le 15 nóiméad. Bíonn íomhánna agus comhaid 3T poiblí nuair a úsáidtear i dtáirge foilsithe iad.

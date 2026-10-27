@@ -6,20 +6,17 @@ description: Téarmaí do luachana, orduithe, éarlaisí, cealuithe, suiteáil a
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 Baineann na téarmaí seo le hobair a dhéanann **{site.legalName}** ("Texture Dublin", "sinn"). D’fhéadfadh do luachan scríofa téarmaí a bhaineann le tionscadal ar leith a chur leo; má bhíonn difríocht ann, beidh forlámhas ag an luachan. Ní dhéanann aon rud sna téarmaí seo difear do do chearta reachtúla mar thomhaltóir faoin Acht um Chearta Tomhaltóirí 2022.
 
 ## 1. Praghsanna agus luachana
 
-Tugtar **luachan ar fhiosrúchán** ar an gcuid is mó den obair. Is treoir iad na rátaí tosaigh agus is samplaí iad praghsanna agus toisí táirgí marcáilte “sampla”. Deimhnítear ábhair, seachadadh, suiteáil, CBL agus an t-iomlán sa luachan. Tagann do **luachan scríofa seasta** tar éis suirbhé agus bíonn sé bailí ar feadh 30 lá. Tugtar luachan ar leith ar obair nach bhfuil sa luachan sula ndéantar í.
+Tugtar **luachan ar fhiosrúchán** ar an gcuid is mó den obair. Is treoir iad na rátaí tosaigh. Deimhnítear ábhair, seachadadh, suiteáil, CBL agus an t-iomlán sa luachan. Tagann do **luachan scríofa seasta** tar éis suirbhé agus bíonn sé bailí ar feadh 30 lá. Tugtar luachan ar leith ar obair nach bhfuil sa luachan sula ndéantar í.
 
 ## 2. Orduithe agus éarlaisí
 
 Tosaíonn obair de réir tomhais nuair a cheadaíonn tú na líníochtaí deiridh agus nuair a íocann tú an éarlais atá ar do luachan. Íoctar as jabanna beaga ar chríochnú, agus deimhnítear aon táille chuairte íosta sa luachan. Bíonn an t-iarmhéid dlite ar chríochnú na suiteála mura ndeir do luachan a mhalairt.
-
-### Fiosrúcháin ón siopa
-
-Cruthaíonn roghnú táirge agus oscailt WhatsApp fiosrúchán chuig Ali Onder. Ní ghlacann an suíomh íocaíocht ná ní dheimhníonn sé ordú. Aontaítear sonraí, praghas, seachadadh agus téarmaí ar leith. Léiríonn an t-amharc 3T dearadh; ní athraíonn roghnú bailchríche an tsamhail go huathoibríoch.
 
 ## 3. Cealú
 
@@ -39,4 +36,4 @@ Caithfidh earraí a sholáthraímid a bheith ar cháilíocht shásúil, oiriúna
 
 ## 7. Gearáin agus dlí
 
-Déan teagmháil linn ar dtús ag <a href={`mailto:${site.email}`}>{site.email}</a> nó {site.phone.display}. Tá eolas faoi do chearta tomhaltóra ar fáil ón gCoimisiún um Iomaíocht agus um Chosaint Tomhaltóirí ag [ccpc.ie](https://www.ccpc.ie). Is le Texture Dublin an t-ainm, an lógó, na léaráidí agus an téacs ar an suíomh seo. Rialaítear na téarmaí seo le dlí na hÉireann. Má bhíonn aon difríocht idir an leagan Gaeilge agus an leagan Béarla, beidh forlámhas ag an leagan Béarla.
+Déan teagmháil linn ar dtús ag <ContactLink />. Tá eolas faoi do chearta tomhaltóra ar fáil ón gCoimisiún um Iomaíocht agus um Chosaint Tomhaltóirí ag [ccpc.ie](https://www.ccpc.ie). Is le Texture Dublin an t-ainm, an lógó, na léaráidí agus an téacs ar an suíomh seo. Rialaítear na téarmaí seo le dlí na hÉireann. Má bhíonn aon difríocht idir an leagan Gaeilge agus an leagan Béarla, beidh forlámhas ag an leagan Béarla.

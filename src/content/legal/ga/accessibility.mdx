@@ -6,6 +6,7 @@ description: Ár dtiomantas do shuíomh gréasáin inrochtana de réir WCAG 2.2 
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 Ba mhaith linn go mbeadh gach duine in ann ár bpraghsanna a aimsiú, ár gcomhairle a léamh agus teagmháil a dhéanamh linn go héasca. Tá an suíomh gréasáin seo deartha chun **Treoirlínte Inrochtaineachta d’Ábhar Gréasáin (WCAG) 2.2, leibhéal AA** a chomhlíonadh, an caighdeán a luaitear in EN 301 549 agus san Acht Eorpach um Inrochtaineacht (Treoir (AE) 2019/882).
 
@@ -24,6 +25,6 @@ Is achoimre amhairc í an léarscáil idirghníomhach; tá gach ceantar uirthi l
 
 ## Aiseolas
 
-Má bhíonn aon rud ar an suíomh deacair le húsáid, inis dúinn agus cuirfimid an t-eolas ar fáil ar bhealach eile: <a href={`mailto:${site.email}`}>{site.email}</a> nó {site.phone.display}. Déanaimid iarracht freagra a thabhairt laistigh de chúig lá oibre.
+Má bhíonn aon rud ar an suíomh deacair le húsáid, inis dúinn agus cuirfimid an t-eolas ar fáil ar bhealach eile: <ContactLink />. Déanaimid iarracht freagra a thabhairt laistigh de chúig lá oibre.
 
 Ullmhaíodh an ráiteas seo ar 27 Deireadh Fómhair 2026 bunaithe ar fhéinmheasúnú.

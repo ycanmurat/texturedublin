@@ -38,7 +38,7 @@ const year = new Date().getFullYear();
         <div class="footer-contact">
           <a href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="footer">WhatsApp · {site.phone.display}</a>
           <a href={`tel:${site.phone.e164}`}>{t.contact.phone} · {site.phone.display}</a>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
         </div>
         {
           socials.length > 0 && (
@@ -71,7 +71,6 @@ const year = new Date().getFullYear();
       <div>
         <h2>{t.footer.company}</h2>
         <ul>
-          <li><a href={href(locale, 'shop')}>{t.nav.shop}</a></li>
           <li><a href={href(locale, 'signageHub')}>{t.nav.signage}</a></li>
           <li><a href={href(locale, 'about')}>{t.nav.about}</a></li>
           <li><a href={href(locale, 'projects')}>{t.nav.projects}</a></li>

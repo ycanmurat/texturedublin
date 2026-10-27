@@ -1,7 +1,7 @@
 /**
  * Conversion tracking: WhatsApp, phone and email clicks are sent to GA4 as
  * `whatsapp_click` / `phone_click` / `email_click` + the recommended
- * `generate_lead` event (mark it as a key event in GA4), to Google Ads as a
+ * `generate_lead` event (an enquiry intent, not a confirmed sale), to Google Ads as a
  * conversion (if a label is configured) and to Meta as `Contact`.
  * Nothing is sent before the visitor consents (basic consent mode).
  */
@@ -9,12 +9,14 @@
 const allowed = () => {
   const td = window.__td;
   if (!td) return false;
-  return td.cfg.mode === 'advanced' || !!(td.consent && (td.consent.a || td.consent.m));
+  return !!(td.cfg.ga4 || td.cfg.gtm) && (td.cfg.mode === 'advanced' || !!td.consent?.a);
 };
 
 export function track(name: string, params: Record<string, unknown> = {}) {
   if (!allowed() || typeof window.gtag !== 'function') return;
-  window.gtag('event', name, params);
+  const cfg = window.__td.cfg;
+  if (cfg.gtm) window.dataLayer.push({ ...params, event: name });
+  else window.gtag('event', name, { ...params, send_to: cfg.ga4 });
 }
 
 function lead(method: 'whatsapp' | 'phone' | 'email' | 'quote_form', el: HTMLElement | null, extra: Record<string, unknown> = {}) {

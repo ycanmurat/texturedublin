@@ -7,13 +7,15 @@
  */
 
 const env = import.meta.env;
+const ga4 = (env.PUBLIC_GA4_ID || '').trim();
+if (ga4 && !/^G-[A-Z0-9]+$/.test(ga4)) throw new Error('PUBLIC_GA4_ID must be a GA4 measurement ID (G-…).');
 
 export const site = {
   name: 'Texture Dublin',
   preview: env.PUBLIC_SITE_PREVIEW === 'true',
   /** Registered business name as it appears with the CRO */
   legalName: 'Texture Dublin',
-  url: (env.SITE || 'https://www.texturedublin.ie').replace(/\/$/, ''),
+  url: (env.SITE || 'https://texturedublin.com').replace(/\/$/, ''),
 
   contactName: 'Ali Onder',
   whatsapp: env.PUBLIC_WHATSAPP_NUMBER || '353830170588',
@@ -21,7 +23,8 @@ export const site = {
     display: env.PUBLIC_PHONE_DISPLAY || '+353 83 017 0588',
     e164: env.PUBLIC_PHONE_E164 || '+353830170588',
   },
-  email: env.PUBLIC_EMAIL || 'hello@texturedublin.ie',
+  // Publish email only once a working business mailbox is confirmed.
+  email: env.PUBLIC_EMAIL || '',
 
   /**
    * Texture Dublin is set up as a service-area business: we travel to the
@@ -66,7 +69,7 @@ export const site = {
 
   analytics: {
     /** Google Analytics 4 measurement ID, e.g. G-XXXXXXXXXX */
-    ga4: env.PUBLIC_GA4_ID || '',
+    ga4,
     /** optional Google Tag Manager container, e.g. GTM-XXXXXXX (if set, GTM is loaded instead of gtag.js) */
     gtm: env.PUBLIC_GTM_ID || '',
     /** Google Ads tag, e.g. AW-123456789 (conversion tracking for WhatsApp clicks) */

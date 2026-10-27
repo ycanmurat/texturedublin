@@ -6,7 +6,6 @@ const en = {
     skip: 'Skip to content',
     home: 'Home',
     services: 'Services',
-    shop: 'Shop',
     woodworks: 'Woodworks',
     signage: 'Signage & Branding',
     areas: 'Areas',
@@ -155,7 +154,6 @@ const en = {
   },
   footer: {
     services: 'Services',
-    shop: 'Shop',
     areas: 'Popular areas',
     company: 'Company',
     legal: 'Legal',
@@ -358,7 +356,6 @@ const ga: UI = {
     skip: 'Léim chuig an ábhar',
     home: 'Baile',
     services: 'Seirbhísí',
-    shop: 'Siopa',
     woodworks: 'Obair Adhmaid',
     signage: 'Comharthaíocht agus Brandáil',
     areas: 'Ceantair',
@@ -507,7 +504,6 @@ const ga: UI = {
   },
   footer: {
     services: 'Seirbhísí',
-    shop: 'Siopa',
     areas: 'Ceantair choitianta',
     company: 'Comhlacht',
     legal: 'Dlíthiúil',

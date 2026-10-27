@@ -64,7 +64,7 @@ const sorted = [...areas].sort((a, b) => a.name[locale].localeCompare(b.name[loc
   <p class="small" data-q-error role="alert" hidden style="color:#b42318">{q.required}</p>
   <div class="btn-row">
     <button class="btn btn--wa btn--lg" type="submit" data-magnetic><Icon name="whatsapp" />{q.send}</button>
-    <a class="arrow-link" href={`mailto:${site.email}`} data-q-mail>{q.email} <Icon name="arrow" /></a>
+    {site.email && <a class="arrow-link" href={`mailto:${site.email}`} data-q-mail>{q.email} <Icon name="arrow" /></a>}
   </div>
   <p class="small muted">{q.privacy.replace(/\.?$/, '')} — <a class="link" href={href(locale, 'privacy')}>{t.legal.privacy}</a>.</p>
   <script type="application/json" data-q-labels set:html={JSON.stringify({ intro: q.msgIntro, service: q.msgService, area: q.msgArea, details: q.msgDetails, size: q.msgSize, when: q.msgWhen, name: q.msgName })} />

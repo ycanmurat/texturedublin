@@ -6,6 +6,7 @@ description: Our commitment to an accessible website in line with WCAG 2.2 AA an
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 We want everyone to be able to find our prices, read our advice and contact us easily. This website is designed to meet the **Web Content Accessibility Guidelines (WCAG) 2.2, level AA**, the standard referenced by EN 301 549 and the European Accessibility Act (Directive (EU) 2019/882).
 
@@ -26,6 +27,6 @@ We want everyone to be able to find our prices, read our advice and contact us e
 
 ## Feedback
 
-If anything on this website is difficult to use, please tell us and we will provide the information in another way: <a href={`mailto:${site.email}`}>{site.email}</a> or {site.phone.display}. We aim to reply within five working days.
+If anything on this website is difficult to use, please tell us and we will provide the information in another way: <ContactLink />. We aim to reply within five working days.
 
 This statement was prepared on 27 October 2026 based on a self-assessment and is reviewed whenever the website changes significantly.

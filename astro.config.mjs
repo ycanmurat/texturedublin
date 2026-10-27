@@ -4,7 +4,7 @@ import node from '@astrojs/node';
 import mdx from '@astrojs/mdx';
 
 // Set SITE_URL in .env (or your host's environment) to the final domain.
-const SITE = process.env.SITE_URL || 'https://www.texturedublin.ie';
+const SITE = process.env.SITE_URL || 'https://texturedublin.com';
 
 export default defineConfig({
   site: SITE,

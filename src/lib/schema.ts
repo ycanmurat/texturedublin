@@ -47,7 +47,7 @@ export function business(l: Locale, full = false): Node {
         : 'Siúinéireacht shaincheaptha, vardrúis fheistithe, cistineacha, aonaid ionsuite, cóimeáil agus suiteáil troscáin, comharthaí siopa, comharthaíocht LED agus brandáil ar fud Bhaile Átha Cliath.',
     slogan: l === 'en' ? 'Bespoke wood works and branding' : 'Obair adhmaid shaincheaptha agus brandáil',
     telephone: site.phone.e164,
-    email: site.email,
+    ...(site.email ? { email: site.email } : {}),
     priceRange: site.priceRange,
     currenciesAccepted: 'EUR',
     address: {
@@ -77,7 +77,7 @@ export function business(l: Locale, full = false): Node {
       contactType: 'customer service',
       name: site.contactName,
       telephone: site.phone.e164,
-      email: site.email,
+      ...(site.email ? { email: site.email } : {}),
       areaServed: 'IE',
       availableLanguage: ['English', 'Irish'],
     };

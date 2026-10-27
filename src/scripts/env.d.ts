@@ -13,7 +13,7 @@ interface TdConfig {
   mode: 'basic' | 'advanced';
 }
 interface Window {
-  __td: { cfg: TdConfig; consent: TdConsent | null; gLoaded?: boolean; mLoaded?: boolean };
+  __td: { cfg: TdConfig; consent: TdConsent | null; gLoaded?: boolean; gaConfigured?: boolean; adsConfigured?: boolean; mLoaded?: boolean };
   __tdReady?: boolean;
   __lenis?: { stop(): void; start(): void; on(e: string, cb: (...a: unknown[]) => void): void; scrollTo(t: unknown, o?: unknown): void };
   gtag: (...args: unknown[]) => void;

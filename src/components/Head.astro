@@ -110,7 +110,7 @@ const speculation = {
   window.__td = { cfg: analytics, consent: null };
   try {
     var c = JSON.parse(localStorage.getItem('td-consent') || 'null');
-    if (c && c.v === 1 && Date.now() - c.t < 1000 * 60 * 60 * 24 * 182) {
+    if (c && c.v === 1 && typeof c.a === 'boolean' && typeof c.m === 'boolean' && Number.isFinite(c.t) && c.t <= Date.now() && Date.now() - c.t < 1000 * 60 * 60 * 24 * 182) {
       window.__td.consent = c;
       gtag('consent', 'update', { analytics_storage: c.a ? 'granted' : 'denied', ad_storage: c.m ? 'granted' : 'denied', ad_user_data: c.m ? 'granted' : 'denied', ad_personalization: c.m ? 'granted' : 'denied' });
     }

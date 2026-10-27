@@ -25,20 +25,56 @@ function inject(src: string) {
 }
 
 function loadGoogle() {
-  if (td.gLoaded) return;
+  const analyticsAllowed = cfg.mode === 'advanced' || !!td.consent?.a;
+  const marketingAllowed = cfg.mode === 'advanced' || !!td.consent?.m;
   if (cfg.gtm) {
+    if (td.gLoaded || !(analyticsAllowed || marketingAllowed)) return;
     td.gLoaded = true;
     window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
     inject(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(cfg.gtm)}`);
     return;
   }
-  const id = cfg.ga4 || cfg.ads;
+  const id = (analyticsAllowed && cfg.ga4) || (marketingAllowed && cfg.ads);
   if (!id) return;
-  td.gLoaded = true;
-  inject(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`);
-  window.gtag('js', new Date());
-  if (cfg.ga4) window.gtag('config', cfg.ga4);
-  if (cfg.ads) window.gtag('config', cfg.ads);
+  if (!td.gLoaded) {
+    td.gLoaded = true;
+    inject(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`);
+    window.gtag('js', new Date());
+  }
+  if (cfg.ga4 && analyticsAllowed && !td.gaConfigured) {
+    td.gaConfigured = true;
+    // Never include enquiry query strings or advertising features in GA4.
+    window.gtag('config', cfg.ga4, {
+      send_page_view: false,
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+      page_location: `${location.origin}${location.pathname}`,
+      page_referrer: document.referrer.split('?')[0].split('#')[0],
+    });
+    window.gtag('event', 'page_view', { send_to: cfg.ga4 });
+  }
+  if (cfg.ads && marketingAllowed && !td.adsConfigured) {
+    td.adsConfigured = true;
+    window.gtag('config', cfg.ads);
+  }
+}
+
+function clearTrackingCookies(analytics: boolean, marketing: boolean) {
+  const names = document.cookie.split(';').map(v => v.trim().split('=')[0]);
+  const parts = location.hostname.split('.');
+  const domains = ['', ...parts.map((_, i) => parts.slice(i).join('.'))];
+  const segments = location.pathname.split('/').filter(Boolean);
+  const paths = new Set(['/']);
+  for (let i = 1; i <= segments.length; i++) {
+    const path = '/' + segments.slice(0, i).join('/');
+    paths.add(path); paths.add(path + '/');
+  }
+  for (const name of names) {
+    if (!(analytics && /^_ga(?:_|$)|^_gid$|^_gat/.test(name)) && !(marketing && /^_gcl_|^_fb[pc]$/.test(name))) continue;
+    for (const path of paths) for (const domain of domains) {
+      document.cookie = `${name}=; Max-Age=0; path=${path}${domain ? `; domain=${domain}` : ''}; SameSite=Lax`;
+    }
+  }
 }
 
 function loadMeta() {
@@ -62,6 +98,7 @@ function loadMeta() {
 
 function apply() {
   const c = td.consent;
+  if (cfg.ga4) (window as unknown as Record<string, unknown>)[`ga-disable-${cfg.ga4}`] = cfg.mode !== 'advanced' && !c?.a;
   if (cfg.mode === 'advanced' || c?.a || c?.m) loadGoogle();
   if (c?.m) loadMeta();
   else window.fbq?.('consent', 'revoke');
@@ -80,6 +117,7 @@ function save(a: boolean, m: boolean) {
     ad_personalization: m ? 'granted' : 'denied',
   });
   window.dataLayer.push({ event: 'consent_updated', analytics: a, marketing: m });
+  clearTrackingCookies(!a, !m);
   hideBanner();
   if (dialog?.open) dialog.close();
   apply();

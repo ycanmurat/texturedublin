@@ -1,0 +1,4 @@
+---
+import { site } from '../config/site.ts';
+---
+<a href={site.email ? `mailto:${site.email}` : `tel:${site.phone.e164}`}>{site.email || site.phone.display}</a>

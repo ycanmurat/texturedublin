@@ -6,12 +6,13 @@ description: How Texture Dublin collects, uses and protects your personal data u
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 This policy explains how **{site.legalName}** ("Texture Dublin", "we", "us") uses personal data when you visit this website, contact us or become a customer. We follow the EU General Data Protection Regulation (GDPR), the Data Protection Act 2018 and the ePrivacy Regulations (S.I. No. 336 of 2011).
 
 ## Who we are
 
-The data controller is {site.legalName}{site.croNumber ? `, CRO no. ${site.croNumber}` : ''}, {site.showAddress && site.address.street ? `${site.address.street}, ${site.address.locality} ${site.address.postalCode}` : 'Dublin, Ireland'}. Contact us about anything in this policy at <a href={`mailto:${site.email}`}>{site.email}</a> or {site.phone.display}.
+The data controller is {site.legalName}{site.croNumber ? `, CRO no. ${site.croNumber}` : ''}, {site.showAddress && site.address.street ? `${site.address.street}, ${site.address.locality} ${site.address.postalCode}` : 'Dublin, Ireland'}. Contact us about anything in this policy at <ContactLink />.
 
 ## What we collect and why
 
@@ -28,7 +29,7 @@ We never sell your data and we do not use it for automated decision-making.
 
 ## WhatsApp
 
-When you message us on WhatsApp, the service is provided by WhatsApp Ireland Limited, which processes your messages under its own terms and privacy policy. The quote form on this website does not store anything: it simply opens WhatsApp (or your email app) with your message filled in. Messages are kept on our business phone for as long as we need them for your enquiry or project.
+When you message us on WhatsApp, the service is provided by WhatsApp Ireland Limited, which processes your messages under its own terms and privacy policy. The quote form on this website does not store anything: it simply opens WhatsApp with your message filled in. Messages are kept on our business phone for as long as we need them for your enquiry or project.
 
 ## Who we share data with
 
@@ -49,7 +50,7 @@ Some of these providers may transfer data outside the European Economic Area. Wh
 
 ## Your rights
 
-You can ask us to access, correct or delete your data, to restrict or object to its use, to receive it in a portable format, or to withdraw your consent at any time (use **Cookie settings** in the footer for cookies). Contact us at <a href={`mailto:${site.email}`}>{site.email}</a> — we reply within one month.
+You can ask us to access, correct or delete your data, to restrict or object to its use, to receive it in a portable format, or to withdraw your consent at any time (use **Cookie settings** in the footer for cookies). Contact us at <ContactLink /> — we reply within one month.
 
 If you are unhappy with how we handle your data you can complain to the **Data Protection Commission**, 21 Fitzwilliam Square South, Dublin 2, D02 RD28 — [www.dataprotection.ie](https://www.dataprotection.ie).
 
@@ -64,9 +65,3 @@ Our services are not aimed at people under 18 and we do not knowingly collect th
 ## Changes
 
 We may update this policy. The date at the top shows the latest version.
-
-## Shop and administration
-
-The shop enquiry fields are assembled into a WhatsApp link in your browser. This website does not store your product enquiry, take payment or create a customer account. You review and send the message in WhatsApp.
-
-The private product administration area stores product content, a password hash and administrator sessions. Sessions expire after eight hours; unsuccessful login records are retained for up to 15 minutes to limit repeated attempts. Uploaded product images and 3D files are public once used in a published listing. Administrators should upload product materials only.

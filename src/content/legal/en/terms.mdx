@@ -6,12 +6,13 @@ description: Terms for quotes, orders, deposits, cancellations, installation and
 updated: 2026-10-27
 ---
 import { site } from '../../../config/site.ts';
+import ContactLink from '../../../components/ContactLink.astro';
 
 These terms apply to work carried out by **{site.legalName}** ("Texture Dublin", "we"). Your written quote may add project-specific terms; if they differ, the quote wins. Nothing in these terms affects your statutory rights as a consumer under the Consumer Rights Act 2022.
 
 ## 1. Prices and quotes
 
-- Most services are **priced on enquiry**. The limited starting rates are guides, and shop items marked “example” have illustrative designs, dimensions and prices. Your quotation confirms materials, delivery, installation, applicable VAT and the complete total.
+- Most services are **priced on enquiry**. The limited starting rates are guides. Your quotation confirms materials, delivery, installation, applicable VAT and the complete total.
 - Your **fixed written quote** follows a survey and is valid for 30 days. It lists the specification, price, payment stages and estimated timescale.
 - Work not included in the quote (for example building work, plastering, plumbing or electrical changes discovered on site) is quoted separately before it is carried out.
 
@@ -20,10 +21,6 @@ These terms apply to work carried out by **{site.legalName}** ("Texture Dublin",
 - Made-to-measure work (wardrobes, kitchens, built-ins, cabinets, signs) starts when you approve the final drawings and pay the deposit shown on your quote, so that materials can be ordered.
 - Small jobs such as assembly, installation and repairs are paid on completion. Any minimum visit charge is confirmed in your quotation.
 - The balance is due on completion of installation unless your quote says otherwise.
-
-### Shop enquiries
-
-Selecting a product, quantity or finish and opening WhatsApp creates an enquiry for Ali Onder. This website does not take payment or confirm an order. Final dimensions, materials, the total price, delivery, installation and order terms must be agreed separately before you commit. The 3D view illustrates a design; finish selections do not automatically change the model.
 
 ## 3. Cancellation
 
@@ -54,7 +51,7 @@ We are responsible for loss or damage that is a foreseeable result of our breach
 
 ## 9. Complaints
 
-Please contact us first at <a href={`mailto:${site.email}`}>{site.email}</a> or {site.phone.display} — we aim to resolve every concern quickly. Information about your consumer rights is available from the Competition and Consumer Protection Commission at [ccpc.ie](https://www.ccpc.ie).
+Please contact us first at <ContactLink /> — we aim to resolve every concern quickly. Information about your consumer rights is available from the Competition and Consumer Protection Commission at [ccpc.ie](https://www.ccpc.ie).
 
 ## 10. Website and intellectual property
 

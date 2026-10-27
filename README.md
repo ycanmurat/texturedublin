@@ -1,63 +1,34 @@
 # Texture Dublin
 
-Bilingual furniture/carpentry and specialist signage website, with a small made-to-order catalogue, 3D product viewing and a private product administrator.
+English/Irish service website for bespoke furniture, carpentry and signage. The shop, 3D viewer, catalogue database and product administrator have been removed.
 
-- Preview: https://canmurat.com/texturedublin/
-- Shop: https://canmurat.com/texturedublin/shop/
-- Admin: https://canmurat.com/texturedublin/admin/
-- Source: https://github.com/ycanmurat/texturedublin (public)
+- Production domain: https://texturedublin.com/
+- Source: https://github.com/ycanmurat/texturedublin
+- Former preview: https://canmurat.com/texturedublin/ (redirect after production routing is configured)
 
-## Run locally
+## Development and validation
 
-Node **24 or later** is required (`node:sqlite`).
-
-```sh
-npm ci
-cp .env.example .env
-# Set a unique ADMIN_INITIAL_PASSWORD (12+ characters) locally.
-SITE_URL=https://canmurat.com BASE_PATH=/texturedublin PUBLIC_SITE_PREVIEW=true npm run dev
-```
-
-The default development port is 4321. For the production server:
+Requires Node 24+. Run `npm ci`, copy `.env.example` to `.env`, then `npm run dev`.
 
 ```sh
-SITE_URL=https://canmurat.com BASE_PATH=/texturedublin PUBLIC_SITE_PREVIEW=true npm run build
+SITE_URL=https://texturedublin.com BASE_PATH=/ PUBLIC_SITE_PREVIEW=false npm run build
 npm run audit
-npm run test:admin
-BASE_PATH=/texturedublin DATA_DIR=.data PORT=3000 node server.mjs
+npm run test:tracking
+SITE_URL=https://texturedublin.com BASE_PATH=/ PORT=3000 node server.mjs
 ```
 
-Runtime secrets must be exported in the shell or supplied by Coolify; `node server.mjs` does not load `.env` itself. Never prefix secrets with `PUBLIC_`.
-
-## Product management
-
-Sign in at `/texturedublin/admin/`. Add or edit products, descriptions in both languages, dimensions in millimetres, finishes, images and self-contained GLB models. Leave the price blank for **Price on enquiry**. Keep **example design** selected for illustrative listings. Uncheck **Published** to archive a product. Existing product URLs stay stable. The **Password & security** tab changes the password and invalidates other sessions.
-
-The initial Oak & Ivory Wardrobe, its dimensions and its **€1,490 example price** are illustrative, not a confirmed product offer. Replace them with verified product details in the panel. Its actual 3D geometry and editable Blender source are in `public/models/` and `design/`. The viewer is loaded only when a visitor chooses 3D; a static image remains available if loading fails.
-
-Selecting quantity, finish, location and notes prepares a WhatsApp enquiry to **Ali Onder, +353 83 017 0588**. The visitor reviews and sends it in WhatsApp. The website does not take payment, hold customer orders or promise availability, delivery or a final price.
-
-## Persistent data and credentials
-
-- Runtime `DATA_DIR=/app/data` contains SQLite (`texture.sqlite`, plus WAL/SHM while running) and uploaded files under `media/`.
-- Mount a **persistent Docker volume at `/app/data`** before deploying. Products, uploads and password hashes must survive container replacement.
-- Set `ADMIN_USERNAME=admin` and a strong, private `ADMIN_INITIAL_PASSWORD` in runtime-only environment variables. The initial password seeds the administrator once; it never overrides a password changed in the panel. Remove the bootstrap environment variable after the account has been initialized.
-- Back up the database with SQLite’s online backup facility, or stop the application and copy the complete data directory including uploads. Do not copy only an active database file while ignoring its WAL.
-- Image uploads are re-encoded as WebP; GLB uploads must embed their resources. Upload product materials only: linked media is public.
-- Admin sessions use HttpOnly/SameSite cookies, CSRF checks, password hashing and login throttling. No default password or secret is committed.
+The Dockerfile builds and validates the website, then runs the static file server on port 3000. No administrator credentials or product database are required. Existing persistent volumes can be retained as backups; the application no longer accesses them.
 
 ## Content and SEO
 
-Business contact and social links: `src/config/site.ts`. Service and local content: `src/data/`, `src/views/` and bilingual MDX guides. Only four guide starting rates remain in `src/lib/pricing.ts`; other service pricing is enquiry based. The old automatic price calculator has been removed.
+Business contact details live in `src/config/site.ts`. Services, local content and bilingual guides live in `src/data/`, `src/views/` and `src/content/`. Canonical, hreflang, Open Graph, JSON-LD, sitemap and robots URLs follow `SITE_URL` and `BASE_PATH`. Keep `PUBLIC_SITE_PREVIEW=true` on any separate preview deployment; production uses `false`.
 
-Furniture and signage have separate landing pages and dedicated specialists under the same company. Guides cover wardrobes, kitchens, alcoves, signage preparation and local permission checks. Sitemap, canonical, hreflang, metadata and structured data respect the hosting prefix. Published products are added to the sitemap immediately; draft products return 404.
+The audit checks every public page for unique titles/descriptions, H1, canonical, language alternates, structured data, assets, internal links and sitemap coverage. It also tests removed shop/admin/media endpoints, custom 404 behavior and trailing-slash redirects. Only service content remains; references to shop signage and commercial fit-outs describe offered services.
 
-This remains a **shareable preview with `noindex, follow`**. Analytics IDs are empty. Before launching on the final business domain, confirm all business claims/content, update `SITE_URL` and `BASE_PATH`, set `PUBLIC_SITE_PREVIEW=false`, rebuild, and update Coolify’s routing. Indexing/rankings are not guaranteed by a technical audit.
+## Measurement
 
-## Deploy
+Set `PUBLIC_GA4_ID` as a **build variable** and rebuild. Google tags stay unloaded until the relevant cookie category is accepted in basic consent mode. GA4 events include `whatsapp_click`, `phone_click`, `email_click`, `quote_whatsapp` and `generate_lead`. These measure contact intent; opening WhatsApp does not prove that a message was sent or an order was placed. Analytics receives no quote-form fields; GA4 page URLs exclude query strings and fragments. The direct tag disables Google signals and advertising personalization.
 
-See [DEPLOYMENT.md](DEPLOYMENT.md). Push `main`, then redeploy the existing **Texture Dublin Preview** application in Coolify. There is no GitHub webhook or deploy key. The Dockerfile uses Astro’s Node middleware adapter on port 3000, a persistent volume and a healthcheck. `Cache-Control: no-transform` prevents CDN HTML modifications that previously broke SVG links.
+Consent tests run without any requests to Google. They cover rejection, separate category permissions, returning consent, revocation, cookie cleanup and duplicate page views. Settings inside GA4 and Search Console must be configured and verified in the actual Google account; see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-## Verification
-
-`npm run audit` checks every generated page and live catalogue route for titles, descriptions, H1, canonical/hreflang, JSON-LD, internal links, OG assets, sitemap, missing products and private admin headers. `npm run test:admin` uses a disposable local database to verify authentication, CSRF, product changes, safe rendering, file uploads, password rotation, archival, rate limiting and persistence across a restart. It never sends WhatsApp messages.
+Runtime environment variables must be supplied by the host or exported in the shell; `node server.mjs` does not load `.env` automatically. `SITE_URL` enables canonical-host redirects, and `LEGACY_SITE_URL` optionally redirects the former preview while removing its hosting prefix.

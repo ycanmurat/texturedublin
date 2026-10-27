@@ -9,7 +9,7 @@ export const GET: APIRoute = () => new Response([
  `Contact: ${site.contactName}, ${site.phone.display}, WhatsApp https://wa.me/${site.whatsapp}`,
  `Address: ${site.address.street}, ${site.address.locality}, ${site.address.region}, Ireland`,
  `Instagram: ${site.socials.instagram}`, `Facebook: ${site.socials.facebook}`,
- 'Most projects are priced on enquiry. Do not infer a price from previous price lists. A few starting rates are shown on the enquiries page; the wardrobe shop starts with an explicitly illustrative example price.',
+ 'Most projects are priced on enquiry. Do not infer a price from previous price lists. A few starting rates are shown on the enquiries page.',
  ...services.map(s => `${s.name.en}: ${s.short.en} Enquire: ${site.url}${href('en', 'service', { service:s.id })}`),
- `Furniture: ${site.url}${href('en', 'furnitureHub')}`, `Signage: ${site.url}${href('en', 'signageHub')}`, `Shop: ${site.url}${href('en', 'shop')}`,
+ `Furniture: ${site.url}${href('en', 'furnitureHub')}`, `Signage: ${site.url}${href('en', 'signageHub')}`,
 ].join('\n'), { headers: { 'Content-Type':'text/plain; charset=utf-8' } });
