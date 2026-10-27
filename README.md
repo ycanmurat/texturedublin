@@ -4,6 +4,12 @@ Shareable preview: **https://canmurat.com/texturedublin/**
 
 ## Current Coolify deployment
 
+Source: https://github.com/ycanmurat/texturedublin (public).
+
+Coolify application: https://coolify.hillbilisim.com/project/hw0g00c4k8wg8848ogg8ck8c/environment/jcc8ok008gc8w8o0wkss4o04/application/wapjweqwp4uhnb0ipk6kkx5p
+
+For updates, push `main` and redeploy this application in Coolify. The public Git source does not need an SSH deploy key. A GitHub push webhook has not been configured.
+
 - Node 24, `npm ci`, Astro static output, nginx on container port 80.
 - Build pack: Dockerfile, branch `main`, Dockerfile `/Dockerfile`.
 - Domain: `https://canmurat.com/texturedublin`.
