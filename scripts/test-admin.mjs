@@ -17,6 +17,7 @@ const request=(action,body,options={})=>fetch(`${origin}${base}/api/admin/${acti
 async function signIn(secret){const r=await request('login',{username:'admin',password:secret});assert.equal(r.status,200,await r.clone().text());cookie=r.headers.get('set-cookie').split(';')[0];const h=await(await fetch(`${origin}${base}/admin/`,{headers:{Cookie:cookie}})).text();csrf=h.match(/name="csrf-token" content="([^"]+)"/)[1];return h;}
 try{
  await start();
+ const redirect=await fetch(`${origin}${base}/shop?test=1`,{redirect:'manual'});assert.equal(redirect.status,308);assert.equal(redirect.headers.get('location'),`${base}/shop/?test=1`);
  assert.equal((await fetch(`${origin}${base}/api/admin/products/`)).status,401);
  assert.equal((await request('login',{username:'admin',password},{headers:{Origin:'https://evil.example'}})).status,403);
  const dashboard=await signIn(password);assert.match(dashboard,/Product management/);
