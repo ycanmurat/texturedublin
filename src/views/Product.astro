@@ -1,0 +1,43 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { Product } from '../data/products.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Icon from '../components/Icon.astro';
+import { href } from '../lib/routes.ts';
+import { productHref, productText, productPrice, orderMessage } from '../lib/shop.ts';
+import { abs, business, website, graph, webPage, breadcrumbs, BUSINESS_ID } from '../lib/schema.ts';
+import { withBase } from '../lib/paths.ts';
+import { site } from '../config/site.ts';
+import '../styles/shop.css';
+interface Props { locale:Locale; product:Product; }
+const {locale,product:p}=Astro.props; const en=locale==='en'; const path=productHref(locale,p.slug); const url=abs(path); const name=productText(p,locale,'name');
+Astro.response.headers.set('Cache-Control','no-store, no-transform');
+const title=`${name} | ${en?'Made to Order':'Ar Ordú'} | Texture Dublin`;
+const description=productText(p,locale,'summary').slice(0,160);
+const crumbs=[{name:en?'Home':'Baile',href:href(locale,'home')},{name:en?'Shop':'Siopa',href:href(locale,'shop')},{name,href:path}];
+const initialWa=`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(orderMessage(p,locale,url))}`;
+const productNode={'@type':'Product','@id':`${url}#product`,name,description:productText(p,locale,'description'),url,...(p.poster?{image:abs(p.poster)}:{}),brand:{'@type':'Brand',name:site.name},manufacturer:{'@id':BUSINESS_ID},...(p.width?{width:{'@type':'QuantitativeValue',value:p.width,unitCode:'MMT'}}:{}),...(p.height?{height:{'@type':'QuantitativeValue',value:p.height,unitCode:'MMT'}}:{}),...(p.depth?{depth:{'@type':'QuantitativeValue',value:p.depth,unitCode:'MMT'}}:{}),...(p.model?{subjectOf:{'@type':'3DModel',encoding:{'@type':'MediaObject',contentUrl:abs(p.model),encodingFormat:'model/gltf-binary'}}}:{}),...(p.example?{}:p.priceCents!==null?{offers:{'@type':'Offer',priceCurrency:'EUR',price:(p.priceCents/100).toFixed(2),url,seller:{'@id':BUSINESS_ID}}}:{})};
+const schema=graph([business(locale),website(),webPage({path,title,description,locale,breadcrumb:true,modified:p.updated}),breadcrumbs(path,crumbs),productNode]);
+---
+<BaseLayout {locale} {title} {description} {path} {schema} alternates={{en:productHref('en',p.slug),ga:productHref('ga',p.slug)}} page="product" cta={false}>
+ <section class="section product-section"><div class="container"><Breadcrumbs {locale} items={crumbs} /><div class="product-detail">
+  <div class="product-gallery"><div class="product-stage" data-model-stage data-src={p.model?withBase(p.model):undefined} data-poster={p.poster?withBase(p.poster):undefined} data-alt={name} data-locale={locale}>
+   {p.poster?<img class="product-poster" src={withBase(p.poster)} alt={en?p.example?`${name}, illustrative concept`:name:`${name}, coincheap samplach`} width="850" height="950" fetchpriority="high" />:<div class="product-placeholder">{en?'Made for your space':'Déanta do do spás'}</div>}
+   {p.model&&<button class="btn btn--ink model-launch" type="button" data-load-model>{en?'Explore in 3D':'Féach i 3T'} <span aria-hidden="true">↻</span></button>}
+   <p class="model-status" role="status" aria-live="polite" hidden></p>
+  </div>{p.model&&<p class="model-help">{en?'3D: drag to rotate · pinch or scroll to zoom · arrow keys to rotate when focused.':'3T: tarraing le rothlú · pinseáil le zúmáil · saigheadeochracha le rothlú.'}</p>}<p class="muted product-small">{en?'Finish options are quoted separately; the 3D view shows the illustrated design.':'Tugtar luachan ar bhailchríocha; léiríonn an t-amharc 3T an dearadh samplach.'}</p></div>
+  <div class="product-info"><span class="eyebrow">{p.example?(en?'Example design · made to measure':'Dearadh samplach · de réir tomhais'):(en?'Texture collection · made to order':'Bailiúchán Texture · ar ordú')}</span><h1>{name}</h1><p class="lede">{productText(p,locale,'summary')}</p>
+   <div class="product-price-block"><p class="eyebrow">{p.priceCents===null?(en?'Your project, your quote':'Do thionscadal, do luachan'):p.example?(en?'Illustrative price':'Praghas samplach'):(en?'Guide price · confirm your specification':'Praghas treorach · deimhnigh do shonraí')}</p><strong>{productPrice(p,locale)}</strong><p class="product-small muted">{p.example?(en?'An example only. Materials, installation, delivery, taxes and final price must be confirmed in your quotation.':'Sampla amháin. Deimhnítear ábhair, suiteáil, seachadadh, cánacha agus an praghas sa luachan.'):(en?'Ali confirms the complete quotation, including delivery, installation and applicable taxes.':'Deimhníonn Ali an luachan iomlán, seachadadh, suiteáil agus cánacha san áireamh.')}</p></div>
+   <p class="product-description">{productText(p,locale,'description')}</p>
+   {[p.width,p.height,p.depth].some(Boolean)&&<dl class="product-dimensions">{[[en?'Width':'Leithead',p.width],[en?'Height':'Airde',p.height],[en?'Depth':'Doimhneacht',p.depth]].map(([label,value])=>value?<div><dt>{label}</dt><dd>{value} <small>mm</small></dd></div>:null)}</dl>}
+   <form class="product-enquiry" data-product-enquiry data-name={p.name} data-url={url} data-example={String(p.example)} data-dimensions={[p.width,p.height,p.depth].join(' × ')} data-whatsapp={site.whatsapp} data-contact={site.contactName} data-locale={locale}>
+    <h2 class="h-m">{en?'Make it yours.':'Déan do cheann féin de.'}</h2><div class="product-fields"><label>{en?'Quantity':'Cainníocht'}<input type="number" name="quantity" min="1" max="20" step="1" value="1" required /></label>{p.finishes.length>0&&<label>{en?'Preferred finish':'Bailchríoch'}<select name="finish">{p.finishes.map(f=><option value={f}>{f}</option>)}</select></label>}</div>
+    <label>{en?'Town / delivery area (optional)':'Baile / ceantar seachadta (roghnach)'}<input name="location" autocomplete="address-level2" maxlength="120" placeholder={en?'e.g. Dunboyne, Dublin 15':'m.sh. Dún Búinne'} /></label>
+    <label>{en?'Room size or changes (optional)':'Toisí nó athruithe (roghnach)'}<textarea name="notes" rows="3" maxlength="1000" placeholder={en?'Tell Ali what you have in mind…':'Inis do Ali cad atá uait…'} /></label>
+    <a class="btn btn--wa product-order" href={initialWa} target="_blank" rel="noopener" data-order-link data-no-prerender><Icon name="whatsapp" />{en?'Enquire with Ali on WhatsApp':'Fiosraigh le Ali ar WhatsApp'}</a><p class="product-small muted">{en?'This opens a prepared WhatsApp message for you to review and send. Your enquiry is not a confirmed order or payment.':'Osclaítear teachtaireacht WhatsApp lena seiceáil agus lena seoladh agat. Ní ordú deimhnithe ná íocaíocht é.'}</p><p class="product-form-error" role="status" hidden>{en?'Enter a whole quantity between 1 and 20.':'Cuir isteach cainníocht iomlán idir 1 agus 20.'}</p>
+   </form>
+  </div>
+ </div><div class="shop-follow"><p>{en?'Need another size, a fitted wardrobe or matching signage?':'Méid eile, vardrús feistithe nó comharthaíocht de dhíth?'}</p><a href={href(locale,'furnitureHub')}>{en?'Furniture & carpentry':'Troscán agus siúinéireacht'} →</a><a href={href(locale,'signageHub')}>{en?'Our signage specialist':'Ár saineolaí comharthaíochta'} →</a></div></div></section>
+ <script>import '../scripts/shop.ts';</script>
+</BaseLayout>

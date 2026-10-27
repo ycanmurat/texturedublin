@@ -7,8 +7,8 @@ import Icon from '../components/Icon.astro';
 import Illustration from '../components/Illustration.astro';
 import AreaFinder from '../components/AreaFinder.astro';
 import DublinMap from '../components/DublinMap.astro';
+import { site } from '../config/site.ts';
 import Process from '../components/Process.astro';
-import Estimator from '../components/Estimator.astro';
 import FAQ from '../components/FAQ.astro';
 import { services, signage, woodworks } from '../data/services.ts';
 import { homeFaqs } from '../data/faqs.ts';
@@ -33,8 +33,8 @@ const wa = waLink(locale);
 const title = locale === 'en' ? 'Carpenter & Sign Maker in Dublin | Texture Dublin' : 'Siúinéir agus Comharthaí i mBaile Átha Cliath | Texture Dublin';
 const description = metaDesc(
   locale === 'en'
-    ? 'Bespoke fitted wardrobes, kitchens, built-in units, flat-pack assembly and shop signs across Dublin. Local prices for 50+ areas — WhatsApp for a free quote.'
-    : 'Vardrúis fheistithe, cistineacha, aonaid ionsuite, cóimeáil troscáin agus comharthaí siopa ar fud Bhaile Átha Cliath. Praghsanna áitiúla do 50+ ceantar.',
+    ? 'Bespoke fitted wardrobes, kitchens, built-in units, flat-pack assembly and shop signs across Dublin. Local services across Dublin — WhatsApp for a free quote.'
+    : 'Vardrúis fheistithe, cistineacha, aonaid ionsuite, cóimeáil troscáin agus comharthaí siopa ar fud Bhaile Átha Cliath. Troscán agus comharthaíocht ó Dhún Búinne.',
 );
 const faqs = homeFaqs.map((x) => ({ q: x.q[locale], a: x.a[locale] }));
 const schema = graph([
@@ -95,7 +95,7 @@ const marquee = services.map((s) => s.name[locale]);
           <div class="world-head">
             <div class="stack" style="--stack:10px">
               <span class="badge">{woodworks.length} {t.nav.services.toLowerCase()}</span>
-              <h3>{t.nav.woodworks}</h3>
+              <h3><a href={href(locale, 'furnitureHub')}>{t.nav.woodworks}</a></h3>
               <p class="muted">{t.home.woodworksDesc}</p>
             </div>
             <Illustration name="wardrobe" />
@@ -108,7 +108,7 @@ const marquee = services.map((s) => s.name[locale]);
           <div class="world-head">
             <div class="stack" style="--stack:10px">
               <span class="badge">{signage.length} {t.nav.services.toLowerCase()}</span>
-              <h3>{t.nav.signage}</h3>
+              <h3><a href={href(locale, 'signageHub')}>{t.nav.signage}</a></h3>
               <p class="muted">{t.home.signageDesc}</p>
             </div>
             <Illustration name="lightbox" />
@@ -120,6 +120,8 @@ const marquee = services.map((s) => s.name[locale]);
       </div>
     </div>
   </section>
+
+  <section class="section section--tight section--cream"><div class="container split"><div class="stack"><p class="eyebrow">{locale === 'en' ? 'THE SHOP' : 'AN SIOPA'}</p><h2 class="h-l">{locale === 'en' ? 'Picture it in your space.' : 'Samhlaigh i do spás é.'}</h2><p class="lede">{locale === 'en' ? 'Explore our example wardrobe in 3D, choose a finish and send a product enquiry to Ali Onder.' : 'Féach ár vardrús samplach i 3T, roghnaigh bailchríoch agus seol fiosrúchán chuig Ali Onder.'}</p><a class="btn btn--ink" href={href(locale,'shop')}>{t.nav.shop} <Icon name="arrow" /></a></div><Illustration name="wardrobe" /></div></section>
 
   <!-- 02 LOCAL PRICES -->
   <section class="section section--paper2" id="prices-near-you" aria-labelledby="finder-title">
@@ -156,18 +158,6 @@ const marquee = services.map((s) => s.name[locale]);
         ))}
         <a class="arrow-link" href={href(locale, 'standards')} data-reveal style="margin-top:28px">{t.nav.standards} <Icon name="arrow" /></a>
       </div>
-    </div>
-  </section>
-
-  <!-- 05 ESTIMATOR -->
-  <section class="section" aria-labelledby="est-title">
-    <div class="container">
-      <div class="section-head">
-        <span class="eyebrow" data-reveal>(05) · {t.nav.pricing}</span>
-        <h2 id="est-title" class="h-xl words" data-words set:html={words(t.home.estimateTitle)} />
-        <p class="lede" data-reveal style="--d:2">{t.home.estimateLede}</p>
-      </div>
-      <div data-reveal><Estimator {locale} /></div>
     </div>
   </section>
 

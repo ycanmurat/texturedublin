@@ -7,7 +7,6 @@ import PageHero from '../components/PageHero.astro';
 import PriceTable from '../components/PriceTable.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import FAQ from '../components/FAQ.astro';
-import Estimator from '../components/Estimator.astro';
 import Icon from '../components/Icon.astro';
 import { serviceById } from '../data/services.ts';
 import { areas } from '../data/areas.ts';
@@ -15,10 +14,10 @@ import { zones } from '../data/zones.ts';
 import { standards } from '../data/standards.ts';
 import { ui, fmt } from '../i18n/ui.ts';
 import { alternates, href } from '../lib/routes.ts';
-import { euro, fromLabel, leadItem, priceFrom, renderTokens, vatText } from '../lib/pricing.ts';
+import { renderTokens } from '../lib/pricing.ts';
 import { breadcrumbs, business, faqPage, graph, serviceNode, webPage, website } from '../lib/schema.ts';
 import { waLink, waData } from '../lib/wa.ts';
-import { metaDesc, shortPrice, withBrand } from '../lib/seo.ts';
+import { metaDesc, withBrand } from '../lib/seo.ts';
 import { words } from '../lib/text.ts';
 
 interface Props {
@@ -29,15 +28,10 @@ const { locale, route } = Astro.props;
 const t = ui[locale];
 const s = serviceById[route.service!];
 const path = href(locale, 'service', { service: s.id });
-const lead = leadItem(s);
 const wa = waLink(locale, { service: s });
 
-const title = withBrand(locale === 'en' ? `${s.name.en} Dublin | From ${shortPrice('en', lead)}` : `${s.name.ga} | Ó ${shortPrice('ga', lead)}`);
-const description = metaDesc(
-  locale === 'en'
-    ? `${s.short.en} From ${fromLabel('en', lead, undefined, false)} ${vatText('en', s)}. Free survey & fixed written quote — WhatsApp Texture Dublin.`
-    : `${s.short.ga} Ó ${fromLabel('ga', lead, undefined, false)}. Suirbhé saor in aisce agus luachan scríofa seasta.`,
-);
+const title = withBrand(locale === 'en' ? `${s.titleName?.en ?? s.name.en} Dublin` : `${s.titleName?.ga ?? s.name.ga}`);
+const description = metaDesc(locale === 'en' ? `${s.short.en} Serving Dublin and Meath from Dunboyne. Contact Ali Onder for a tailored quotation.` : `${s.short.ga} Déan teagmháil le Ali Onder le haghaidh luachan saincheaptha.`);
 const crumbs = [
   { name: t.nav.home, href: href(locale, 'home') },
   { name: t.nav.services, href: href(locale, 'services') },
@@ -55,14 +49,10 @@ const schema = graph([
 
 const related = s.related.map((id) => serviceById[id]).filter(Boolean);
 const relatedStandards = standards.filter((x) => x.services.includes(s.id));
-const estimatorFor: Record<string, 'wardrobes' | 'kitchens' | 'builtins' | 'assembly' | 'signs'> = {
-  'fitted-wardrobes': 'wardrobes', 'bespoke-kitchens': 'kitchens', 'built-in-units': 'builtins', 'furniture-assembly': 'assembly', 'shop-signs': 'signs', 'illuminated-led-signs': 'signs',
-};
-const est = estimatorFor[s.id];
 const byZone = ([1, 2, 3, 4] as const).map((z) => ({
   z,
   name: zones[z].name[locale],
-  price: euro(priceFrom(lead, z)),
+
   list: areas.filter((a) => a.zone === z).sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale)),
 }));
 const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { area: id, service: s.id }) : href(locale, 'area', { area: id }));
@@ -71,7 +61,7 @@ const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { ar
 <BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} service={s} page="service" ogImage={ogPath(path)}>
   <PageHero {locale} eyebrow={`${s.category === 'woodworks' ? t.nav.woodworks : t.nav.signage} · ${t.service.inDublin}`} title={s.headline[locale]} lede={s.short[locale]} {crumbs} illustration={s.illustration}>
     <div class="meta-row" data-reveal style="--d:3">
-      <span class="price-badge"><small>{t.common.from}</small><strong class="num">{euro(lead.from)}</strong><small>{t.units[lead.unit]} · {vatText(locale, s)}</small></span>
+      <span class="chip">{locale === 'en' ? 'Made to order · price on enquiry' : 'Déanta ar ordú · praghas ar iarratas'}</span>
     </div>
     <div class="btn-row" data-reveal style="--d:4;margin-top:22px">
       <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('service-hero', { service: s })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>
@@ -104,19 +94,6 @@ const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { ar
     </div>
   </section>
 
-  {
-    est && (
-      <section class="section section--tight">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow" data-reveal>{t.pricing.estimatorTitle}</span>
-            <h2 class="h-l words" data-words set:html={words(t.home.estimateTitle)} />
-          </div>
-          <div data-reveal><Estimator {locale} start={est} /></div>
-        </div>
-      </section>
-    )
-  }
 
   <section class="section section--paper2" aria-labelledby="areas-title">
     <div class="container">
@@ -130,7 +107,7 @@ const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { ar
           <div class="card" data-reveal style={`--d:${i}`}>
             <div class="card-top">
               <h3>{t.common.zone} {z.z} · {z.name}</h3>
-              <strong class="num" style="font-family:var(--f-serif);font-weight:400;color:var(--accent)">{t.price.from} {z.price}</strong>
+
             </div>
             <div class="cluster" style="--gap:8px">
               {z.list.map((a) => <a class="chip" href={areaLink(a.id)}>{a.name[locale]}</a>)}

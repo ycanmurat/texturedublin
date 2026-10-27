@@ -1,14 +1,3 @@
-import type { Locale, PriceItem, Unit, ZoneId } from '../data/types.ts';
-import { euro, priceFrom } from './pricing.ts';
-
-const short: Record<Locale, Partial<Record<Unit, string>>> = {
-  en: { perMetre: '/m', perHour: '/hr', perDoor: '/door', perSqm: '/m²', perUnit: '/unit', perAlcove: '/alcove', perRoom: '/room', perWindow: '/window', perShelf: '/shelf', perDay: '/day' },
-  ga: { perMetre: '/m', perHour: '/uair', perDoor: '/doras', perSqm: '/m²', perUnit: '/aonad', perAlcove: '/cuas', perRoom: '/seomra', perWindow: '/fuinneog', perShelf: '/seilf', perDay: '/lá' },
-};
-
-/** "€1,150/m" for titles and meta descriptions */
-export const shortPrice = (l: Locale, item: PriceItem, zone?: ZoneId) => `${euro(priceFrom(item, zone))}${short[l][item.unit] ?? ''}`;
-
 /** appends the brand when the title stays under ~65 characters */
 export const withBrand = (s: string) => (s.length <= 48 ? `${s} | Texture Dublin` : s);
 

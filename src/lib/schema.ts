@@ -4,12 +4,12 @@ import { withBase } from './paths.ts';
  * business, website, web page, breadcrumbs and page-specific entities
  * (services with priced offers, areas served, FAQs, articles).
  */
-import type { Area, FAQ, Locale, PriceItem, Service, ZoneId } from '../data/types.ts';
+import type { Area, FAQ, Locale, Service, ZoneId } from '../data/types.ts';
 import { site } from '../config/site.ts';
 import { areas } from '../data/areas.ts';
 import { services } from '../data/services.ts';
 import { ui } from '../i18n/ui.ts';
-import { priceFrom, priceTo, renderTokens } from './pricing.ts';
+import { renderTokens } from './pricing.ts';
 import { href } from './routes.ts';
 
 type Node = Record<string, unknown>;
@@ -34,7 +34,7 @@ export const placeNode = (a: Area, l: Locale): Node => ({
 /** the business entity. `full` adds opening hours, areas served and the full offer catalogue */
 export function business(l: Locale, full = false): Node {
   const node: Node = {
-    '@type': 'HomeAndConstructionBusiness',
+    '@type': 'LocalBusiness',
     '@id': BUSINESS_ID,
     name: site.name,
     legalName: site.legalName,
@@ -57,7 +57,6 @@ export function business(l: Locale, full = false): Node {
       addressRegion: site.address.region,
       addressCountry: site.address.country,
     },
-    geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
     knowsLanguage: ['en-IE', 'ga-IE'],
     ...(site.vatNumber ? { vatID: site.vatNumber } : {}),
   };
@@ -72,9 +71,11 @@ export function business(l: Locale, full = false): Node {
     }));
     node.areaServed = [dublinPlace, ...areas.map((a) => ({ '@type': 'Place', name: a.name.en }))];
     node.hasOfferCatalog = offerCatalog(l);
+    node.department = ['woodworks', 'signage'].map(category => ({ '@type': 'ProfessionalService', '@id': `${abs('/')}#${category}`, name: category === 'signage' ? 'Texture Dublin Signage' : 'Texture Dublin Furniture & Carpentry', url: abs(href(l, category === 'signage' ? 'signageHub' : 'furnitureHub')), telephone: site.phone.e164 }));
     node.contactPoint = {
       '@type': 'ContactPoint',
       contactType: 'customer service',
+      name: site.contactName,
       telephone: site.phone.e164,
       email: site.email,
       areaServed: 'IE',
@@ -118,33 +119,6 @@ export function breadcrumbs(path: string, items: Array<{ name: string; href: str
   };
 }
 
-function priceSpec(item: PriceItem, s: Service, l: Locale, zone?: ZoneId): Node {
-  const unit = ui.en.units[item.unit];
-  const spec: Node = {
-    '@type': unit ? 'UnitPriceSpecification' : 'PriceSpecification',
-    priceCurrency: 'EUR',
-    price: priceFrom(item, zone),
-    minPrice: priceFrom(item, zone),
-    ...(item.to ? { maxPrice: priceTo(item, zone) } : {}),
-    valueAddedTaxIncluded: s.vat === 'inc',
-  };
-  if (unit) spec.unitText = ui[l].units[item.unit] || unit;
-  return spec;
-}
-
-export function offers(s: Service, l: Locale, zone?: ZoneId, area?: Area): Node[] {
-  return s.items.map((item) => ({
-    '@type': 'Offer',
-    name: item.name[l],
-    priceCurrency: 'EUR',
-    price: priceFrom(item, zone),
-    priceSpecification: priceSpec(item, s, l, zone),
-    availability: 'https://schema.org/InStock',
-    seller: { '@id': BUSINESS_ID },
-    ...(area ? { areaServed: { '@type': 'Place', name: area.name[l] } } : {}),
-  }));
-}
-
 export function serviceNode(s: Service, l: Locale, o: { path: string; area?: Area } = { path: '' }): Node {
   const url = abs(o.path);
   return {
@@ -157,7 +131,7 @@ export function serviceNode(s: Service, l: Locale, o: { path: string; area?: Are
     provider: { '@id': BUSINESS_ID },
     areaServed: o.area ? placeNode(o.area, l) : dublinPlace,
     category: s.category === 'woodworks' ? 'Carpentry & Joinery' : 'Signage & Branding',
-    offers: offers(s, l, o.area?.zone, o.area),
+
   };
 }
 
@@ -172,7 +146,7 @@ export function offerCatalog(l: Locale, zone?: ZoneId, area?: Area): Node {
         name: s.name[l],
         url: abs(href(l, area && s.areaPages ? 'areaService' : 'service', { service: s.id, area: area?.id })),
       },
-      priceSpecification: priceSpec(s.items.find((i) => i.id === s.lead) ?? s.items[0], s, l, zone),
+
       ...(area ? { areaServed: { '@type': 'Place', name: area.name[l] } } : {}),
     })),
   };

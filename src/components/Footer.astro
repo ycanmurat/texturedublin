@@ -34,6 +34,7 @@ const year = new Date().getFullYear();
         </a>
         <p class="footer-tagline">{t.home.eyebrow.split('·')[1]?.trim() ?? ''}</p>
         <p>{t.footer.serviceArea}</p>
+        <p class="small">{site.contactName}<br />{site.address.street}<br />{site.address.locality}, {site.address.region}</p>
         <div class="footer-contact">
           <a href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="footer">WhatsApp · {site.phone.display}</a>
           <a href={`tel:${site.phone.e164}`}>{t.contact.phone} · {site.phone.display}</a>
@@ -70,6 +71,8 @@ const year = new Date().getFullYear();
       <div>
         <h2>{t.footer.company}</h2>
         <ul>
+          <li><a href={href(locale, 'shop')}>{t.nav.shop}</a></li>
+          <li><a href={href(locale, 'signageHub')}>{t.nav.signage}</a></li>
           <li><a href={href(locale, 'about')}>{t.nav.about}</a></li>
           <li><a href={href(locale, 'projects')}>{t.nav.projects}</a></li>
           <li><a href={href(locale, 'pricing')}>{t.nav.pricing}</a></li>

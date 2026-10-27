@@ -1,3 +1,4 @@
+export const prerender = true;
 import { withoutBase } from '../../lib/paths.ts';
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
@@ -22,7 +23,7 @@ export const getStaticPaths = (async () => {
     for (const s of services) {
       out.push({
         params: { slug: slugOf(href(l, 'service', { service: s.id })) },
-        props: { eyebrow: `${s.category === 'woodworks' ? t.nav.woodworks : t.nav.signage} · ${l === 'en' ? 'Dublin' : 'Baile Átha Cliath'}`, title: s.headline[l], price: fromLabel(l, leadItem(s)), cta, url: host },
+        props: { eyebrow: `${s.category === 'woodworks' ? t.nav.woodworks : t.nav.signage} · ${l === 'en' ? 'Dublin' : 'Baile Átha Cliath'}`, title: s.headline[l], price: l === 'en' ? 'Enquire with Ali Onder' : 'Fiosraigh le Ali Onder', cta, url: host },
       });
     }
     const W = services.find((x) => x.id === 'fitted-wardrobes')!;
@@ -32,7 +33,7 @@ export const getStaticPaths = (async () => {
         props: {
           eyebrow: `${a.postal} · ${t.common.zone} ${a.zone}`,
           title: l === 'en' ? `Carpenter & sign maker in ${a.name.en}` : `${t.area.titleA} ${a.inGa}`,
-          price: `${W.name[l]} ${fromLabel(l, leadItem(W), a.zone)}`,
+          price: l === 'en' ? 'Furniture & signage · made to order' : 'Troscán agus comharthaíocht',
           cta,
           url: host,
         },

@@ -1,0 +1,38 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { session, cookieName, ensureAdmin } from '../../lib/server/auth.ts';
+import { products, productById } from '../../lib/server/store.ts';
+import { withBase } from '../../lib/paths.ts';
+export const prerender=false;
+const user=session(Astro.cookies.get(cookieName)?.value);
+const list=user?products(true):[];
+const selected=user?productById(Astro.url.searchParams.get('edit')||''):undefined;
+const newProduct=Astro.url.searchParams.has('new');
+const editing=!!selected||newProduct;
+const configured=ensureAdmin();
+---
+<AdminLayout title={user?'Product management':'Sign in'} csrf={user?.csrf}>
+ {!user ? <section class="admin-login card"><p class="eyebrow">TEXTURE DUBLIN</p><h1 class="h-l">A place for your products.</h1><p class="muted">Sign in to manage your shop and 3D previews.</p>{!configured&&<p class="admin-error">Admin setup is not complete. Ask the site administrator to configure the initial password.</p>}<form data-admin-login class="stack"><label>Username<input class="input" name="username" autocomplete="username" required maxlength="100"/></label><label>Password<input class="input" name="password" type="password" autocomplete="current-password" required maxlength="128"/></label><p data-message role="status" hidden></p><button class="btn btn--ink" type="submit" disabled={!configured}>Sign in</button></form></section> : <>
+ <div class="admin-title"><div><p class="eyebrow">YOUR CATALOGUE</p><h1 class="h-l">Product management</h1><p class="muted">Changes appear in the shop as soon as you save.</p></div><div class="cluster"><a class="btn btn--ink" href={withBase('/admin/?new=1')}>+ Add product</a><button class="btn btn--ghost" data-admin-logout>Sign out</button></div></div>
+ <nav class="admin-tabs"><a href={withBase('/admin/')} aria-current={!Astro.url.searchParams.has('security')?'page':undefined}>Products <span>{list.length}</span></a><a href={withBase('/admin/?security=1')} aria-current={Astro.url.searchParams.has('security')?'page':undefined}>Password & security</a></nav>
+ {Astro.url.searchParams.has('updated')&&<p class="admin-saved" role="status">Product saved. Published products appear in the shop; drafts stay private.</p>}
+ {Astro.url.searchParams.has('security') ? <section class="card admin-security"><h2 class="h-m">Change your password</h2><p>Use at least 12 characters. Changing your password signs out other sessions.</p><form data-admin-password class="stack"><label>Current password<input name="current" type="password" class="input" autocomplete="current-password" required maxlength="128"/></label><label>New password<input name="next" type="password" class="input" autocomplete="new-password" minlength="12" maxlength="128" required/></label><label>Confirm new password<input name="confirm" type="password" class="input" autocomplete="new-password" minlength="12" maxlength="128" required/></label><p data-message role="status" hidden></p><button class="btn btn--ink" type="submit">Change password</button></form></section> : <div class:list={['admin-workspace',editing&&'is-editing']}>
+  <section class="admin-product-list" aria-label="Products">{list.map(p=><article class="admin-product-row">{p.poster&&<img src={withBase(p.poster)} alt="" width="100" height="100"/>}<div><h2 class="h-s">{p.name}</h2><p class="small muted">{p.published?'Published':'Draft'} · {p.example?'Example product':'Made to order'} · {p.model?'3D ready':'No 3D model'}</p><p class="small">{p.priceCents===null?'Price on enquiry':`${p.example?'Example price: ':''}€${(p.priceCents/100).toLocaleString('en-IE')}`}</p></div><a class="btn btn--ghost btn--sm" href={withBase(`/admin/?edit=${encodeURIComponent(p.id)}`)}>Edit</a></article>)}</section>
+  {editing&&<section class="card admin-editor"><div class="card-top"><h2 class="h-m">{selected?'Edit product':'Add a product'}</h2><a href={withBase('/admin/')} class="arrow-link">Close</a></div><form data-admin-product class="stack" data-product-id={selected?.id}>
+   <label>Product name<input class="input" name="name" value={selected?.name} required maxlength="100"/></label>
+   <label>Product URL slug<input class="input" name="slug" value={selected?.slug} pattern="[a-z0-9]+(-[a-z0-9]+)*" required maxlength="80" readonly={!!selected}/><small class="muted">Keep an existing URL stable. New URLs use lowercase words and hyphens.</small></label>
+   <label>Short description<textarea class="textarea" name="summary" required maxlength="220">{selected?.summary}</textarea></label>
+   <label>Full description<textarea class="textarea" name="description" required maxlength="4000" rows="5">{selected?.description}</textarea></label>
+   <details><summary>Irish translation (optional)</summary><div class="stack" style="margin-top:16px"><label>Irish name<input class="input" name="nameGa" value={selected?.nameGa} maxlength="100"/></label><label>Irish short description<textarea class="textarea" name="summaryGa" maxlength="220">{selected?.summaryGa}</textarea></label><label>Irish full description<textarea class="textarea" name="descriptionGa" maxlength="4000">{selected?.descriptionGa}</textarea></label><p class="small muted">English is shown when a translation is empty.</p></div></details>
+   <label>Price (€)<input class="input" name="price" type="number" min="0" max="1000000" step="0.01" value={selected?.priceCents==null?'':selected.priceCents/100}/><small class="muted">Leave blank to show “Price on enquiry”.</small></label>
+   <label class="admin-check"><input type="checkbox" name="example" checked={selected?.example??true}/> This is an example design and illustrative price</label>
+   <div class="admin-dimensions">{(['width','height','depth'] as const).map(key=><label>{key} (mm)<input class="input" type="number" min="0" max="10000" step="1" name={key} value={selected?.[key]??0} required/></label>)}</div>
+   <label>Finishes (one per line)<textarea class="textarea" name="finishes" rows="3">{selected?.finishes.join('\n')}</textarea></label>
+   <div class="admin-upload"><label>Product image (JPG, PNG or WebP, up to 6 MB)<input type="file" accept="image/jpeg,image/png,image/webp" data-upload="poster"/></label><input type="hidden" name="poster" value={selected?.poster||''}/><button type="button" class="arrow-link small" data-clear-asset="poster">Remove image</button>{selected?.poster&&<img src={withBase(selected.poster)} alt="Current product image" width="180" height="150"/>}<p class="small muted" data-upload-status="poster" role="status"></p></div>
+   <div class="admin-upload"><label>3D product model (self-contained GLB, up to 16 MB)<input type="file" accept=".glb,model/gltf-binary" data-upload="model"/></label><input type="hidden" name="model" value={selected?.model||''}/><button type="button" class="arrow-link small" data-clear-asset="model">Remove 3D model</button><p class="small muted" data-upload-status="model" role="status">{selected?.model?'A 3D model is attached.':'Optional. Products without a model show the product image.'}</p></div>
+   <label class="admin-check"><input type="checkbox" name="published" checked={selected?.published??false}/> Published in the shop</label>
+   <p class="small muted">Uncheck Published to archive a product without deleting it.</p><p data-message role="status" hidden></p><button class="btn btn--ink" type="submit">Save product</button>
+  </form></section>}
+ </div>}
+ </>}
+</AdminLayout>

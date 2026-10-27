@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
+import node from '@astrojs/node';
 import mdx from '@astrojs/mdx';
 
 // Set SITE_URL in .env (or your host's environment) to the final domain.
@@ -7,8 +8,18 @@ const SITE = process.env.SITE_URL || 'https://www.texturedublin.ie';
 
 export default defineConfig({
   site: SITE,
+  output: 'server',
+  adapter: node({ mode: 'middleware' }),
   base: process.env.BASE_PATH || '/',
   trailingSlash: 'always',
+  security: {
+    allowedDomains: [
+      { hostname: new URL(SITE).hostname },
+      { hostname: `www.${new URL(SITE).hostname.replace(/^www\./, '')}` },
+      { hostname: 'localhost' },
+      { hostname: '127.0.0.1' },
+    ],
+  },
   build: { format: 'directory', inlineStylesheets: 'auto' },
   // keep classic whitespace handling between inline elements
   compressHTML: true,

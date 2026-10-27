@@ -21,12 +21,11 @@ const other: Locale = locale === 'en' ? 'ga' : 'en';
 const switchHref = alternates ? alternates[other] : href(other, 'home');
 
 const nav: Array<{ key: RouteKey; label: string }> = [
-  { key: 'areas', label: t.nav.areas },
-  { key: 'pricing', label: t.nav.pricing },
-  { key: 'projects', label: t.nav.projects },
-  { key: 'guides', label: t.nav.guides },
-  { key: 'about', label: t.nav.about },
-  { key: 'contact', label: t.nav.contact },
+  { key:'furnitureHub', label: locale === 'en' ? 'Furniture' : 'Troscán' },
+  { key:'signageHub', label: locale === 'en' ? 'Signage' : 'Comharthaíocht' },
+  { key:'shop', label:t.nav.shop },
+  { key:'guides', label:t.nav.guides },
+  { key:'contact', label:t.nav.contact },
 ];
 const isCurrent = (k: RouteKey) => {
   const h = href(locale, k);
@@ -113,7 +112,7 @@ const servicesHref = href(locale, 'services');
   <nav aria-label="Mobile">
     <ul class="mm-main">
       {
-        [{ key: 'services' as RouteKey, label: t.nav.services }, ...nav, { key: 'quote' as RouteKey, label: t.nav.quote }].map((n, i) => (
+        [{ key: 'services' as RouteKey, label: t.nav.services }, ...nav, {key:'areas' as RouteKey,label:t.nav.areas}, {key:'pricing' as RouteKey,label:t.nav.pricing}, {key:'about' as RouteKey,label:t.nav.about}, { key: 'quote' as RouteKey, label: t.nav.quote }].map((n, i) => (
           <li style={`--i:${i}`}>
             <a href={href(locale, n.key)}>
               {n.label}

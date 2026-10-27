@@ -7,6 +7,9 @@ export const LOCALES: Locale[] = ['en', 'ga'];
 
 /** translated URL segments — English lives at the root, Irish under /ga/ */
 export const SEG = {
+  furnitureHub: { en: 'furniture-carpentry', ga: 'troscan-siuineireacht' },
+  signageHub: { en: 'signage', ga: 'comharthaiocht' },
+  shop: { en: 'shop', ga: 'siopa' },
   services: { en: 'services', ga: 'seirbhisi' },
   areas: { en: 'areas', ga: 'ceantair' },
   pricing: { en: 'pricing', ga: 'praghsanna' },
@@ -59,7 +62,7 @@ export const alternates = (e: RouteEntry): L10n => ({ en: href('en', e.key, e), 
 /** every page of the site, in one place — used by the router, sitemap and HTML site map */
 export function allRoutes(guides: L10n[]): RouteEntry[] {
   const list: RouteEntry[] = [{ key: 'home' }];
-  for (const k of Object.keys(SEG) as StaticKey[]) list.push({ key: k });
+  for (const k of Object.keys(SEG) as StaticKey[]) if (k !== 'shop') list.push({ key: k });
   for (const s of services) list.push({ key: 'service', service: s.id });
   for (const a of areas) {
     list.push({ key: 'area', area: a.id });

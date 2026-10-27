@@ -86,10 +86,8 @@ const speculation = {
 <meta name="theme-color" content="#15120f" />
 <meta name="color-scheme" content="light" />
 <meta name="format-detection" content="telephone=no" />
-<meta name="geo.region" content="IE-D" />
-<meta name="geo.placename" content="Dublin" />
-<meta name="geo.position" content={`${site.geo.lat};${site.geo.lng}`} />
-<meta name="ICBM" content={`${site.geo.lat}, ${site.geo.lng}`} />
+<meta name="geo.region" content="IE-MH" />
+<meta name="geo.placename" content="Dunboyne, County Meath" />
 {site.verification.google && <meta name="google-site-verification" content={site.verification.google} />}
 {site.verification.bing && <meta name="msvalidate.01" content={site.verification.bing} />}
 {site.verification.facebook && <meta name="facebook-domain-verification" content={site.verification.facebook} />}
@@ -124,4 +122,4 @@ const speculation = {
 
 <script type="speculationrules" is:inline set:html={JSON.stringify(speculation)} />
 
-{schema && <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />}
+{schema && <script type="application/ld+json" is:inline set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}

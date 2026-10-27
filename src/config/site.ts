@@ -15,11 +15,11 @@ export const site = {
   legalName: 'Texture Dublin',
   url: (env.SITE || 'https://www.texturedublin.ie').replace(/\/$/, ''),
 
-  /** TODO: your WhatsApp Business number — international format, digits only (353 + number without the leading 0) */
-  whatsapp: env.PUBLIC_WHATSAPP_NUMBER || '353870000000',
+  contactName: 'Ali Onder',
+  whatsapp: env.PUBLIC_WHATSAPP_NUMBER || '353830170588',
   phone: {
-    display: env.PUBLIC_PHONE_DISPLAY || '087 000 0000',
-    e164: env.PUBLIC_PHONE_E164 || '+353870000000',
+    display: env.PUBLIC_PHONE_DISPLAY || '+353 83 017 0588',
+    e164: env.PUBLIC_PHONE_E164 || '+353830170588',
   },
   email: env.PUBLIC_EMAIL || 'hello@texturedublin.ie',
 
@@ -28,15 +28,15 @@ export const site = {
    * customer. If you have a public workshop or showroom, fill this in and set
    * showAddress to true — it will appear on the contact page and in schema.org.
    */
-  showAddress: false,
+  showAddress: true,
   address: {
-    street: '',
-    locality: 'Dublin',
-    region: 'County Dublin',
+    street: 'Barstown Commercial Park, Barstown',
+    locality: 'Dunboyne',
+    region: 'Co. Meath',
     postalCode: '',
     country: 'IE',
   },
-  geo: { lat: 53.3498, lng: -6.2603 },
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Barstown+Commercial+Park+Barstown+Dunboyne+Co+Meath',
 
   /** opening hours (schema.org format days: Mo Tu We Th Fr Sa Su) */
   hours: [
@@ -46,8 +46,8 @@ export const site = {
 
   /** add the full profile URLs once the accounts exist — they feed schema.org sameAs and the footer */
   socials: {
-    instagram: env.PUBLIC_INSTAGRAM_URL || '',
-    facebook: env.PUBLIC_FACEBOOK_URL || '',
+    instagram: env.PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/texturedublinco/',
+    facebook: env.PUBLIC_FACEBOOK_URL || 'https://www.facebook.com/texturedublinco/',
     tiktok: env.PUBLIC_TIKTOK_URL || '',
     linkedin: env.PUBLIC_LINKEDIN_URL || '',
     pinterest: env.PUBLIC_PINTEREST_URL || '',
@@ -60,7 +60,7 @@ export const site = {
   vatNumber: env.PUBLIC_VAT_NUMBER || '',
   croNumber: env.PUBLIC_CRO_NUMBER || '',
 
-  priceRange: '€€',
+  priceRange: 'By quotation',
   /** date the price list was last reviewed (shown on pricing tables + guides) */
   pricesReviewed: '2026-10-01',
 
@@ -89,4 +89,4 @@ export const site = {
   },
 } as const;
 
-export const isPlaceholderContact = site.whatsapp === '353870000000';
+export const isPlaceholderContact = !site.whatsapp;

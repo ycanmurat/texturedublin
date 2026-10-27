@@ -2,9 +2,8 @@
 import type { Area, FAQ, Locale, Service } from '../data/types.ts';
 import { housing, commercial } from '../data/housing.ts';
 import { serviceById } from '../data/services.ts';
-import { councils, zones } from '../data/zones.ts';
+import { councils } from '../data/zones.ts';
 import { ui, fmt } from '../i18n/ui.ts';
-import { euro } from './pricing.ts';
 import { placeVars } from './routes.ts';
 import { lowerName } from './wa.ts';
 
@@ -48,8 +47,7 @@ export function areaFaqs(a: Area, l: Locale, opts: { service?: Service } = {}): 
   const mk = (l2: Locale) => {
     const t = ui[l2].area;
     const v = placeVars(a, l2);
-    const min = euro(zones[a.zone].minVisit);
-    const travel = fmt(t[`faqTravel${a.zone}` as 'faqTravel1'], { ...v, min });
+    const travel = l2 === 'en' ? `We quote travel, parking and access for ${a.name.en} as part of your project. Send your location and job details to Ali Onder; any charges are agreed in advance.` : `Cuirtear taisteal, páirceáil agus rochtain san áireamh sa luachan do ${a.name.ga}. Seol sonraí chuig Ali Onder agus aontaítear aon táillí roimh ré.`;
     return {
       travel: { q: fmt(t.faqTravelQ, v), a: travel },
       planning: { q: fmt(t.faqPlanningQ, v), a: fmt(t.faqPlanningA, { ...v, council: councils[a.council][l2] }) },

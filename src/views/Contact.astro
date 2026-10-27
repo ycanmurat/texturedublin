@@ -33,6 +33,7 @@ const dayName = (d: string) => t.days[d as keyof typeof t.days];
   <PageHero {locale} eyebrow={t.contact.title} title={t.contact.h1} lede={t.contact.lede} {crumbs} size="l" />
 
   <section class="section section--tight" style="padding-top:0">
+    <div class="container" style="margin-bottom:28px"><p class="lede">{locale === 'en' ? 'Speak to Ali Onder about furniture, carpentry or signage.' : 'Labhair le Ali Onder faoi throscán, siúinéireacht nó comharthaíocht.'}</p><address style="font-style:normal;margin-top:14px">{site.address.street}<br />{site.address.locality}<br />{site.address.region}</address><a class="arrow-link" style="margin-top:12px" href={site.mapsUrl} target="_blank" rel="noopener">{locale === 'en' ? 'View location on Google Maps' : 'Féach an suíomh ar Google Maps'} ↗</a><div class="cluster" style="margin-top:16px"><a class="chip" href={site.socials.instagram} target="_blank" rel="noopener me">Instagram · @texturedublinco</a><a class="chip" href={site.socials.facebook} target="_blank" rel="noopener me">Facebook · texturedublinco</a></div></div>
     <div class="container grid grid--4">
       <a class="card" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="contact-card" data-reveal style="background:var(--wa);color:var(--wa-ink);border-color:transparent">
         <Icon name="whatsapp" class="card-icon" />

@@ -5,7 +5,7 @@ import { serviceById } from '../data/services.ts';
 import { zones } from '../data/zones.ts';
 import { ui, fmt } from '../i18n/ui.ts';
 import { href, placeIn } from '../lib/routes.ts';
-import { euro, leadLabel } from '../lib/pricing.ts';
+import { leadLabel } from '../lib/pricing.ts';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -22,12 +22,12 @@ const data = areas.map((a) => ({
   h: href(locale, 'area', { area: a.id }),
   z: a.zone,
   zn: zones[a.zone].name[locale],
-  mv: euro(zones[a.zone].minVisit),
+  mv: locale === 'en' ? 'Confirmed in your quote' : 'Deimhnithe sa luachan',
   see: fmt(t.finder.see, { area: placeIn(a, locale) }),
   pr: showcase.map((s) => leadLabel(locale, s, a.zone)),
 }));
 const popular = ['rathmines', 'ranelagh', 'clontarf', 'dundrum', 'blackrock', 'malahide', 'swords', 'lucan', 'tallaght', 'dublin-city-centre'].map((id) => areaById[id]);
-const labels = { zone: t.common.zone, min: t.finder.minVisit, none: t.finder.none, names: showcase.map((s) => s.name[locale]) };
+const labels = { zone: t.common.zone, min: locale === 'en' ? 'Travel & access' : 'Taisteal agus rochtain', none: t.finder.none, names: showcase.map((s) => s.name[locale]) };
 ---
 
 <div class="finder" data-finder>

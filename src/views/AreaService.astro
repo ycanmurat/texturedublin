@@ -13,11 +13,11 @@ import { serviceById, services } from '../data/services.ts';
 import { zones } from '../data/zones.ts';
 import { ui, fmt } from '../i18n/ui.ts';
 import { alternates, href, inPlace, placeVars } from '../lib/routes.ts';
-import { euro, fromLabel, leadItem, priceFrom, renderTokens, typicalProject, vatText } from '../lib/pricing.ts';
+import { renderTokens } from '../lib/pricing.ts';
 import { breadcrumbs, business, faqPage, graph, serviceNode, webPage, website, placeNode } from '../lib/schema.ts';
 import { waHref, waLink, waData, lowerName } from '../lib/wa.ts';
 import { areaFaqs, housingAdvice } from '../lib/local.ts';
-import { fitTitle, metaDesc, shortPrice } from '../lib/seo.ts';
+import { fitTitle, metaDesc } from '../lib/seo.ts';
 import { words } from '../lib/text.ts';
 
 interface Props {
@@ -30,21 +30,13 @@ const a = areaById[route.area!];
 const s = serviceById[route.service!];
 const v = placeVars(a, locale);
 const z = zones[a.zone];
-const lead = leadItem(s);
 const path = href(locale, 'areaService', { area: a.id, service: s.id });
 const wa = waLink(locale, { service: s, area: a });
 
 const tn = s.titleName ?? s.name;
 const aShort = a.name.en.replace(/ & .*$/, '');
-const title =
-  locale === 'en'
-    ? fitTitle(`${s.name.en} ${a.name.en} | From ${shortPrice('en', lead, a.zone)}`, `${tn.en} ${a.name.en} | From ${shortPrice('en', lead, a.zone)}`, `${tn.en} ${aShort} | From ${shortPrice('en', lead, a.zone)}`)
-    : fitTitle(`${s.name.ga} ${a.inGa} | Ó ${shortPrice('ga', lead, a.zone)}`, `${tn.ga} ${a.inGa} | Ó ${shortPrice('ga', lead, a.zone)}`, `${tn.ga} ${a.inGa}`);
-const description = metaDesc(
-  locale === 'en'
-    ? `${s.name.en} in ${a.name.en} (${a.postal}) from ${fromLabel('en', lead, a.zone, false)} ${vatText('en', s)}. ${s.short.en} Free survey — WhatsApp us.`
-    : `${s.name.ga} ${a.inGa} (${a.postal}) ó ${fromLabel('ga', lead, a.zone, false)}. ${s.short.ga}`,
-);
+const title = locale === 'en' ? fitTitle(`${s.name.en} ${a.name.en}`, `${tn.en} ${a.name.en}`, `${tn.en} ${aShort}`) : fitTitle(`${s.name.ga} ${a.inGa}`, `${tn.ga} ${a.inGa}`);
+const description = metaDesc(locale === 'en' ? `${s.name.en} in ${a.name.en} (${a.postal}). ${s.short.en} Enquire with Ali Onder for a tailored quote.` : `${s.name.ga} ${a.inGa} (${a.postal}). ${s.short.ga} Luachan ar iarratas.`);
 const crumbs = [
   { name: t.nav.home, href: href(locale, 'home') },
   { name: t.nav.areas, href: href(locale, 'areas') },
@@ -65,23 +57,19 @@ const schema = graph([
 ]);
 
 const advice = housingAdvice(a, s, locale);
-const typical = typicalProject(s, a);
 const near = nearby(a, 6);
 const others = services.filter((x) => x.areaPages && x.id !== s.id);
 const h1 = locale === 'en' ? `${s.name.en} in *${a.name.en}*` : `${s.name.ga} *${a.inGa}*`;
 const lede = locale === 'en'
-  ? `${s.short.en} Local guide prices for ${a.name.en} (${a.postal}) below — Zone ${a.zone}, ${z.name.en}.`
-  : `${s.short.ga} Praghsanna treorach áitiúla ${a.inGa} (${a.postal}) thíos — Crios ${a.zone}, ${z.name.ga}.`;
-const typicalMsg = typical
-  ? waHref(fmt(t.wa.item, { item: `${typical.label[locale]} (${euro(typical.low)}–${euro(typical.high)})`, inArea: ` ${inPlace(a, locale)}` }))
-  : wa;
+  ? `${s.short.en} Tailored quotations for ${a.name.en} (${a.postal}) below — Zone ${a.zone}, ${z.name.en}.`
+  : `${s.short.ga} Luachana saincheaptha ${a.inGa} (${a.postal}) thíos — Crios ${a.zone}, ${z.name.ga}.`;
 ---
 
 <BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} service={s} area={a} page="area-service" ogImage={ogPath(href(locale, 'area', { area: a.id }))}>
   <PageHero {locale} eyebrow={`${a.postal} · ${t.common.zone} ${a.zone} — ${z.name[locale]}`} title={h1} {lede} {crumbs} illustration={s.illustration}>
     <div class="meta-row" data-reveal style="--d:3">
-      <span class="price-badge"><small>{t.common.from}</small><strong class="num">{euro(priceFrom(lead, a.zone))}</strong><small>{t.units[lead.unit]} · {vatText(locale, s)}</small></span>
-      <span class="chip">{t.price.minVisit}: {euro(z.minVisit)}</span>
+
+      <span class="chip">{locale === 'en' ? 'Price on enquiry' : 'Praghas ar iarratas'}</span>
     </div>
     <div class="btn-row" data-reveal style="--d:4;margin-top:22px">
       <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('area-service-hero', { service: s, area: a })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>
@@ -95,19 +83,7 @@ const typicalMsg = typical
         <span class="eyebrow" data-reveal>{t.nav.pricing} · {a.postal}</span>
         <h2 id="prices-title" class="h-l words" data-words set:html={words(`${fmt(t.service.pricesTitle, { service: s.name[locale] })} — ${a.name[locale]}`)} />
         <p class="muted" data-reveal>{z.description[locale]}</p>
-        {
-          typical && (
-            <div class="finder-card" data-reveal style="--d:1">
-              <p class="eyebrow">{fmt(t.area.typicalTitle, v)}</p>
-              <h3 style="font-size:1.35rem">{typical.label[locale]}</h3>
-              <p class="total num" style="font-family:var(--f-serif);font-size:2.2rem;line-height:1;color:var(--oak)">
-                {euro(typical.low)} – {euro(typical.high)}
-              </p>
-              <p class="small" style="color:#bdb2a3">{vatText(locale, s)} · {t.estimator.disclaimer}</p>
-              <a class="btn btn--wa" style="justify-self:start" href={typicalMsg} target="_blank" rel="noopener" {...waData('typical-project', { service: s, area: a })}><Icon name="whatsapp" />{t.price.ask}</a>
-            </div>
-          )
-        }
+
       </div>
       <div data-reveal style="--d:1"><PriceTable {locale} services={[s]} zone={a.zone} area={a} /></div>
     </div>
@@ -137,7 +113,7 @@ const typicalMsg = typical
       <div class="cluster" style="--gap:10px" data-reveal>
         {near.map((n) => (
           <a class="chip" href={href(locale, 'areaService', { area: n.id, service: s.id })}>
-            {n.name[locale]} <small>{t.price.from} {euro(priceFrom(lead, n.zone))}</small>
+            {n.name[locale]}
           </a>
         ))}
         <a class="chip" href={href(locale, 'service', { service: s.id })}><strong>{s.name[locale]} — {t.nav.allAreas} →</strong></a>

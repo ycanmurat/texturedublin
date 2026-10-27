@@ -6,7 +6,7 @@ import { placeIn } from './routes.ts';
 /** "Fitted Wardrobes" -> "fitted wardrobes", keeps acronyms such as LED */
 export const lowerName = (s: string) => s.replace(/(\p{Lu})(?=\p{Ll})/gu, (c) => c.toLowerCase());
 
-export const waHref = (text: string) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
+export const waHref = (text: string) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text.replace(/Hi Texture Dublin!|A Texture Dublin!/g, 'Hi Ali Onder / Texture Dublin!'))}`;
 
 /** pre-filled WhatsApp message for the page context */
 export function waMessage(locale: Locale, ctx: { service?: Service; area?: Area } = {}) {

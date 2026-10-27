@@ -4,65 +4,26 @@ import type { RouteEntry } from '../lib/routes.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import PriceTable from '../components/PriceTable.astro';
-import ZoneCards from '../components/ZoneCards.astro';
-import Estimator from '../components/Estimator.astro';
-import FAQ from '../components/FAQ.astro';
-import { signage, woodworks } from '../data/services.ts';
-import { pricingFaqs } from '../data/faqs.ts';
+import { woodworks, signage } from '../data/services.ts';
+import { startingRates, euro } from '../lib/pricing.ts';
+import { href, alternates } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
+import { waLink } from '../lib/wa.ts';
 import { ui } from '../i18n/ui.ts';
-import { alternates, href } from '../lib/routes.ts';
-import { abs, breadcrumbs, business, faqPage, graph, offerCatalog, webPage, website } from '../lib/schema.ts';
-import { words } from '../lib/text.ts';
-
-interface Props {
-  locale: Locale;
-  route: RouteEntry;
-}
+interface Props { locale: Locale; route: RouteEntry; }
 const { locale, route } = Astro.props;
-const t = ui[locale];
-const path = href(locale, 'pricing');
-const title = locale === 'en' ? 'Carpentry & Signage Prices Dublin 2026 | Texture Dublin' : 'Praghsanna Siúinéireachta agus Comharthaíochta 2026 | Texture Dublin';
-const description =
-  locale === 'en'
-    ? 'Full 2026 price list for fitted wardrobes, kitchens, alcove units, cabinets, assembly, carpentry, shop signs, LED signs and branding in Dublin.'
-    : 'Liosta iomlán praghsanna 2026: vardrúis, cistineacha, aonaid chuasa, caibinéid, cóimeáil, siúinéireacht, comharthaí siopa, comharthaí LED agus brandáil.';
-const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.nav.pricing, href: path }];
-const faqs = pricingFaqs.map((f) => ({ q: f.q[locale], a: f.a[locale] }));
-const schema = graph([business(locale), website(), webPage({ path, title, description, locale, breadcrumb: true }), breadcrumbs(path, crumbs), { ...offerCatalog(locale), '@id': `${abs(path)}#catalog` }, faqPage(path, pricingFaqs, locale)]);
+const en = locale === 'en'; const t = ui[locale]; const path = href(locale,'pricing');
+const title = en ? 'Project Enquiries & Starting Rates | Texture Dublin' : 'Fiosrúcháin agus Rátaí Tosaigh | Texture Dublin';
+const description = en ? 'Ask Ali Onder for a tailored furniture, carpentry or signage quote. Four small-job starting rates; larger projects are priced to your specification.' : 'Iarr luachan saincheaptha ó Ali Onder do throscán, siúinéireacht nó comharthaíocht. Rátaí tosaigh agus tionscadail de réir sonraíochta.';
+const crumbs = [{name:t.nav.home,href:href(locale,'home')},{name:t.nav.pricing,href:path}];
+const schema = graph([business(locale),website(),webPage({path,title,description,locale,breadcrumb:true}),breadcrumbs(path,crumbs)]);
 ---
-
-<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="pricing">
-  <PageHero {locale} eyebrow={t.pricing.title} title={t.pricing.h1} lede={t.pricing.lede} {crumbs} illustration="cabinet" size="l" />
-
-  <section class="section section--tight section--paper2" aria-labelledby="est-title">
-    <div class="container">
-      <div class="section-head">
-        <span class="eyebrow" data-reveal>{t.pricing.estimatorTitle}</span>
-        <h2 id="est-title" class="h-l words" data-words set:html={words(t.home.estimateTitle)} />
-      </div>
-      <div data-reveal><Estimator {locale} /></div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="list-title">
-    <div class="container split" style="align-items:start">
-      <div class="stack" style="--stack:20px">
-        <h2 id="list-title" class="h-l words" data-words set:html={words(t.cta.allPrices)} />
-        <p class="muted" data-reveal>{t.areas.zonesLede}</p>
-        <h3 class="h-s" data-reveal style="margin-top:20px">{t.pricing.zonesTitle}</h3>
-        <ZoneCards {locale} />
-      </div>
-      <div class="stack" style="--stack:48px">
-        <PriceTable {locale} services={woodworks} collapsible open={['fitted-wardrobes', 'bespoke-kitchens']} caption={t.nav.woodworks} />
-        <PriceTable {locale} services={signage} collapsible open={['shop-signs']} caption={t.nav.signage} />
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--cream" aria-labelledby="faq-title">
-    <div class="container split" style="align-items:start">
-      <h2 id="faq-title" class="h-l words" data-words set:html={words(t.common.faq)} />
-      <FAQ {locale} items={faqs} openFirst />
-    </div>
-  </section>
+<BaseLayout {locale} {title} {description} {path} {schema} alternates={alternates(route)} page="pricing">
+ <PageHero {locale} eyebrow={en ? 'ENQUIRIES' : 'FIOSRÚCHÁIN'} title={en ? 'Your project. A considered quote.' : 'Do thionscadal. Luachan saincheaptha.'} lede={en ? 'Furniture and signage are made around your space, materials and finish. Send your brief to Ali Onder for a written quotation, with installation and delivery agreed before work starts.' : 'Déantar troscán agus comharthaíocht de réir do spáis, d’ábhar agus do bhailchríche. Seol do chuid sonraí chuig Ali Onder le haghaidh luachan scríofa.'} {crumbs} />
+ <section class="section section--tight" style="padding-top:0"><div class="container">
+  <div class="section-head"><h2 class="h-l">{en ? 'A few small-job starting rates' : 'Rátaí tosaigh do jabanna beaga'}</h2><p class="muted">{en ? 'These are minimum guide rates, not fixed project prices. Ali confirms the exact scope, minimum booking, VAT, travel and installation before you book.' : 'Is rátaí treorach íosta iad seo. Deimhníonn Ali an obair, CBL, taisteal agus suiteáil sula gcuirtear in áirithe í.'}</p></div>
+  <div class="grid grid--4">{startingRates.map(rate => <article class="card"><h3>{rate.name[locale]}</h3><p class="h-l num">{en ? 'From' : 'Ó'} {euro(rate.amount)}</p><p class="small muted">{rate.unit[locale]}</p><a class="arrow-link" href={waLink(locale)} target="_blank" rel="noopener">{en ? 'Confirm a quote' : 'Iarr luachan'} ↗</a></article>)}</div>
+ </div></section>
+ <section class="section section--paper2"><div class="container split" style="align-items:start"><div><h2 class="h-l">{en ? 'Furniture & carpentry enquiries' : 'Fiosrúcháin troscáin agus siúinéireachta'}</h2><p class="muted" style="margin-top:20px">{en ? 'Wardrobes, kitchens, storage and installations are quoted individually. No automated estimate replaces a measured specification.' : 'Tugtar luachan ar leith ar vardrúis, cistineacha, stóráil agus suiteálacha.'}</p></div><PriceTable {locale} services={woodworks} collapsible /></div></section>
+ <section class="section"><div class="container split" style="align-items:start"><div><h2 class="h-l">{en ? 'Specialist signage enquiries' : 'Fiosrúcháin comharthaíochta'}</h2><p class="muted" style="margin-top:20px">{en ? 'Our signage specialist confirms artwork, materials, illumination, fixing and access. Share a straight-on photo of your shopfront and any landlord requirements.' : 'Deimhníonn ár saineolaí comharthaíochta an dearadh, ábhair, soilsiú, daingniú agus rochtain.'}</p></div><PriceTable {locale} services={signage} collapsible /></div></section>
 </BaseLayout>

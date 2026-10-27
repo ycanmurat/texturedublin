@@ -4,14 +4,14 @@ const f = (qEn: string, qGa: string, aEn: string, aGa: string): FAQ => ({ q: { e
 
 export const homeFaqs: FAQ[] = [
   f('Which areas do you cover?', 'Cé na ceantair a chlúdaíonn sibh?',
-    'All of Dublin City and County — from Balbriggan to Shankill and from Lucan to Howth — plus commuter towns in Wicklow, Kildare and Meath such as Bray, Greystones, Maynooth, Celbridge, Naas and Ashbourne. Every area has its own page with local prices.',
-    'Cathair agus Contae Bhaile Átha Cliath ar fad — ó Bhaile Brigín go Seanchill agus ó Leamhcán go Binn Éadair — chomh maith le bailte comaitéireachta i gCill Mhantáin, i gCill Dara agus sa Mhí ar nós Bré, na gClocha Liatha, Mhaigh Nuad, Chill Droichid, an Náis agus Chill Dhéagláin. Tá a leathanach féin le praghsanna áitiúla ag gach ceantar.'),
+    'All of Dublin City and County — from Balbriggan to Shankill and from Lucan to Howth — plus commuter towns in Wicklow, Kildare and Meath such as Bray, Greystones, Maynooth, Celbridge, Naas and Ashbourne. Every area has local service information; quotations are tailored to your project.',
+    'Cathair agus Contae Bhaile Átha Cliath ar fad — ó Bhaile Brigín go Seanchill agus ó Leamhcán go Binn Éadair — chomh maith le bailte comaitéireachta i gCill Mhantáin, i gCill Dara agus sa Mhí ar nós Bré, na gClocha Liatha, Mhaigh Nuad, Chill Droichid, an Náis agus Chill Dhéagláin. Tá eolas áitiúil ar gach leathanach ceantair; tugtar luachan de réir do thionscadail.'),
   f('How do I get a quote?', 'Conas a fhaighim luachan?',
     'Send us a WhatsApp with a few photos and rough measurements. We’ll reply with a guide price and, if you’d like to go ahead, book a free survey followed by a fixed written quote.',
     'Seol WhatsApp chugainn le cúpla grianghraf agus tomhais gharbha. Tabharfaimid praghas treorach duit agus, más mian leat leanúint ar aghaidh, socróimid suirbhé saor in aisce agus ina dhiaidh sin luachan scríofa seasta.'),
-  f('Are the prices on this website fixed?', 'An bhfuil na praghsanna ar an suíomh seo seasta?',
-    'They are guide prices based on typical projects. After the survey you receive a fixed written quote, and that is the price you pay unless you change the specification.',
-    'Is praghsanna treorach iad bunaithe ar thionscadail thipiciúla. Tar éis an tsuirbhé faigheann tú luachan scríofa seasta, agus is é sin an praghas a íocann tú mura n-athraíonn tú an tsonraíocht.'),
+  f('How is my project priced?', 'An bhfuil na praghsanna ar an suíomh seo seasta?',
+    'Most services are priced on enquiry. A few small-job starting rates and an explicitly illustrative shop example are shown; your written quote confirms the actual specification and total.',
+    'Tugtar luachan ar an gcuid is mó den obair. Tá cúpla ráta tosaigh agus sampla siopa ann. Deimhnítear an tsonraíocht agus an praghas sa luachan scríofa.'),
   f('Do you work for businesses as well as homeowners?', 'An n-oibríonn sibh do ghnólachtaí chomh maith le húinéirí tí?',
     'Yes — we work for homeowners, landlords, shops, cafés, offices and builders. Our signage and branding services are designed for businesses of every size, and we can deliver joinery and signage together for a fit-out.',
     'Oibrímid — oibrímid d’úinéirí tí, do thiarnaí talún, do shiopaí, do chaiféanna, d’oifigí agus do thógálaithe. Tá ár seirbhísí comharthaíochta agus brandála deartha do ghnólachtaí de gach méid, agus is féidir linn siúinéireacht agus comharthaíocht a sheachadadh le chéile d’fheistiú.'),
@@ -24,12 +24,12 @@ export const homeFaqs: FAQ[] = [
 ];
 
 export const pricingFaqs: FAQ[] = [
-  f('Why do prices change slightly between areas?', 'Cén fáth a n-athraíonn praghsanna beagán idir ceantair?',
-    'The work itself costs the same everywhere. Areas further from the city include a small travel allowance on project prices (3% in County Dublin, 6% in the commuter belt), and small jobs carry a minimum visit charge that reflects parking and travel time.',
-    'Cosnaíonn an obair féin an méid céanna i ngach áit. Cuimsíonn ceantair níos faide ón gcathair liúntas taistil beag ar phraghsanna tionscadail (3% i gContae Bhaile Átha Cliath, 6% sa chrios comaitéireachta), agus bíonn táille chuairte íosta ar jabanna beaga a léiríonn páirceáil agus am taistil.'),
+  f('How are travel and access quoted?', 'Cén fáth a n-athraíonn praghsanna beagán idir ceantair?',
+    'Travel, delivery, parking and access are assessed for your project and clearly included in your written quotation. Send your location to Ali Onder when you enquire.',
+    'Cuirtear taisteal, seachadadh, páirceáil agus rochtain san áireamh sa luachan scríofa. Seol do shuíomh chuig Ali Onder.'),
   f('Do your prices include VAT?', 'An gcuimsíonn bhur bpraghsanna CBL?',
-    'Residential prices include VAT. Commercial, signage and branding prices are shown excluding VAT, because most business customers reclaim it.',
-    'Cuimsíonn praghsanna cónaithe CBL. Taispeántar praghsanna tráchtála, comharthaíochta agus brandála gan CBL, toisc go n-éilíonn formhór na gcustaiméirí gnó ar ais é.'),
+    'Your written quotation confirms applicable VAT and the complete total. Any published starting rate or illustrative product price is a guide, not a substitute for your quotation.',
+    'Deimhnítear an CBL ábhartha agus an t-iomlán sa luachan scríofa. Is treoir iad rátaí tosaigh agus praghsanna samplacha.'),
   f('Do you ask for a deposit?', 'An iarrann sibh éarlais?',
     'For made-to-measure work we take a deposit when you approve the design, so materials can be ordered. Small jobs such as assembly are paid on completion. The exact terms are written on your quote.',
     'D’obair de réir tomhais glacaimid éarlais nuair a cheadaíonn tú an dearadh, ionas gur féidir na hábhair a ordú. Íoctar as jabanna beaga ar nós cóimeála ar chríochnú. Tá na téarmaí cruinne scríofa ar do luachan.'),

@@ -1,0 +1,12 @@
+---
+import '../styles/global.css';
+import '../styles/admin.css';
+import { withBase } from '../lib/paths.ts';
+interface Props { title:string; csrf?:string; }
+const {title,csrf}=Astro.props;
+Astro.response.headers.set('Cache-Control','no-store, no-transform');
+Astro.response.headers.set('X-Robots-Tag','noindex, nofollow');
+Astro.response.headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+---
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><meta name="csrf-token" content={csrf||''}/><title>{title} | Texture Dublin Admin</title><link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')}/></head>
+<body class="admin-body"><header class="admin-header"><a href={withBase('/admin/')} class="admin-brand">TEXTURE <span>DUBLIN / ADMIN</span></a><a href={withBase('/shop/')} target="_blank" rel="noopener" class="arrow-link">View shop ↗</a></header><main class="admin-main"><slot /></main><script>import '../scripts/admin.ts';</script></body></html>

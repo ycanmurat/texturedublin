@@ -9,6 +9,8 @@ import type { GetStaticPaths } from 'astro';
 import type { Locale } from '../data/types.ts';
 import { allRoutes, href, LOCALES, type RouteEntry } from '../lib/routes.ts';
 import { guideSlugs } from '../lib/guides.ts';
+import Specialism from '../views/Specialism.astro';
+export const prerender = true;
 import Home from '../views/Home.astro';
 import ServicesIndex from '../views/ServicesIndex.astro';
 import Service from '../views/Service.astro';
@@ -43,6 +45,8 @@ interface Props {
 const { locale, route } = Astro.props;
 const views = {
   home: Home,
+  furnitureHub: Specialism,
+  signageHub: Specialism,
   services: ServicesIndex,
   service: Service,
   areas: AreasIndex,
@@ -62,7 +66,7 @@ const views = {
   accessibility: Legal,
   sitemap: Sitemap,
 } as const;
-const View = views[route.key];
+const View = views[route.key as keyof typeof views];
 ---
 
 <View {locale} {route} />

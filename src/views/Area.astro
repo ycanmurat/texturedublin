@@ -15,11 +15,10 @@ import { housing, commercial } from '../data/housing.ts';
 import { councils, zones } from '../data/zones.ts';
 import { ui, fmt } from '../i18n/ui.ts';
 import { alternates, href, inPlace, placeVars } from '../lib/routes.ts';
-import { euro, leadItem } from '../lib/pricing.ts';
 import { breadcrumbs, business, faqPage, graph, offerCatalog, placeNode, webPage, website, BUSINESS_ID, abs } from '../lib/schema.ts';
 import { waLink, waData } from '../lib/wa.ts';
 import { areaFaqs, popularServices } from '../lib/local.ts';
-import { fitTitle, metaDesc, shortPrice } from '../lib/seo.ts';
+import { fitTitle, metaDesc } from '../lib/seo.ts';
 import { words } from '../lib/text.ts';
 
 interface Props {
@@ -42,11 +41,7 @@ const title =
   locale === 'en'
     ? fitTitle(`Carpenter & Sign Maker ${a.name.en} (${postalShort})`, `Carpenter & Sign Maker ${a.name.en.replace(/ & .*$/, '')} (${postalShort})`, `Carpenter ${a.name.en} (${postalShort})`)
     : fitTitle(`Siúinéir agus Comharthaí ${a.inGa}`, `Siúinéir ${a.inGa}`);
-const description = metaDesc(
-  locale === 'en'
-    ? `Fitted wardrobes from ${shortPrice('en', leadItem(W), a.zone)}, kitchens from ${shortPrice('en', leadItem(K), a.zone)}, alcove units & shop signs in ${a.name.en}. Local prices, free survey — WhatsApp Texture Dublin.`
-    : `Vardrúis fheistithe ó ${shortPrice('ga', leadItem(W), a.zone)}, cistineacha ó ${shortPrice('ga', leadItem(K), a.zone)}, aonaid chuasa agus comharthaí siopa ${a.inGa}. Praghsanna áitiúla.`,
-);
+const description = metaDesc(locale === 'en' ? `Furniture, carpentry and shop signage in ${a.name.en} (${a.postal}). Wardrobes, kitchens, LED signs and window graphics. Ask Ali Onder for a tailored quote.` : `Troscán, siúinéireacht agus comharthaí siopa ${a.inGa}. Vardrúis, cistineacha agus comharthaí LED. Luachan ó Ali Onder.`);
 const crumbs = [
   { name: t.nav.home, href: href(locale, 'home') },
   { name: t.nav.areas, href: href(locale, 'areas') },
@@ -94,8 +89,6 @@ const h1 = locale === 'en' ? `${t.area.titleA} in *${a.name.en}*` : `${t.area.ti
           <dl class="facts" data-reveal style="--d:4;margin-top:36px">
             <div><dt>{t.common.postcode}</dt><dd>{a.postal}</dd></div>
             {a.eircode && <div><dt>{t.common.eircode}</dt><dd>{a.eircode}</dd></div>}
-            <div><dt>{t.price.minVisit}</dt><dd class="num">{euro(z.minVisit)}</dd></div>
-            <div><dt>{t.price.travel}</dt><dd class="num">{z.multiplier === 1 ? t.price.noTravel : `${Math.round((z.multiplier - 1) * 100)}%`}</dd></div>
           </dl>
         </div>
         <div data-reveal="fade" style="--d:2">
@@ -128,8 +121,6 @@ const h1 = locale === 'en' ? `${t.area.titleA} in *${a.name.en}*` : `${t.area.ti
           <span class="zn">{a.zone}</span>
           <h3 class="h-s">{t.common.zone} {a.zone} — {z.name[locale]}</h3>
           <dl class="facts">
-            <div><dt>{t.price.minVisit}</dt><dd class="num">{euro(z.minVisit)}</dd></div>
-            <div><dt>{t.price.travel}</dt><dd class="num">{z.multiplier === 1 ? '0%' : `${Math.round((z.multiplier - 1) * 100)}%`}</dd></div>
           </dl>
           <a class="arrow-link small" href={href(locale, 'areas')}>{t.areas.zonesTitle} <Icon name="arrow" /></a>
         </div>

@@ -1,0 +1,41 @@
+---
+import type { Locale } from '../data/types.ts';
+import type { RouteEntry } from '../lib/routes.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import FAQ from '../components/FAQ.astro';
+import Icon from '../components/Icon.astro';
+import { woodworks, signage } from '../data/services.ts';
+import { site } from '../config/site.ts';
+import { ui } from '../i18n/ui.ts';
+import { href, alternates } from '../lib/routes.ts';
+import { breadcrumbs, business, graph, webPage, website, abs } from '../lib/schema.ts';
+import { metaDesc } from '../lib/seo.ts';
+import { waLink } from '../lib/wa.ts';
+interface Props { locale:Locale; route:RouteEntry; }
+const {locale,route}=Astro.props; const en=locale==='en'; const isSign=route.key==='signageHub'; const t=ui[locale]; const list=isSign?signage:woodworks;
+const path=href(locale,isSign?'signageHub':'furnitureHub');
+const title=isSign ? (en?'Sign Makers Dublin & Meath | Texture Dublin':'Comharthaíocht i mBaile Átha Cliath agus sa Mhí | Texture Dublin') : (en?'Bespoke Furniture & Carpentry Dublin | Texture Dublin':'Troscán agus Siúinéireacht | Texture Dublin');
+const description=metaDesc(isSign ? (en?'Shop fascias, LED signs, 3D lettering and window graphics from our specialist signage service. Based in Dunboyne, serving Dublin and Meath. Enquire with Ali Onder.':'Comharthaí siopa, litreacha 3T, comharthaí LED agus grafaicí fuinneoige. Seirbhís chomharthaíochta ó Dhún Búinne do Bhaile Átha Cliath agus an Mhí.') : (en?'Fitted wardrobes, bespoke kitchens, cabinets and carpentry from Dunboyne across Dublin and Meath. Made to measure, with a quotation from Ali Onder.':'Vardrúis, cistineacha, caibinéid agus siúinéireacht de réir tomhais ó Dhún Búinne. Déan teagmháil le Ali Onder le haghaidh luachan.'));
+const crumbs=[{name:t.nav.home,href:href(locale,'home')},{name:isSign?t.nav.signage:t.nav.woodworks,href:path}];
+const points=isSign ? [
+ [en?'Designed to be seen':'Deartha le feiceáil',en?'Fascias, projecting signs and built-up lettering give your premises a clear identity. Artwork, scale and materials are agreed before production.':'Tugann cláir aghaidhe, comharthaí crochta agus litreoireacht aitheantas soiléir do d’áitreabh.'],
+ [en?'A dedicated signage specialist':'Saineolaí comharthaíochta',en?'Sign production and installation are handled by the signage specialist within Texture Dublin. The furniture team handles joinery; Ali Onder coordinates your enquiry with the right person.':'Láimhseálann saineolaí comharthaíochta Texture Dublin táirgeadh agus suiteáil comharthaí. Comhordaíonn Ali Onder do fhiosrúchán.'],
+ [en?'From artwork to installation':'Ó dhearadh go suiteáil',en?'Send your logo, a straight-on photo, approximate dimensions and location. Tell us if you need illumination, removal of an existing sign or coordinated furniture for a fit-out.':'Seol do lógó, grianghraf díreach, tomhais gharbha agus do shuíomh. Inis dúinn faoi shoilsiú nó seanchomhartha a bhaint.'],
+] : [
+ [en?'Designed around your room':'Deartha do do sheomra',en?'Wardrobes, alcove units and kitchens start with the available space, the way you use it and the finish you want. We work with both modern rooms and awkward existing layouts.':'Tosaíonn vardrúis, aonaid chuasa agus cistineacha leis an spás agus an úsáid atá uait.'],
+ [en?'Furniture is its own craft':'Ceird ar leith is ea troscán',en?'Our furniture and carpentry service handles storage, cabinetry, assembly and installation. Signage is delivered by a separate specialist within the same company, so a commercial project can include both.':'Láimhseálann ár seirbhís troscáin stóráil, caibinéid agus suiteáil. Soláthraíonn saineolaí ar leith comharthaíocht laistigh den chomhlacht céanna.'],
+ [en?'An enquiry that leads somewhere':'Fiosrúchán úsáideach',en?'Send Ali Onder a few photos, approximate width, height and depth, your location and a preferred finish. We confirm the design, materials, installation scope and quote before you commit.':'Seol grianghraif, leithead, airde, doimhneacht, suíomh agus bailchríoch chuig Ali Onder. Deimhnítear an dearadh agus an luachan roimh ré.'],
+];
+const faqs=[{q:en?'Where are you based?':'Cá bhfuil sibh lonnaithe?',a:en?'Barstown Commercial Park, Barstown, Dunboyne, Co. Meath. We take furniture and signage enquiries for Dublin, Meath and nearby counties.':'Páirc Tráchtála Barstown, Barstown, Dún Búinne, Co. na Mí. Glacaimid le fiosrúcháin ó Bhaile Átha Cliath agus ón Mhí.'},{q:en?'Do you publish fixed prices?':'An bhfoilsíonn sibh praghsanna seasta?',a:en?'Most work is priced on enquiry because size, materials, finish and access vary. Ali Onder confirms the scope and total in a written quotation.':'Tugtar luachan ar an gcuid is mó den obair de réir méid, ábhair, bailchríche agus rochtana.'}];
+const schema=graph([business(locale,true),website(),webPage({path,title,description,locale,type:'CollectionPage',breadcrumb:true}),breadcrumbs(path,crumbs),{'@type':'ItemList',itemListElement:list.map((s,i)=>({'@type':'ListItem',position:i+1,name:s.name[locale],url:abs(href(locale,'service',{service:s.id}))}))}]);
+---
+<BaseLayout {locale} {title} {description} {path} {schema} alternates={alternates(route)} page={isSign?'signage':'furniture'}>
+ <PageHero {locale} eyebrow={isSign?t.nav.signage:t.nav.woodworks} title={isSign?(en?'Signs that mean business.':'Comharthaí a chuireann gnólachtaí chun cinn.'):(en?'Furniture made for the way you live.':'Troscán don chaoi a maireann tú.')} lede={description} {crumbs} illustration={isSign?'lightbox':'wardrobe'}>
+  <div class="btn-row" style="margin-top:24px"><a class="btn btn--wa" href={waLink(locale,{service:list[0]})} target="_blank" rel="noopener"><Icon name="whatsapp" />{en?'Enquire with Ali Onder':'Fiosraigh le Ali Onder'}</a><a class="btn btn--ghost" href={href(locale,isSign?'furnitureHub':'signageHub')}>{isSign?t.nav.woodworks:t.nav.signage} →</a></div>
+ </PageHero>
+ <section class="section section--tight" style="padding-top:0"><div class="container grid grid--3">{points.map(([h,p])=><article class="card"><h2 class="h-m">{h}</h2><p>{p}</p></article>)}</div></section>
+ <section class="section section--paper2"><div class="container"><div class="section-head"><h2 class="h-l">{isSign?(en?'Our signage services':'Ár seirbhísí comharthaíochta'):(en?'Our furniture & carpentry services':'Ár seirbhísí troscáin agus siúinéireachta')}</h2></div><div class="grid grid--3">{list.map((s,i)=><ServiceCard {locale} service={s} index={i} />)}</div></div></section>
+ <section class="section"><div class="container split"><div class="stack"><h2 class="h-l">{en?'Dunboyne base. Dublin reach.':'Ó Dhún Búinne go Baile Átha Cliath.'}</h2><p class="lede">{site.address.street}, {site.address.locality}, {site.address.region}</p><a class="arrow-link" href={href(locale,'areas')}>{t.nav.allAreas} →</a><a class="arrow-link" href={href(locale,'guides')}>{t.guides.all} →</a></div><FAQ {locale} items={faqs} /></div></section>
+</BaseLayout>

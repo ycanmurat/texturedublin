@@ -10,8 +10,8 @@ export const zones: Record<ZoneId, Zone> = {
     id: 1,
     name: { en: 'City Centre', ga: 'Lár na Cathrach' },
     description: {
-      en: 'Dublin 1, 2, 7 and 8 and the Docklands. No travel charge — city-centre parking and access are built into the minimum visit.',
-      ga: 'Baile Átha Cliath 1, 2, 7 agus 8 agus na Duganna. Gan táille taistil — tá páirceáil agus rochtain i lár na cathrach san áireamh sa chuairt íosta.',
+      en: 'Dublin 1, 2, 7 and 8 and the Docklands. Parking, loading and access are planned with your quotation.',
+      ga: 'Baile Átha Cliath 1, 2, 7 agus 8 agus na Duganna. Deimhnítear páirceáil agus rochtain sa luachan.',
     },
     multiplier: 1,
     minVisit: 75,
@@ -20,8 +20,8 @@ export const zones: Record<ZoneId, Zone> = {
     id: 2,
     name: { en: 'Dublin Suburbs', ga: 'Bruachbhailte Bhaile Átha Cliath' },
     description: {
-      en: 'Inner and middle suburbs north and south of the city. No travel charge and our lowest minimum visit.',
-      ga: 'Bruachbhailte inmheánacha agus lárnacha ó thuaidh agus ó dheas den chathair. Gan táille taistil agus an chuairt íosta is ísle againn.',
+      en: 'Inner and middle suburbs north and south of Dublin. Tell us your address and installation requirements.',
+      ga: 'Bruachbhailte ó thuaidh agus ó dheas de Bhaile Átha Cliath. Seol do sheoladh agus riachtanais suiteála.',
     },
     multiplier: 1,
     minVisit: 65,
@@ -30,8 +30,8 @@ export const zones: Record<ZoneId, Zone> = {
     id: 3,
     name: { en: 'County Dublin', ga: 'Contae Bhaile Átha Cliath' },
     description: {
-      en: 'Outer suburbs and towns across Dún Laoghaire-Rathdown, Fingal and South Dublin. A small travel allowance (3%) is included in project prices.',
-      ga: 'Bruachbhailte seachtracha agus bailte ar fud Dhún Laoghaire-Ráth an Dúin, Fhine Gall agus Átha Cliath Theas. Tá liúntas taistil beag (3%) san áireamh i bpraghsanna tionscadail.',
+      en: 'Outer suburbs and County Dublin towns. We confirm the site visit, access and installation in your quote.',
+      ga: 'Bruachbhailte seachtracha agus bailte Chontae Bhaile Átha Cliath. Deimhnítear an chuairt agus suiteáil sa luachan.',
     },
     multiplier: 1.03,
     minVisit: 75,
@@ -40,8 +40,8 @@ export const zones: Record<ZoneId, Zone> = {
     id: 4,
     name: { en: 'Commuter Belt', ga: 'An Crios Comaitéireachta' },
     description: {
-      en: 'Towns in Wicklow, Kildare and Meath within easy reach of Dublin. A 6% travel allowance is included in project prices.',
-      ga: 'Bailte i gCill Mhantáin, i gCill Dara agus sa Mhí atá furasta a bhaint amach ó Bhaile Átha Cliath. Tá liúntas taistil 6% san áireamh i bpraghsanna tionscadail.',
+      en: 'Dunboyne and surrounding towns in Meath, Kildare and Wicklow. Travel and delivery are quoted for your location.',
+      ga: 'Dún Búinne agus bailte sa Mhí, i gCill Dara agus i gCill Mhantáin. Luachan taistil agus seachadta de réir suímh.',
     },
     multiplier: 1.06,
     minVisit: 95,

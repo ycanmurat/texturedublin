@@ -5,3 +5,6 @@ dist
 .env
 .env.*
 outputs
+.data
+data
+design
