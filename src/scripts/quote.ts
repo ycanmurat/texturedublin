@@ -38,7 +38,8 @@ document.querySelectorAll<HTMLFormElement>('[data-quote]').forEach((form) => {
     err.hidden = true;
     const url = `https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(message())}`;
     lead('quote_form', null, { service, placement: 'quote-form' });
-    const w = window.open(url, '_blank', 'noopener');
-    if (!w) window.location.href = url;
+    // A noopener popup can return null even when it opens successfully.
+    // Use one navigation so the same quote never opens twice.
+    window.location.assign(url);
   });
 });
