@@ -66,6 +66,7 @@ Local production build: **788 public HTML pages**, **91,110 internal link/resour
 - Structured data: `HomeAndConstructionBusiness` with email, map link, counties served and `knowsAbout`; service offer catalogues; FAQPage on hub pages; `dateModified` and sitemap `lastmod` from `site.updated`.
 - Local production build: **844 public HTML pages**, 104,190 internal link/resource references, 844 JSON-LD blocks, 6,474 FAQ entries. Build audit and consent tests pass.
 - Footer credit "Powered by Hill Bilişim" (https://www.hillbilisim.com/) added under the legal links; the footer keeps clear space below for the fixed WhatsApp button.
+- Follow-up deploys: `a8d1c53` (footer credit) and `3bf6303` (process-step contrast for Lighthouse accessibility; `llms.txt` in llmstxt.org markdown). PageSpeed Insights mobile after the content update: Performance 94, Accessibility 96 (contrast issue since fixed), Best Practices 100, SEO 100; LCP 1.8 s, CLS 0.
 - Deployed commit `cb99934` with Coolify deployment `aat7n3lpdjyydcbk7l6kt6m6` (manual redeploy; pushing to `main` does not deploy automatically). Live checks: home, new area and service pages return 200, unknown pages 404, `www` 308 to the apex, sitemap lists 844 URLs with `lastmod`, structured data carries the email and 16 home FAQs, the opening animation and centred menu render in the browser.
 
 ## Organic acquisition priorities
