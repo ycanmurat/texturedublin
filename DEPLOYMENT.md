@@ -57,6 +57,8 @@ Prefer the **Domain property** `texturedublin.com`, verified using a DNS TXT tok
 
 `public/<key>.txt` holds the IndexNow key and is served from the site root; the build audit checks that it is plain text containing only the key. After each deploy that adds or changes pages, run `npm run indexnow` from a checkout (Node 24+). It confirms the live key file matches, then submits every URL in the live sitemap to `api.indexnow.org`, which shares submissions with Bing, Yandex, Seznam, Naver and Yep. Pass paths to submit only those pages, for example `npm run indexnow -- /blog/new-post/ /ga/blag/post-nua/`. A submission is a crawl hint, not a guarantee of indexing. For Bing reports, add the site in Bing Webmaster Tools with **Import from Google Search Console**; no extra verification tag is needed.
 
+Deployed in `7c8dbc5` (Coolify deployment `8xpj3pnx6mfvoifagvtg9kvw`, 28 October 2026). The first submission returned 403 `SiteVerificationNotCompleted` while the new key was being validated; a retry three minutes later accepted all 858 sitemap URLs (HTTP 200). Expect the same short delay if the key file is ever replaced.
+
 ## Launch evidence
 
 Local production build: **788 public HTML pages**, **91,110 internal link/resource references**, **788 JSON-LD blocks**. Build audit and category-consent tests pass. External publication, DNS, Google IDs and browser evidence are recorded below.
