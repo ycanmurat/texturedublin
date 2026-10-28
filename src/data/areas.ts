@@ -715,6 +715,58 @@ export const areas: Area[] = [
       'Is minic a theastaíonn gach rud ag an am céanna ó thithe nua anseo — vardrúis fheistithe, ballaí meán agus cóimeáil troscáin — agus is féidir linn é ar fad a sceidealú mar thionscadal amháin. Oireann painéil aghaidhe nua-aimseartha agus grafaicí fuinneoige do ghnólachtaí i lár an bhaile.',
     ],
   }),
+  a({
+    id: 'dunboyne', en: 'Dunboyne', ga: 'Dún Búinne', inGa: 'i nDún Búinne',
+    postal: 'Co. Meath', eircode: 'A86', council: 'meath', zone: 4, lat: 53.4197, lng: -6.4733,
+    housing: ['estate', 'newbuild', 'detached'], commercial: 'town',
+    intro: [
+      'Our workshop is at Barstown Commercial Park in Dunboyne, so this is home ground: a growing Meath town with established estates, new developments and a busy Main Street.',
+      'Tá ár gceardlann i bPáirc Tráchtála Barstown i nDún Búinne, mar sin is é seo ár mbaile féin: baile atá ag fás sa Mhí le heastáit sheanbhunaithe, forbairtí nua agus Príomhshráid ghnóthach.',
+    ],
+    insight: [
+      'Being minutes from the workshop makes surveys, fitting days and follow-up visits easy to schedule. Family homes here suit fitted wardrobes, kitchens and media walls, and local shops and cafés benefit from fascia signs and window graphics.',
+      'Toisc nach bhfuilimid ach cúpla nóiméad ón gceardlann, is furasta suirbhéanna, laethanta feistithe agus cuairteanna leantacha a sceidealú. Oireann vardrúis fheistithe, cistineacha agus ballaí meán do thithe teaghlaigh anseo, agus baineann siopaí agus caiféanna áitiúla leas as cláir aghaidhe agus grafaicí fuinneoige.',
+    ],
+  }),
+  a({
+    id: 'clonee', en: 'Clonee', ga: 'Cluain Aodha', inGa: 'i gCluain Aodha',
+    postal: 'Co. Meath', eircode: 'D15', council: 'meath', zone: 4, lat: 53.411, lng: -6.443,
+    housing: ['newbuild', 'estate', 'apartment'], commercial: 'village',
+    intro: [
+      'Clonee sits on the Meath–Dublin border beside Blanchardstown, with newer estates and apartments along the N3, a few minutes from our Dunboyne workshop.',
+      'Tá Cluain Aodha ar an teorainn idir an Mhí agus Baile Átha Cliath in aice le Baile Bhlainséir, le heastáit agus árasáin níos nuaí feadh an N3, cúpla nóiméad ónár gceardlann i nDún Búinne.',
+    ],
+    insight: [
+      'Newer homes in Clonee often need fitted wardrobes, media walls and flat-pack assembly soon after moving in, and these can be combined in one visit. Local businesses suit modern fascia panels and window vinyl.',
+      'Is minic a theastaíonn vardrúis fheistithe, ballaí meán agus cóimeáil flat-pack ó thithe nua i gCluain Aodha go gairid tar éis bogadh isteach, agus is féidir iad a chur le chéile in aon chuairt amháin. Oireann painéil aghaidhe nua-aimseartha agus vinil fuinneoige do ghnólachtaí áitiúla.',
+    ],
+  }),
+  a({
+    id: 'ratoath', en: 'Ratoath', ga: 'Ráth Tó', inGa: 'i Ráth Tó',
+    postal: 'Co. Meath', eircode: 'A85', council: 'meath', zone: 4, lat: 53.5066, lng: -6.4642,
+    housing: ['estate', 'detached', 'newbuild'], commercial: 'village',
+    intro: [
+      'A fast-growing Meath town between Dunboyne and Ashbourne, Ratoath combines family estates, larger detached homes and a village-style centre.',
+      'Is baile sa Mhí é Ráth Tó atá ag fás go tapa idir Dún Búinne agus Cill Dhéagláin, le heastáit teaghlaigh, tithe scoite níos mó agus lár baile i stíl sráidbhaile.',
+    ],
+    insight: [
+      'Larger family homes here suit island kitchens, walk-in wardrobes and boot-room storage. Shops and cafés in the village benefit from hand-painted or timber fascia signs that suit the streetscape.',
+      'Oireann cistineacha le hoileán, vardrúis siúil isteach agus stóráil seomra buataisí do thithe teaghlaigh níos mó anseo. Baineann siopaí agus caiféanna sa sráidbhaile leas as cláir aghaidhe lámhphéinteáilte nó adhmaid a oireann don sráid-dreach.',
+    ],
+  }),
+  a({
+    id: 'leixlip', en: 'Leixlip', ga: 'Léim an Bhradáin', inGa: 'i Léim an Bhradáin',
+    postal: 'Co. Kildare', eircode: 'W23', council: 'kildare', zone: 4, lat: 53.3659, lng: -6.4955,
+    housing: ['estate', 'suburban', 'newbuild'], commercial: 'village',
+    intro: [
+      'Leixlip, on the Liffey at the Kildare–Dublin border, mixes established estates, newer developments and a historic Main Street close to Lucan and Maynooth.',
+      'Measann Léim an Bhradáin, ar an Life ar theorainn Chill Dara agus Bhaile Átha Cliath, eastáit sheanbhunaithe, forbairtí níos nuaí agus Príomhshráid stairiúil in aice le Leamhcán agus Maigh Nuad.',
+    ],
+    insight: [
+      'Established semi-detached homes here suit kitchen updates, alcove units and fitted wardrobes, while newer homes often start with flat-pack assembly and media walls. Main Street businesses suit traditional timber and painted signage.',
+      'Oireann nuashonruithe cistine, aonaid chuasa agus vardrúis fheistithe do thithe leathscoite seanbhunaithe anseo, agus is minic a thosaíonn tithe nua le cóimeáil flat-pack agus ballaí meán. Oireann comharthaíocht adhmaid agus phéinteáilte thraidisiúnta do ghnólachtaí ar an bPríomhshráid.',
+    ],
+  }),
 ];
 
 export const areaById = Object.fromEntries(areas.map((x) => [x.id, x])) as Record<string, Area>;

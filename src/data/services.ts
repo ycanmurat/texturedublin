@@ -1,4 +1,5 @@
 import type { FAQ, L10n, PriceItem, Service } from './types.ts';
+import { serviceContent } from './content/index.ts';
 
 /*
  * PRICES — every figure on the site (service pages, 50+ area pages, the
@@ -26,7 +27,7 @@ export const services: Service[] = [
     slug: t('fitted-wardrobes', 'vardruis-fheistithe'),
     name: t('Fitted Wardrobes', 'Vardrúis Fheistithe'),
     short: t(
-      'Made-to-measure hinged, sliding and walk-in wardrobes, made to measure from our base in Dunboyne.',
+      'Hinged, sliding and walk-in wardrobes, made to measure in our Dunboyne workshop for homes across Dublin and Meath.',
       'Vardrúis le doirse insí nó sleamhnáin agus vardrúis siúil isteach, déanta de réir tomhais ónár mbunáit i nDún Búinne.',
     ),
     headline: t('Fitted wardrobes, made to measure for Dublin homes', 'Vardrúis fheistithe, déanta de réir tomhais do thithe Bhaile Átha Cliath'),
@@ -857,14 +858,24 @@ export const services: Service[] = [
   },
 ];
 
+// Prices are quoted individually: answers that quoted figures are replaced by the
+// written-quote answers in content/, then the long-form content is attached.
+const priced = (f: FAQ) => /\{(?:from|to):|€/.test(f.a.en + f.a.ga);
 for (const service of services) {
-  service.faqs = service.faqs.map(f => /\{(?:from|to):|€/.test(f.a.en + f.a.ga) ? {
-    ...f,
-    a: {
-      en: `Every ${service.name.en.toLowerCase()} project is quoted to its size, materials, finish and installation requirements. Send Ali Onder photos, measurements and your location for a written quotation.`,
-      ga: `Braitheann an luachan ar mhéid, ábhair, bailchríoch agus suiteáil an tionscadail. Seol grianghraif, tomhais agus do shuíomh chuig Ali Onder le haghaidh luachan scríofa.`,
-    },
-  } : f);
+  const content = serviceContent[service.id];
+  if (!content) throw new Error(`Missing service content for ${service.id}`);
+  service.menu = content.menu;
+  service.metaDescription = content.description;
+  service.sections = content.sections;
+  service.faqs = [
+    ...service.faqs.map((f) => {
+      if (!priced(f)) return f;
+      const a = content.answers[f.q.en];
+      if (!a) throw new Error(`Missing quotation answer for "${f.q.en}"`);
+      return { ...f, a };
+    }),
+    ...content.faqs,
+  ];
 }
 export const serviceById = Object.fromEntries(services.map((s) => [s.id, s])) as Record<string, Service>;
 export const woodworks = services.filter((s) => s.category === 'woodworks');

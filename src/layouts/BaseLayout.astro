@@ -9,6 +9,7 @@ import Footer from '../components/Footer.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Intro from '../components/Intro.astro';
 
 interface Props {
   locale: Locale;
@@ -27,9 +28,11 @@ interface Props {
   cta?: boolean;
   /** page type, sent with conversion events */
   page?: string;
+  /** opening animation (home page) */
+  intro?: boolean;
 }
 
-const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType, schema, noindex, tone = 'light', service, area, cta = true, page = 'page' } = Astro.props;
+const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType, schema, noindex, tone = 'light', service, area, cta = true, page = 'page', intro = false } = Astro.props;
 const t = ui[locale];
 const wa = waLink(locale, { service, area });
 ---
@@ -37,9 +40,10 @@ const wa = waLink(locale, { service, area });
 <!doctype html>
 <html lang={t.meta.htmlLang} dir="ltr">
   <head>
-    <Head {locale} {title} {description} {path} {alternates} {ogImage} {ogImageAlt} {ogType} {schema} {noindex} />
+    <Head {locale} {title} {description} {path} {alternates} {ogImage} {ogImageAlt} {ogType} {schema} {noindex} {intro} />
   </head>
   <body data-page={page} data-service={service?.id} data-area={area?.id}>
+    {intro && <Intro />}
     <a class="skip-link" href="#main">{t.nav.skip}</a>
     <Header {locale} {path} {alternates} {tone} {wa} />
     <main id="main">

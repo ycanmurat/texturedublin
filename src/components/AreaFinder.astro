@@ -5,7 +5,6 @@ import { serviceById } from '../data/services.ts';
 import { zones } from '../data/zones.ts';
 import { ui, fmt } from '../i18n/ui.ts';
 import { href, placeIn } from '../lib/routes.ts';
-import { leadLabel } from '../lib/pricing.ts';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -24,7 +23,7 @@ const data = areas.map((a) => ({
   zn: zones[a.zone].name[locale],
   mv: locale === 'en' ? 'Confirmed in your quote' : 'Deimhnithe sa luachan',
   see: fmt(t.finder.see, { area: placeIn(a, locale) }),
-  pr: showcase.map((s) => leadLabel(locale, s, a.zone)),
+  pr: showcase.map((s) => s.menu?.[locale] ?? s.short[locale]),
 }));
 const popular = ['rathmines', 'ranelagh', 'clontarf', 'dundrum', 'blackrock', 'malahide', 'swords', 'lucan', 'tallaght', 'dublin-city-centre'].map((id) => areaById[id]);
 const labels = { zone: t.common.zone, min: locale === 'en' ? 'Travel & access' : 'Taisteal agus rochtain', none: t.finder.none, names: showcase.map((s) => s.name[locale]) };

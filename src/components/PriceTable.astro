@@ -1,6 +1,5 @@
 ---
 import type { Area, Locale, Service, ZoneId } from '../data/types.ts';
-import { enquiryLabel } from '../lib/pricing.ts';
 import { waLink } from '../lib/wa.ts';
 interface Props { locale: Locale; services: Service[]; zone?: ZoneId; area?: Area; caption?: string; collapsible?: boolean; open?: string[]; showAsk?: boolean; }
 const { locale, services, area, caption, open = [] } = Astro.props;
@@ -8,7 +7,7 @@ const { locale, services, area, caption, open = [] } = Astro.props;
 <div class="price-wrap">
  {caption && <h3 class="h-s price-caption">{caption}</h3>}
  {services.map(s => <details class="price-group" open={services.length === 1 || open.includes(s.id)}>
-  <summary><span class="pg-name">{s.name[locale]}</span><span class="pg-from">{enquiryLabel(locale)}</span><i aria-hidden="true" /></summary>
+  <summary><span class="pg-name">{s.name[locale]}</span><span class="pg-from">{s.items.length} {locale === 'en' ? 'options' : 'rogha'}</span><i aria-hidden="true" /></summary>
   <ul class="enquiry-items">{s.items.map(item => <li><span>{item.name[locale]}</span><a class="arrow-link" href={waLink(locale, { service:s, area })} target="_blank" rel="noopener">{locale === 'en' ? 'Enquire' : 'Fiosraigh'} ↗</a></li>)}</ul>
  </details>)}
  <p class="price-note">{locale === 'en' ? 'Send photos, dimensions and your location. Ali Onder will confirm the specification, VAT, installation and delivery in your written quote.' : 'Seol grianghraif, tomhais agus do shuíomh. Deimhneoidh Ali Onder an tsonraíocht, CBL, suiteáil agus seachadadh sa luachan scríofa.'}</p>

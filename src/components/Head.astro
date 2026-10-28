@@ -17,9 +17,11 @@ interface Props {
   ogType?: 'website' | 'article';
   schema?: object;
   noindex?: boolean;
+  /** play the opening animation (home page) */
+  intro?: boolean;
 }
 
-const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType = 'website', schema, noindex = false } = Astro.props;
+const { locale, title, description, path, alternates, ogImage, ogImageAlt, ogType = 'website', schema, noindex = false, intro = false } = Astro.props;
 const t = ui[locale];
 const canonical = abs(path);
 const preventIndexing = noindex || site.preview;
@@ -102,7 +104,7 @@ const speculation = {
 <Font cssVariable="--font-fraunces" preload={[{ style: 'normal' }]} />
 
 <!-- Consent Mode v2 defaults: everything denied until the visitor chooses (EU/GDPR) -->
-<script is:inline define:vars={{ analytics }}>
+<script is:inline define:vars={{ analytics, intro }}>
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
   gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted', wait_for_update: 500 });
@@ -117,6 +119,22 @@ const speculation = {
   } catch (e) {}
   var d = document.documentElement;
   d.classList.add('js');
+  // opening animation: home page, once per session, skipped for reduced motion and crawlers
+  try {
+    if (intro && !/bot|crawl|spider|slurp|lighthouse|headless/i.test(navigator.userAgent) && !matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('td-intro')) {
+      sessionStorage.setItem('td-intro', '1');
+      d.classList.add('intro-on', 'intro-lock');
+      // hold the page still under the curtain without hiding the scrollbar (no layout shift)
+      var hold = function (e) { e.preventDefault(); };
+      addEventListener('wheel', hold, { passive: false });
+      addEventListener('touchmove', hold, { passive: false });
+      var unlock = function () { removeEventListener('wheel', hold); removeEventListener('touchmove', hold); d.classList.remove('intro-lock'); };
+      var skip = function () { d.classList.add('intro-skip'); unlock(); };
+      addEventListener('pointerdown', skip, { once: true });
+      addEventListener('keydown', skip, { once: true });
+      setTimeout(function () { removeEventListener('pointerdown', skip); removeEventListener('keydown', skip); unlock(); }, 2300);
+    }
+  } catch (e) {}
   setTimeout(function () { if (!window.__tdReady) d.classList.add('reveal-all'); }, 3500);
 </script>
 

@@ -7,11 +7,9 @@ import AreaFinder from '../components/AreaFinder.astro';
 import DublinMap from '../components/DublinMap.astro';
 import ZoneCards from '../components/ZoneCards.astro';
 import { areas } from '../data/areas.ts';
-import { serviceById } from '../data/services.ts';
-import { zones } from '../data/zones.ts';
+import { councils, zones } from '../data/zones.ts';
 import { ui } from '../i18n/ui.ts';
 import { alternates, href } from '../lib/routes.ts';
-import { leadLabel } from '../lib/pricing.ts';
 import { abs, breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
 import { words } from '../lib/text.ts';
 
@@ -39,7 +37,6 @@ const schema = graph([
     itemListElement: areas.map((a, i) => ({ '@type': 'ListItem', position: i + 1, name: a.name[locale], url: abs(href(locale, 'area', { area: a.id })) })),
   },
 ]);
-const W = serviceById['fitted-wardrobes'];
 const sorted = [...areas].sort((a, b) => a.name[locale].localeCompare(b.name[locale], locale));
 ---
 
@@ -70,7 +67,7 @@ const sorted = [...areas].sort((a, b) => a.name[locale].localeCompare(b.name[loc
               <a class="card" href={href(locale, 'area', { area: a.id })} data-reveal style={`--d:${i % 4};padding:20px;gap:6px`}>
                 <h3 style="font-size:1.2rem">{a.name[locale]}</h3>
                 <p class="small">{a.postal}{a.eircode ? ` · ${a.eircode}` : ''}</p>
-                <p class="small" style="color:var(--accent)">{W.name[locale]} {leadLabel(locale, W, a.zone)}</p>
+                <p class="small" style="color:var(--accent)">{councils[a.council][locale]}</p>
               </a>
             ))}
           </div>

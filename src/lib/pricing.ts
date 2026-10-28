@@ -2,7 +2,7 @@ import type { Locale, PriceItem, Service, ZoneId } from '../data/types.ts';
 import { ui } from '../i18n/ui.ts';
 const nf = new Intl.NumberFormat('en-IE', { maximumFractionDigits: 0 });
 export const euro = (n: number) => `€${nf.format(n)}`;
-export const enquiryLabel = (l: Locale) => l === 'en' ? 'Price on enquiry' : 'Praghas ar iarratas';
+export const enquiryLabel = (l: Locale) => l === 'en' ? 'Free written quote' : 'Luachan scríofa saor in aisce';
 export const unitText = (l: Locale, item: PriceItem) => ui[l].units[item.unit];
 export const vatText = (l: Locale, s: Service) => s.vat === 'inc' ? ui[l].price.incVat : ui[l].price.exVat;
 export const leadItem = (s: Service) => s.items.find(i => i.id === s.lead) ?? s.items[0];

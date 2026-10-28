@@ -36,6 +36,14 @@ export interface FAQ {
   a: L10n;
 }
 
+/** a long-form section on a service page */
+export interface ContentSection {
+  title: L10n;
+  body: L10n<string[]>;
+  /** optional short list shown under the paragraphs */
+  points?: L10n<string[]>;
+}
+
 export type AdviceKey = 'wardrobes' | 'kitchens' | 'builtins' | 'assembly' | 'signs';
 export type Category = 'woodworks' | 'signage';
 
@@ -64,6 +72,12 @@ export interface Service {
   lead: string;
   related: string[];
   keywords: string[];
+  /** one-line descriptor for menus and service lists (from service-content.ts) */
+  menu?: L10n;
+  /** search snippet for the service page (from service-content.ts) */
+  metaDescription?: L10n;
+  /** long-form sections for the service page (from service-content.ts) */
+  sections?: ContentSection[];
 }
 
 export type ZoneId = 1 | 2 | 3 | 4;

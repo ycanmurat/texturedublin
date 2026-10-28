@@ -2,7 +2,6 @@
 import type { Area, Locale, Service } from '../data/types.ts';
 import { ui } from '../i18n/ui.ts';
 import { href } from '../lib/routes.ts';
-import { leadLabel } from '../lib/pricing.ts';
 import Illustration from './Illustration.astro';
 import Icon from './Icon.astro';
 
@@ -26,5 +25,5 @@ const link = area && s.areaPages ? href(locale, 'areaService', { area: area.id, 
     <Icon name="arrow-up-right" />
   </div>
   <p>{s.short[locale]}</p>
-  <div class="card-price"><span>{locale === 'en' ? 'Made for your project' : 'Déanta do do thionscadal'}</span><strong>{leadLabel(locale, s)}</strong></div>
+  <div class="card-price"><span>{s.menu?.[locale]}</span><span class="arrow-link">{t.cta.explore} <Icon name="arrow" /></span></div>
 </a>

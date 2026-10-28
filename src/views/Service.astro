@@ -30,8 +30,8 @@ const s = serviceById[route.service!];
 const path = href(locale, 'service', { service: s.id });
 const wa = waLink(locale, { service: s });
 
-const title = withBrand(locale === 'en' ? `${s.titleName?.en ?? s.name.en} Dublin` : `${s.titleName?.ga ?? s.name.ga}`);
-const description = metaDesc(locale === 'en' ? `${s.short.en} Serving Dublin and Meath from Dunboyne. Contact Ali Onder for a tailored quotation.` : `${s.short.ga} Déan teagmháil le Ali Onder le haghaidh luachan saincheaptha.`);
+const title = withBrand(locale === 'en' ? `${s.titleName?.en ?? s.name.en} Dublin & Meath` : `${s.titleName?.ga ?? s.name.ga}`);
+const description = metaDesc(s.metaDescription?.[locale] ?? s.short[locale]);
 const crumbs = [
   { name: t.nav.home, href: href(locale, 'home') },
   { name: t.nav.services, href: href(locale, 'services') },
@@ -61,7 +61,8 @@ const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { ar
 <BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} service={s} page="service" ogImage={ogPath(path)}>
   <PageHero {locale} eyebrow={`${s.category === 'woodworks' ? t.nav.woodworks : t.nav.signage} · ${t.service.inDublin}`} title={s.headline[locale]} lede={s.short[locale]} {crumbs} illustration={s.illustration}>
     <div class="meta-row" data-reveal style="--d:3">
-      <span class="chip">{locale === 'en' ? 'Made to order · price on enquiry' : 'Déanta ar ordú · praghas ar iarratas'}</span>
+      <span class="chip"><Icon name="check" class="inline-icon" />{locale === 'en' ? 'Free survey · fixed written quote' : 'Suirbhé saor in aisce · luachan scríofa seasta'}</span>
+      <span class="chip"><Icon name="pin" class="inline-icon" />{locale === 'en' ? 'Dublin, Meath & Kildare' : 'Baile Átha Cliath, an Mhí agus Cill Dara'}</span>
     </div>
     <div class="btn-row" data-reveal style="--d:4;margin-top:22px">
       <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('service-hero', { service: s })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>
@@ -81,6 +82,30 @@ const areaLink = (id: string) => (s.areaPages ? href(locale, 'areaService', { ar
       </div>
     </div>
   </section>
+
+  {
+    s.sections && s.sections.length > 0 && (
+      <section class="section section--tight section--paper2" aria-labelledby="detail-title">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow" data-reveal>{s.name[locale]}</span>
+            <h2 id="detail-title" class="h-l words" data-words set:html={words(locale === 'en' ? 'What to *know before you start*' : 'Eolas *sula dtosaíonn tú*')} />
+          </div>
+          <div class="detail-list">
+            {s.sections.map((sec, i) => (
+              <article class="detail" data-reveal style={`--d:${Math.min(i, 3)}`}>
+                <h3 class="h-m">{sec.title[locale]}</h3>
+                <div class="stack" style="--stack:1em">
+                  {sec.body[locale].map((p) => <p>{p}</p>)}
+                  {sec.points && <ul class="ticks">{sec.points[locale].map((x) => <li>{x}</li>)}</ul>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <section class="section section--cream" id="prices" aria-labelledby="prices-title">
     <div class="container split" style="align-items:start">

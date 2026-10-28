@@ -7,10 +7,13 @@ import ServiceCard from '../components/ServiceCard.astro';
 import FAQ from '../components/FAQ.astro';
 import Icon from '../components/Icon.astro';
 import { woodworks, signage } from '../data/services.ts';
+import { areaById } from '../data/areas.ts';
+import { furnitureFaqs, signageFaqs } from '../data/faqs.ts';
 import { site } from '../config/site.ts';
 import { ui } from '../i18n/ui.ts';
 import { href, alternates } from '../lib/routes.ts';
-import { breadcrumbs, business, graph, webPage, website, abs } from '../lib/schema.ts';
+import { breadcrumbs, business, faqPage, graph, webPage, website, abs } from '../lib/schema.ts';
+import { words } from '../lib/text.ts';
 import { metaDesc } from '../lib/seo.ts';
 import { waLink } from '../lib/wa.ts';
 interface Props { locale:Locale; route:RouteEntry; }
@@ -28,8 +31,12 @@ const points=isSign ? [
  [en?'Furniture is its own craft':'Ceird ar leith is ea troscán',en?'Our furniture and carpentry service handles storage, cabinetry, assembly and installation. Signage is delivered by a separate specialist within the same company, so a commercial project can include both.':'Láimhseálann ár seirbhís troscáin stóráil, caibinéid agus suiteáil. Soláthraíonn saineolaí ar leith comharthaíocht laistigh den chomhlacht céanna.'],
  [en?'An enquiry that leads somewhere':'Fiosrúchán úsáideach',en?'Send Ali Onder a few photos, approximate width, height and depth, your location and a preferred finish. We confirm the design, materials, installation scope and quote before you commit.':'Seol grianghraif, leithead, airde, doimhneacht, suíomh agus bailchríoch chuig Ali Onder. Deimhnítear an dearadh agus an luachan roimh ré.'],
 ];
-const faqs=[{q:en?'Where are you based?':'Cá bhfuil sibh lonnaithe?',a:en?'Barstown Commercial Park, Barstown, Dunboyne, Co. Meath. We take furniture and signage enquiries for Dublin, Meath and nearby counties.':'Páirc Tráchtála Barstown, Barstown, Dún Búinne, Co. na Mí. Glacaimid le fiosrúcháin ó Bhaile Átha Cliath agus ón Mhí.'},{q:en?'Do you publish fixed prices?':'An bhfoilsíonn sibh praghsanna seasta?',a:en?'Most work is priced on enquiry because size, materials, finish and access vary. Ali Onder confirms the scope and total in a written quotation.':'Tugtar luachan ar an gcuid is mó den obair de réir méid, ábhair, bailchríche agus rochtana.'}];
-const schema=graph([business(locale,true),website(),webPage({path,title,description,locale,type:'CollectionPage',breadcrumb:true}),breadcrumbs(path,crumbs),{'@type':'ItemList',itemListElement:list.map((s,i)=>({'@type':'ListItem',position:i+1,name:s.name[locale],url:abs(href(locale,'service',{service:s.id}))}))}]);
+const faqData=isSign?signageFaqs:furnitureFaqs;
+const faqs=faqData.map(f=>({q:f.q[locale],a:f.a[locale]}));
+// internal links to the local landing pages for this specialism
+const localAreas=['dunboyne','clonee','ratoath','ashbourne','castleknock','lucan','blanchardstown','rathmines','clontarf','dundrum','swords','maynooth'].map(id=>areaById[id]);
+const localServices=list.filter(s=>s.areaPages);
+const schema=graph([business(locale,true),website(),webPage({path,title,description,locale,type:'CollectionPage',breadcrumb:true}),breadcrumbs(path,crumbs),{'@type':'ItemList','@id':`${abs(path)}#services`,itemListElement:list.map((s,i)=>({'@type':'ListItem',position:i+1,name:s.name[locale],url:abs(href(locale,'service',{service:s.id}))}))},faqPage(path,faqData,locale)]);
 ---
 <BaseLayout {locale} {title} {description} {path} {schema} alternates={alternates(route)} page={isSign?'signage':'furniture'}>
  <PageHero {locale} eyebrow={isSign?t.nav.signage:t.nav.woodworks} title={isSign?(en?'Signs that mean business.':'Comharthaí a chuireann gnólachtaí chun cinn.'):(en?'Furniture made for the way you live.':'Troscán don chaoi a maireann tú.')} lede={description} {crumbs} illustration={isSign?'lightbox':'wardrobe'}>
@@ -37,5 +44,9 @@ const schema=graph([business(locale,true),website(),webPage({path,title,descript
  </PageHero>
  <section class="section section--tight" style="padding-top:0"><div class="container grid grid--3">{points.map(([h,p])=><article class="card"><h2 class="h-m">{h}</h2><p>{p}</p></article>)}</div></section>
  <section class="section section--paper2"><div class="container"><div class="section-head"><h2 class="h-l">{isSign?(en?'Our signage services':'Ár seirbhísí comharthaíochta'):(en?'Our furniture & carpentry services':'Ár seirbhísí troscáin agus siúinéireachta')}</h2></div><div class="grid grid--3">{list.map((s,i)=><ServiceCard {locale} service={s} index={i} />)}</div></div></section>
- <section class="section"><div class="container split"><div class="stack"><h2 class="h-l">{en?'Dunboyne base. Dublin reach.':'Ó Dhún Búinne go Baile Átha Cliath.'}</h2><p class="lede">{site.address.street}, {site.address.locality}, {site.address.region}</p><a class="arrow-link" href={href(locale,'areas')}>{t.nav.allAreas} →</a><a class="arrow-link" href={href(locale,'guides')}>{t.guides.all} →</a></div><FAQ {locale} items={faqs} /></div></section>
+ <section class="section section--tight" aria-labelledby="local-title"><div class="container">
+  <div class="section-head"><span class="eyebrow">{t.nav.areas}</span><h2 id="local-title" class="h-l">{en?'Local service pages':'Leathanaigh seirbhíse áitiúla'}</h2><p class="muted">{en?'Local advice, nearby areas and quotations for your town or district.':'Comhairle áitiúil, ceantair in aice láimhe agus luachana do do bhaile nó do cheantar.'}</p></div>
+  <div class="local-links">{localServices.map(s=><div class="local-row"><h3 class="h-s"><a href={href(locale,'service',{service:s.id})}>{s.name[locale]}</a></h3><div class="cluster" style="--gap:8px">{localAreas.map(a=><a class="chip" href={href(locale,'areaService',{area:a.id,service:s.id})}>{a.name[locale]}</a>)}</div></div>)}</div>
+ </div></section>
+ <section class="section" aria-labelledby="faq-title"><div class="container split" style="align-items:start"><div class="stack" style="--stack:20px"><span class="eyebrow">FAQ</span><h2 id="faq-title" class="h-l words" data-words set:html={words(en?'Dunboyne base. *Dublin reach.*':'Ó Dhún Búinne *go Baile Átha Cliath.*')} /><p class="lede">{site.address.street}, {site.address.locality}, {site.address.region}</p><a class="arrow-link" href={href(locale,'areas')}>{t.nav.allAreas} →</a><a class="arrow-link" href={href(locale,'guides')}>{t.guides.all} →</a></div><FAQ {locale} items={faqs} openFirst /></div></section>
 </BaseLayout>

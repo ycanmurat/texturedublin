@@ -36,7 +36,7 @@ const wa = waLink(locale, { service: s, area: a });
 const tn = s.titleName ?? s.name;
 const aShort = a.name.en.replace(/ & .*$/, '');
 const title = locale === 'en' ? fitTitle(`${s.name.en} ${a.name.en}`, `${tn.en} ${a.name.en}`, `${tn.en} ${aShort}`) : fitTitle(`${s.name.ga} ${a.inGa}`, `${tn.ga} ${a.inGa}`);
-const description = metaDesc(locale === 'en' ? `${s.name.en} in ${a.name.en} (${a.postal}). ${s.short.en} Enquire with Ali Onder for a tailored quote.` : `${s.name.ga} ${a.inGa} (${a.postal}). ${s.short.ga} Luachan ar iarratas.`);
+const description = metaDesc(locale === 'en' ? `${s.name.en} in ${a.name.en} (${a.postal}) — ${s.menu?.en ?? s.short.en}. Free survey and written quote from our Dunboyne workshop.` : `${s.name.ga} ${a.inGa} (${a.postal}) — ${s.menu?.ga ?? s.short.ga}. Luachan scríofa saor in aisce ónár gceardlann i nDún Búinne.`);
 const crumbs = [
   { name: t.nav.home, href: href(locale, 'home') },
   { name: t.nav.areas, href: href(locale, 'areas') },
@@ -68,8 +68,8 @@ const lede = locale === 'en'
 <BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} service={s} area={a} page="area-service" ogImage={ogPath(href(locale, 'area', { area: a.id }))}>
   <PageHero {locale} eyebrow={`${a.postal} · ${t.common.zone} ${a.zone} — ${z.name[locale]}`} title={h1} {lede} {crumbs} illustration={s.illustration}>
     <div class="meta-row" data-reveal style="--d:3">
-
-      <span class="chip">{locale === 'en' ? 'Price on enquiry' : 'Praghas ar iarratas'}</span>
+      <span class="chip"><Icon name="check" class="inline-icon" />{locale === 'en' ? 'Free survey · fixed written quote' : 'Suirbhé saor in aisce · luachan scríofa seasta'}</span>
+      <span class="chip"><Icon name="pin" class="inline-icon" />{a.name[locale]} · {a.postal}</span>
     </div>
     <div class="btn-row" data-reveal style="--d:4;margin-top:22px">
       <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" {...waData('area-service-hero', { service: s, area: a })} data-magnetic><Icon name="whatsapp" />{t.wa.ctaLong}</a>

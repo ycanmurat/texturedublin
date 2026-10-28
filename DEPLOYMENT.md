@@ -57,9 +57,18 @@ Prefer the **Domain property** `texturedublin.com`, verified using a DNS TXT tok
 
 Local production build: **788 public HTML pages**, **91,110 internal link/resource references**, **788 JSON-LD blocks**. Build audit and category-consent tests pass. External publication, DNS, Google IDs and browser evidence are recorded below.
 
+## Content and navigation update — 28 October 2026
+
+- Services mega menu rebuilt: centred under the header (the old panel was positioned with a `translate` that the CSS minifier dropped, so it ran off-screen), with a one-line descriptor per service instead of "Price on enquiry".
+- Opening animation on the home page (first visit per session; skipped for reduced motion and crawlers; tap or key press skips it). Hero scroll cue removed. EN/GA switch is now a two-option toggle.
+- Contact email `info@texturedublin.com` is shown site-wide and in structured data. **texturedublin.com had no MX records at the time of this update**, so mail to that address is not delivered until a mail service (for example Cloudflare Email Routing or a hosted mailbox) is configured in DNS.
+- Long-form sections and additional FAQs on all 15 service pages, both hub pages and the home page; local FAQs (distance from the Dunboyne workshop, nearby areas, how to get a quote) on every area and area-service page. New area pages: Dunboyne, Clonee, Ratoath, Leixlip.
+- Structured data: `HomeAndConstructionBusiness` with email, map link, counties served and `knowsAbout`; service offer catalogues; FAQPage on hub pages; `dateModified` and sitemap `lastmod` from `site.updated`.
+- Local production build: **844 public HTML pages**, 104,190 internal link/resource references, 844 JSON-LD blocks, 6,474 FAQ entries. Build audit and consent tests pass.
+
 ## Organic acquisition priorities
 
-Technical setup supports discovery and measurement. The immediate content priorities are verified project photos/case studies, clear service scopes, genuine customer reviews and consistent business name/address/phone across the site and Google Business Profile. The previous email, hello@texturedublin.ie, was removed because its domain returned NXDOMAIN. Add a confirmed working mailbox via PUBLIC_EMAIL and rebuild. Confirm the business hours and address with the customer. Do not publish invented projects, reviews, credentials or guaranteed delivery times.
+Technical setup supports discovery and measurement. The immediate content priorities are verified project photos/case studies, clear service scopes, genuine customer reviews and consistent business name/address/phone across the site and Google Business Profile. The previous email, hello@texturedublin.ie, was removed because its domain returned NXDOMAIN; info@texturedublin.com is now the default and needs working mail DNS (see above). Confirm the business hours and address with the customer. Do not publish invented projects, reviews, credentials or guaranteed delivery times.
 
 Focus initial acquisition on fitted wardrobes, bespoke kitchens, built-in units, furniture assembly and signage pages. Use Search Console queries and actual enquiries to decide which services and areas deserve more original content; page count alone is not an organic-growth strategy. Review index coverage and conversion quality after data is available. Do not claim that the launch guarantees rankings or immediate traffic.
 

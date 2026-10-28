@@ -1,0 +1,21 @@
+---
+/**
+ * Opening animation for the home page: the mark draws itself, the name rises,
+ * then the curtain lifts. Hidden unless the inline head script adds .intro-on
+ * (first visit per session, motion allowed), so it never blocks content.
+ */
+import Logo from './Logo.astro';
+
+const word = (s: string, offset: number) => s.split('').map((c, i) => ({ c, i: i + offset }));
+---
+
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-inner">
+    <Logo variant="mark" class="intro-mark" title="Texture Dublin" />
+    <p class="intro-word">
+      <span class="intro-w">{word('Texture', 0).map((x) => <span style={`--i:${x.i}`}>{x.c}</span>)}</span>
+      <span class="intro-w intro-w--accent">{word('Dublin', 8).map((x) => <span style={`--i:${x.i}`}>{x.c}</span>)}</span>
+    </p>
+    <span class="intro-line"><i></i></span>
+  </div>
+</div>

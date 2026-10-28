@@ -17,7 +17,7 @@ const { locale, alternates, wa } = Astro.props;
 const t = ui[locale];
 const other: Locale = locale === 'en' ? 'ga' : 'en';
 
-const footerAreas = ['dublin-city-centre', 'rathmines', 'ranelagh', 'ballsbridge', 'clontarf', 'dundrum', 'blackrock', 'dun-laoghaire', 'howth', 'malahide', 'swords', 'castleknock', 'lucan', 'tallaght'].map((id) => areaById[id]);
+const footerAreas = ['dunboyne', 'dublin-city-centre', 'rathmines', 'ranelagh', 'ballsbridge', 'clontarf', 'dundrum', 'blackrock', 'dun-laoghaire', 'howth', 'malahide', 'swords', 'castleknock', 'lucan', 'tallaght'].map((id) => areaById[id]);
 const socials = (Object.entries(site.socials) as Array<[string, string]>).filter(([, u]) => u);
 const socialIcon: Record<string, 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'pinterest' | 'google'> = {
   instagram: 'instagram', facebook: 'facebook', tiktok: 'tiktok', linkedin: 'linkedin', pinterest: 'pinterest', googleBusiness: 'google',

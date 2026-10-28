@@ -21,7 +21,7 @@ The Dockerfile builds and validates the website, then runs the static file serve
 
 ## Content and SEO
 
-Business contact details live in `src/config/site.ts`. Services, local content and bilingual guides live in `src/data/`, `src/views/` and `src/content/`. Canonical, hreflang, Open Graph, JSON-LD, sitemap and robots URLs follow `SITE_URL` and `BASE_PATH`. Keep `PUBLIC_SITE_PREVIEW=true` on any separate preview deployment; production uses `false`.
+Business contact details live in `src/config/site.ts` (public email defaults to info@texturedublin.com; override with `PUBLIC_EMAIL`). Services, local content and bilingual guides live in `src/data/`, `src/views/` and `src/content/`. Long-form service sections, menu descriptors, meta descriptions and service FAQs are in `src/data/content/`; bump `site.updated` when page content changes, because it feeds sitemap `lastmod` and `dateModified`. Canonical, hreflang, Open Graph, JSON-LD, sitemap and robots URLs follow `SITE_URL` and `BASE_PATH`. Keep `PUBLIC_SITE_PREVIEW=true` on any separate preview deployment; production uses `false`.
 
 The audit checks every public page for unique titles/descriptions, H1, canonical, language alternates, structured data, assets, internal links and sitemap coverage. It also tests removed shop/admin/media endpoints, custom 404 behavior and trailing-slash redirects. Only service content remains; references to shop signage and commercial fit-outs describe offered services.
 

@@ -3,8 +3,7 @@ import type { L10n, Locale } from '../data/types.ts';
 import { signage, woodworks } from '../data/services.ts';
 import { site } from '../config/site.ts';
 import { ui } from '../i18n/ui.ts';
-import { href, type RouteKey } from '../lib/routes.ts';
-import { leadLabel } from '../lib/pricing.ts';
+import { href, LOCALES, type RouteKey } from '../lib/routes.ts';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 
@@ -17,8 +16,7 @@ interface Props {
 }
 const { locale, path, alternates, tone = 'light', wa } = Astro.props;
 const t = ui[locale];
-const other: Locale = locale === 'en' ? 'ga' : 'en';
-const switchHref = alternates ? alternates[other] : href(other, 'home');
+const langHref = (l: Locale) => (alternates ? alternates[l] : href(l, 'home'));
 
 const nav: Array<{ key: RouteKey; label: string }> = [
   { key:'furnitureHub', label: locale === 'en' ? 'Furniture' : 'Troscán' },
@@ -31,6 +29,10 @@ const isCurrent = (k: RouteKey) => {
   return path === h || (k !== 'home' && path.startsWith(h));
 };
 const servicesHref = href(locale, 'services');
+const columns = [
+  { key: 'furnitureHub' as RouteKey, kicker: t.mega.woodKicker, title: t.nav.woodworks, list: woodworks, cls: 'mega-col--wood' },
+  { key: 'signageHub' as RouteKey, kicker: t.mega.signKicker, title: t.nav.signage, list: signage, cls: 'mega-col--sign' },
+];
 ---
 
 <header class="site-header" id="site-header" data-tone={tone}>
@@ -41,41 +43,42 @@ const servicesHref = href(locale, 'services');
 
     <nav class="nav" aria-label="Main">
       <ul class="nav-list">
-        <li class="nav-item" data-mega>
+        <li class="nav-item nav-item--mega" data-mega>
           <a class="nav-link" href={servicesHref} aria-current={path.startsWith(servicesHref) ? 'page' : undefined}>
             {t.nav.services}
             <Icon name="chevron" />
           </a>
           <div class="mega" role="group" aria-label={t.nav.services}>
-            <div>
-              <h3>{t.nav.woodworks}</h3>
-              <ul>
-                {woodworks.map((s) => (
-                  <li>
-                    <a href={href(locale, 'service', { service: s.id })}>
-                      <span>{s.name[locale]}</span>
-                      <span>{leadLabel(locale, s)}</span>
-                    </a>
-                  </li>
-                ))}
+            {columns.map((c, ci) => (
+              <div class={`mega-col ${c.cls}`}>
+                <a class="mega-head" href={href(locale, c.key)}>
+                  <span class="mega-kicker">0{ci + 1} · {c.kicker}</span>
+                  <span class="mega-title">{c.title} <Icon name="arrow" /></span>
+                </a>
+                <ul class="mega-list">
+                  {c.list.map((s) => (
+                    <li>
+                      <a href={href(locale, 'service', { service: s.id })} aria-current={path === href(locale, 'service', { service: s.id }) ? 'page' : undefined}>
+                        <span class="mega-name">{s.name[locale]}</span>
+                        <span class="mega-desc">{s.menu?.[locale]}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div class="mega-aside dark">
+              <span class="mega-kicker">{t.mega.asideKicker}</span>
+              <p class="mega-aside-title">{t.mega.asideTitle}</p>
+              <p class="mega-aside-text">{t.mega.asideText}</p>
+              <a class="btn btn--wa btn--sm" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="mega-menu"><Icon name="whatsapp" />{t.wa.cta}</a>
+              <a class="mega-phone" href={`tel:${site.phone.e164}`}><Icon name="phone" />{site.phone.display}</a>
+              <ul class="mega-links">
+                <li><a href={servicesHref}>{t.nav.allServices} <Icon name="arrow" /></a></li>
+                <li><a href={href(locale, 'areas')}>{t.mega.areas} <Icon name="arrow" /></a></li>
+                <li><a href={href(locale, 'guides')}>{t.mega.guides} <Icon name="arrow" /></a></li>
+                <li><a href={href(locale, 'pricing')}>{t.cta.allPrices} <Icon name="arrow" /></a></li>
               </ul>
-            </div>
-            <div>
-              <h3>{t.nav.signage}</h3>
-              <ul>
-                {signage.map((s) => (
-                  <li>
-                    <a href={href(locale, 'service', { service: s.id })}>
-                      <span>{s.name[locale]}</span>
-                      <span>{leadLabel(locale, s)}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div class="mega-foot">
-              <a class="arrow-link" href={servicesHref}>{t.nav.allServices} <Icon name="arrow" /></a>
-              <a class="arrow-link" href={href(locale, 'pricing')}>{t.cta.allPrices} <Icon name="arrow" /></a>
             </div>
           </div>
         </li>
@@ -92,7 +95,12 @@ const servicesHref = href(locale, 'services');
     </nav>
 
     <div class="header-actions">
-      <a class="lang-switch" href={switchHref} hreflang={ui[other].meta.htmlLang} lang={ui[other].meta.htmlLang} aria-label={t.nav.switchAria}>{ui[other].meta.short}</a>
+      <nav class="lang-toggle" aria-label={t.nav.language}>
+        <Icon name="globe" />
+        {LOCALES.map((l) => (
+          <a href={langHref(l)} hreflang={ui[l].meta.htmlLang} lang={ui[l].meta.htmlLang} title={ui[l].meta.name} aria-label={ui[l].meta.name} aria-current={l === locale ? 'true' : undefined}>{ui[l].meta.short}</a>
+        ))}
+      </nav>
       <a class="btn btn--wa btn--sm header-wa" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="header">
         <Icon name="whatsapp" />
         {t.wa.cta}
@@ -107,7 +115,7 @@ const servicesHref = href(locale, 'services');
   </div>
 </header>
 
-<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+<div class="mobile-menu dark" id="mobile-menu" aria-hidden="true">
   <nav aria-label="Mobile">
     <ul class="mm-main">
       {
@@ -126,7 +134,12 @@ const servicesHref = href(locale, 'services');
     <a class="btn btn--wa btn--lg" href={wa} target="_blank" rel="noopener" data-track="whatsapp" data-placement="mobile-menu"><Icon name="whatsapp" />{t.wa.ctaLong}</a>
     <div class="cluster">
       <a class="btn btn--ghost btn--sm" href={`tel:${site.phone.e164}`}><Icon name="phone" />{site.phone.display}</a>
-      <a class="lang-switch" href={switchHref} hreflang={ui[other].meta.htmlLang} lang={ui[other].meta.htmlLang}>{ui[other].meta.name}</a>
+      <nav class="lang-toggle lang-toggle--lg" aria-label={t.nav.language}>
+        <Icon name="globe" />
+        {LOCALES.map((l) => (
+          <a href={langHref(l)} hreflang={ui[l].meta.htmlLang} lang={ui[l].meta.htmlLang} aria-current={l === locale ? 'true' : undefined}>{ui[l].meta.name}</a>
+        ))}
+      </nav>
     </div>
   </div>
 </div>

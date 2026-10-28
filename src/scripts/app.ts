@@ -135,11 +135,33 @@ async function initLenis() {
   const { default: Lenis } = await import('lenis');
   const lenis = new Lenis({ lerp: 0.11, anchors: { offset: -90 } as any, prevent: (node: Element) => !!node.closest?.('.finder-list, dialog, .mobile-menu') });
   window.__lenis = lenis as any;
+  const root = document.documentElement;
+  if (root.classList.contains('intro-lock')) {
+    lenis.stop();
+    const mo = new MutationObserver(() => {
+      if (root.classList.contains('intro-lock')) return;
+      lenis.start();
+      mo.disconnect();
+    });
+    mo.observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
   const raf = (t: number) => {
     lenis.raf(t);
     requestAnimationFrame(raf);
   };
   requestAnimationFrame(raf);
+}
+
+/* ---------- opening animation: remove the curtain once it has lifted */
+function initIntro() {
+  const intro = document.getElementById('intro');
+  if (!intro) return;
+  if (!document.documentElement.classList.contains('intro-on')) return intro.remove();
+  intro.addEventListener('animationend', (e) => {
+    if (e.target === intro) intro.remove();
+  });
+  // never leave the curtain up if animations are paused or unsupported
+  window.setTimeout(() => intro.remove(), 4000);
 }
 
 /* ---------- WhatsApp bubble */
@@ -164,6 +186,7 @@ function initWaBubble() {
   bubble.querySelector('[data-wa-dismiss]')?.addEventListener('click', hide);
 }
 
+initIntro();
 initReveal();
 initProcess();
 initMagnetic();

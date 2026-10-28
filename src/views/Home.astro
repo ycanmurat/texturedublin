@@ -14,7 +14,6 @@ import { services, signage, woodworks } from '../data/services.ts';
 import { homeFaqs } from '../data/faqs.ts';
 import { ui } from '../i18n/ui.ts';
 import { alternates, href } from '../lib/routes.ts';
-import { leadLabel } from '../lib/pricing.ts';
 import { business, faqPage, graph, webPage, website } from '../lib/schema.ts';
 import { waLink } from '../lib/wa.ts';
 import { words } from '../lib/text.ts';
@@ -48,7 +47,7 @@ const guides = (await getCollection('guides')).filter((g) => g.data.locale === l
 const marquee = services.map((s) => s.name[locale]);
 ---
 
-<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} tone="dark" page="home">
+<BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} tone="dark" page="home" intro>
   <!-- HERO -->
   <section class="hero dark" aria-labelledby="hero-title">
     <canvas class="hero-canvas" data-grain aria-hidden="true"></canvas>
@@ -72,7 +71,6 @@ const marquee = services.map((s) => s.name[locale]);
         <Logo variant="mark" draw title="Texture Dublin" />
       </div>
     </div>
-    <div class="scroll-cue" aria-hidden="true"><span>{t.home.scroll}</span><i></i></div>
     <div class="marquee" aria-hidden="true">
       <div class="marquee-track">
         {[...marquee, ...marquee].map((m) => <span>{m}</span>)}
@@ -101,7 +99,7 @@ const marquee = services.map((s) => s.name[locale]);
             <Illustration name="wardrobe" />
           </div>
           <ul>
-            {woodworks.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{leadLabel(locale, s)}</span></a></li>)}
+            {woodworks.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{s.menu?.[locale]}</span></a></li>)}
           </ul>
         </article>
         <article class="world world--sign" data-reveal style="--d:1">
@@ -114,7 +112,7 @@ const marquee = services.map((s) => s.name[locale]);
             <Illustration name="lightbox" />
           </div>
           <ul>
-            {signage.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{leadLabel(locale, s)}</span></a></li>)}
+            {signage.map((s) => <li><a href={href(locale, 'service', { service: s.id })}><span>{s.name[locale]}</span><span>{s.menu?.[locale]}</span></a></li>)}
           </ul>
         </article>
       </div>

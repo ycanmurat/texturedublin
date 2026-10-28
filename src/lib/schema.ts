@@ -23,6 +23,8 @@ const sameAs = () => Object.values(site.socials).filter(Boolean);
 const dayMap: Record<string, string> = { Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' };
 
 const dublinPlace = { '@type': 'City', name: 'Dublin', sameAs: 'https://en.wikipedia.org/wiki/Dublin' };
+/** counties covered from the Dunboyne workshop */
+const counties = ['Dublin', 'Meath', 'Kildare', 'Wicklow'].map((c) => ({ '@type': 'AdministrativeArea', name: `County ${c}` }));
 
 export const placeNode = (a: Area, l: Locale): Node => ({
   '@type': 'Place',
@@ -34,7 +36,7 @@ export const placeNode = (a: Area, l: Locale): Node => ({
 /** the business entity. `full` adds opening hours, areas served and the full offer catalogue */
 export function business(l: Locale, full = false): Node {
   const node: Node = {
-    '@type': 'LocalBusiness',
+    '@type': 'HomeAndConstructionBusiness',
     '@id': BUSINESS_ID,
     name: site.name,
     legalName: site.legalName,
@@ -57,6 +59,7 @@ export function business(l: Locale, full = false): Node {
       addressRegion: site.address.region,
       addressCountry: site.address.country,
     },
+    hasMap: site.mapsUrl,
     knowsLanguage: ['en-IE', 'ga-IE'],
     ...(site.vatNumber ? { vatID: site.vatNumber } : {}),
   };
@@ -69,7 +72,8 @@ export function business(l: Locale, full = false): Node {
       opens: h.opens,
       closes: h.closes,
     }));
-    node.areaServed = [dublinPlace, ...areas.map((a) => ({ '@type': 'Place', name: a.name.en }))];
+    node.areaServed = [...counties, dublinPlace, ...areas.map((a) => ({ '@type': 'Place', name: a.name.en }))];
+    node.knowsAbout = [...new Set(services.flatMap((s) => s.keywords))];
     node.hasOfferCatalog = offerCatalog(l);
     node.department = ['woodworks', 'signage'].map(category => ({ '@type': 'ProfessionalService', '@id': `${abs('/')}#${category}`, name: category === 'signage' ? 'Texture Dublin Signage' : 'Texture Dublin Furniture & Carpentry', url: abs(href(l, category === 'signage' ? 'signageHub' : 'furnitureHub')), telephone: site.phone.e164 }));
     node.contactPoint = {
@@ -107,7 +111,7 @@ export function webPage(o: { path: string; title: string; description: string; l
     ...(o.breadcrumb ? { breadcrumb: { '@id': `${url}#breadcrumb` } } : {}),
     ...(o.image ? { primaryImageOfPage: { '@type': 'ImageObject', url: abs(o.image) } } : {}),
     ...(o.about ? { about: o.about } : {}),
-    ...(o.modified ? { dateModified: o.modified } : {}),
+    dateModified: o.modified ?? site.updated,
   };
 }
 
@@ -129,9 +133,13 @@ export function serviceNode(s: Service, l: Locale, o: { path: string; area?: Are
     description: s.short[l],
     url,
     provider: { '@id': BUSINESS_ID },
-    areaServed: o.area ? placeNode(o.area, l) : dublinPlace,
+    areaServed: o.area ? placeNode(o.area, l) : counties,
     category: s.category === 'woodworks' ? 'Carpentry & Joinery' : 'Signage & Branding',
-
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: s.name[l],
+      itemListElement: s.items.map((i) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: i.name[l] } })),
+    },
   };
 }
 

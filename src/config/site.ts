@@ -23,8 +23,7 @@ export const site = {
     display: env.PUBLIC_PHONE_DISPLAY || '+353 83 017 0588',
     e164: env.PUBLIC_PHONE_E164 || '+353830170588',
   },
-  // Publish email only once a working business mailbox is confirmed.
-  email: env.PUBLIC_EMAIL || '',
+  email: env.PUBLIC_EMAIL || 'info@texturedublin.com',
 
   /**
    * Texture Dublin is set up as a service-area business: we travel to the
@@ -64,6 +63,8 @@ export const site = {
   croNumber: env.PUBLIC_CRO_NUMBER || '',
 
   priceRange: 'By quotation',
+  /** date the public content was last reviewed (sitemap lastmod, WebPage dateModified) — update when pages change */
+  updated: '2026-10-28',
   /** date the price list was last reviewed (shown on pricing tables + guides) */
   pricesReviewed: '2026-10-01',
 
