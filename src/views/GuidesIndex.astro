@@ -4,7 +4,7 @@ import type { Locale } from '../data/types.ts';
 import type { RouteEntry } from '../lib/routes.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
-import Icon from '../components/Icon.astro';
+import PostCard from '../components/PostCard.astro';
 import { ui } from '../i18n/ui.ts';
 import { alternates, href } from '../lib/routes.ts';
 import { abs, breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
@@ -17,37 +17,33 @@ interface Props {
 const { locale, route } = Astro.props;
 const t = ui[locale];
 const path = href(locale, 'guides');
-const title = locale === 'en' ? 'Price Guides & Advice for Dublin Homes | Texture Dublin' : 'Treoracha Praghsanna agus Comhairle | Texture Dublin';
+const title = locale === 'en' ? 'Blog: Furniture, Carpentry & Signage Advice | Texture Dublin' : 'Blag: Troscán agus Comharthaíocht | Texture Dublin';
 const description = metaDesc(t.guides.lede);
 const crumbs = [{ name: t.nav.home, href: href(locale, 'home') }, { name: t.guides.title, href: path }];
-const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale).sort((a, b) => +b.data.updated - +a.data.updated);
+const posts = (await getCollection('guides')).filter((g) => g.data.locale === locale).sort((a, b) => +b.data.published - +a.data.published || +b.data.updated - +a.data.updated);
 const link = (slug: string) => href(locale, 'guide', { guide: { en: slug, ga: slug } });
 const schema = graph([
   business(locale),
   website(),
   webPage({ path, title, description, locale, breadcrumb: true, type: 'CollectionPage' }),
   breadcrumbs(path, crumbs),
-  { '@type': 'ItemList', '@id': `${abs(path)}#list`, itemListElement: guides.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(link(g.data.slug)), name: g.data.title })) },
+  {
+    '@type': 'Blog',
+    '@id': `${abs(path)}#blog`,
+    name: t.guides.title,
+    url: abs(path),
+    inLanguage: t.meta.htmlLang,
+    publisher: { '@id': `${abs('/')}#business` },
+    blogPost: posts.map((g) => ({ '@type': 'BlogPosting', headline: g.data.title, url: abs(link(g.data.slug)), datePublished: g.data.published.toISOString().slice(0, 10) })),
+  },
 ]);
-const fmtDate = (d: Date) => d.toLocaleDateString(locale === 'ga' ? 'ga-IE' : 'en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 
 <BaseLayout {locale} {title} {description} {path} alternates={alternates(route)} {schema} page="guides">
   <PageHero {locale} eyebrow={t.guides.title} title={t.guides.h1} lede={t.guides.lede} {crumbs} size="l" />
   <section class="section section--tight" style="padding-top:0">
-    <div class="container grid grid--2">
-      {guides.map((g, i) => (
-        <a class="card" href={link(g.data.slug)} data-reveal style={`--d:${i % 2}`}>
-          <span class="corner corner--tl"></span><span class="corner corner--br"></span>
-          <span class="badge">{g.data.readingMinutes} {t.guides.read}</span>
-          <h3>{g.data.title}</h3>
-          <p>{g.data.description}</p>
-          <div class="card-price">
-            <span>{t.guides.updated} {fmtDate(g.data.updated)}</span>
-            <span class="arrow-link">{t.cta.readGuide} <Icon name="arrow" /></span>
-          </div>
-        </a>
-      ))}
+    <div class="container post-grid">
+      {posts.map((g, i) => <PostCard {locale} post={g.data} href={link(g.data.slug)} index={i} featured={i === 0} eager={i < 3} />)}
     </div>
   </section>
 </BaseLayout>

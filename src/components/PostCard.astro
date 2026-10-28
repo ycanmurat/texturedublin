@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../data/types.ts';
+import { serviceById } from '../data/services.ts';
+import { ui } from '../i18n/ui.ts';
+import { cover } from '../lib/covers.ts';
+import Illustration from './Illustration.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  post: CollectionEntry<'guides'>['data'];
+  href: string;
+  index?: number;
+  /** first post on the blog index spans two columns */
+  featured?: boolean;
+  /** above-the-fold cards load their image immediately */
+  eager?: boolean;
+}
+const { locale, post, href, index = 0, featured = false, eager = false } = Astro.props;
+const t = ui[locale];
+const img = cover(post.cover);
+const art = (post.service && serviceById[post.service]?.illustration) || 'plan';
+const fmtDate = (d: Date) => d.toLocaleDateString(locale === 'ga' ? 'ga-IE' : 'en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<a class:list={['card post-card', { 'post-card--featured': featured }]} href={href} data-reveal style={`--d:${index % 3}`}>
+  <div class="post-card-media">
+    {
+      img ? (
+        <Image src={img} alt={post.coverAlt ?? ''} widths={[480, 760, 1100]} sizes={featured ? '(min-width: 1000px) 60vw, 100vw' : '(min-width: 1000px) 30vw, (min-width: 700px) 45vw, 100vw'} loading={eager ? 'eager' : 'lazy'} />
+      ) : (
+        <div class="post-card-art"><Illustration name={art} /></div>
+      )
+    }
+  </div>
+  <div class="post-card-body">
+    <div class="post-card-meta">
+      <span class="badge">{t.guides.categories[post.category]}</span>
+      <span class="small muted">{post.readingMinutes} {t.guides.read}</span>
+    </div>
+    <h3>{post.title}</h3>
+    <p>{post.description}</p>
+    <div class="card-price">
+      <span><time datetime={post.published.toISOString().slice(0, 10)}>{fmtDate(post.published)}</time></span>
+      <span class="arrow-link">{t.cta.readGuide} <Icon name="arrow" /></span>
+    </div>
+  </div>
+</a>

@@ -73,3 +73,36 @@ export function ogSvg(o: OgInput) {
   s += `</svg>`;
   return s;
 }
+
+/** overlay for blog posts with a cover photo: the photo shows through, title sits on a dark gradient */
+export function ogPhotoOverlay(o: { eyebrow: string; title: string; url: string }) {
+  const W = 1200;
+  const H = 630;
+  const serif = font('fraunces400');
+  const sansM = font('jost500');
+  const sans = font('jost400');
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+  s += `<defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INK}" stop-opacity="0.25"/><stop offset="0.45" stop-color="${INK}" stop-opacity="0.35"/><stop offset="1" stop-color="${INK}" stop-opacity="0.92"/></linearGradient></defs>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#fade)"/>`;
+  const L = wordmark.compact;
+  const ls = 52 / L.h;
+  s += `<g transform="translate(60 48) scale(${ls.toFixed(4)})"><g transform="translate(${L.mark.x} ${L.mark.y})">${markInner({ id: 'ogp', ink: PAPER, grain: OAK })}</g>`;
+  for (const p of L.parts) s += `<path fill="${p.cls === 'wm-accent' ? OAK : PAPER}" d="${p.d}"/>`;
+  s += `</g>`;
+  let size = 62;
+  let lines = wrap(serif, o.title, size, 1060);
+  while (lines.length > 2 && size > 42) {
+    size -= 4;
+    lines = wrap(serif, o.title, size, 1060);
+  }
+  const lh = size * 1.08;
+  const last = 560;
+  const first = last - (Math.min(lines.length, 2) - 1) * lh;
+  s += `<path fill="${OAK}" d="${textPath(sansM, o.eyebrow.toUpperCase(), 62, first - size - 6, 20, { tracking: 0.2 }).d}"/>`;
+  lines.slice(0, 2).forEach((ln: string, i: number) => {
+    s += `<path fill="${PAPER}" d="${textPath(serif, ln, 60, first + i * lh, size).d}"/>`;
+  });
+  s += `<path fill="${PAPER}" fill-opacity="0.7" d="${textPath(sans, o.url, W - 60, 76, 20, { align: 'end', tracking: 0.04 }).d}"/>`;
+  s += `</svg>`;
+  return s;
+}

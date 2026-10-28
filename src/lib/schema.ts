@@ -174,10 +174,10 @@ export function faqPage(path: string, faqs: FAQ[], l: Locale, ctx?: { service?: 
   };
 }
 
-export function article(o: { path: string; title: string; description: string; locale: Locale; published: Date; updated: Date; image: string }): Node {
+export function article(o: { path: string; title: string; description: string; locale: Locale; published: Date; updated: Date; image: string | string[]; section?: string }): Node {
   const url = abs(o.path);
   return {
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     '@id': `${url}#article`,
     headline: o.title,
     description: o.description,
@@ -186,7 +186,8 @@ export function article(o: { path: string; title: string; description: string; l
     dateModified: o.updated.toISOString().slice(0, 10),
     author: { '@id': BUSINESS_ID },
     publisher: { '@id': BUSINESS_ID },
-    image: abs(o.image),
+    image: Array.isArray(o.image) ? o.image.map(abs) : abs(o.image),
+    ...(o.section ? { articleSection: o.section } : {}),
     mainEntityOfPage: { '@id': `${url}#webpage` },
   };
 }

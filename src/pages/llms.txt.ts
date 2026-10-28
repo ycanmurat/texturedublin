@@ -37,7 +37,7 @@ export const GET: APIRoute = () => new Response([
  '',
  '## Optional',
  '',
- `- [Project guides](${url(href('en', 'guides'))}): advice on wardrobes, kitchens, alcove units and shop signs`,
+ `- [Blog](${url(href('en', 'guides'))}): ideas and guides on wardrobes, kitchens, media walls, utility storage and shop signs`,
  `- [Irish-language site](${url(href('ga', 'home'))}): the same content in Irish`,
  `- [XML sitemap](${url('/sitemap.xml')}): every public page`,
  '',

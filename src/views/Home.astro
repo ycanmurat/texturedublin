@@ -10,6 +10,7 @@ import DublinMap from '../components/DublinMap.astro';
 import { site } from '../config/site.ts';
 import Process from '../components/Process.astro';
 import FAQ from '../components/FAQ.astro';
+import PostCard from '../components/PostCard.astro';
 import { services, signage, woodworks } from '../data/services.ts';
 import { homeFaqs } from '../data/faqs.ts';
 import { ui } from '../i18n/ui.ts';
@@ -43,7 +44,7 @@ const schema = graph([
   faqPage(path, homeFaqs, locale),
 ]);
 
-const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale).slice(0, 3);
+const guides = (await getCollection('guides')).filter((g) => g.data.locale === locale).sort((a, b) => +b.data.published - +a.data.published).slice(0, 3);
 const marquee = services.map((s) => s.name[locale]);
 ---
 
@@ -167,15 +168,8 @@ const marquee = services.map((s) => s.name[locale]);
             <h2 id="guides-title" class="h-l words" data-words set:html={words(t.home.guidesTitle)} />
             <a class="arrow-link" href={href(locale, 'guides')} style="justify-self:end">{t.guides.all} <Icon name="arrow" /></a>
           </div>
-          <div class="grid grid--3">
-            {guides.map((g, i) => (
-              <a class="card" href={href(locale, 'guide', { guide: { en: g.data.slug, ga: g.data.slug } })} data-reveal style={`--d:${i}`}>
-                <span class="badge">{g.data.readingMinutes} {t.guides.read}</span>
-                <h3>{g.data.title}</h3>
-                <p>{g.data.description}</p>
-                <span class="arrow-link" style="margin-top:auto">{t.cta.readGuide} <Icon name="arrow" /></span>
-              </a>
-            ))}
+          <div class="post-grid">
+            {guides.map((g, i) => <PostCard {locale} post={g.data} href={href(locale, 'guide', { guide: { en: g.data.slug, ga: g.data.slug } })} index={i} />)}
           </div>
         </div>
       </section>

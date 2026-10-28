@@ -20,6 +20,9 @@ const server=createServer((req,res)=>{
  }
  if(base&&pathname===base){res.writeHead(308,{Location:`${base}/`});res.end();return;}
  if(base&&!pathname.startsWith(`${base}/`)){res.writeHead(404);res.end('Not found');return;}
+ // The guides section became the blog: send old links to the same article.
+ const rel=pathname.slice(base.length)||'/';const moved=rel.match(/^\/(?:guides|ga\/treoracha)(?=\/|$)/);
+ if(moved){res.writeHead(308,{Location:`${base}${rel.startsWith('/ga/')?'/ga/blag':'/blog'}${rel.slice(moved[0].length)||'/'}${new URL(original,'http://localhost').search}`});res.end();return;}
  // One canonical trailing-slash URL for page and API routes; keep file URLs intact.
  if(!pathname.endsWith('/')&&!pathname.split('/').at(-1).includes('.')){const query=new URL(original,'http://localhost').search;res.writeHead(308,{Location:`${pathname}/${query}`});res.end();return;}
  req.url=original.slice(base.length)||'/';

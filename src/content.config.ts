@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 
 const locale = z.enum(['en', 'ga']);
 
-/** long-form price guides (MDX so live prices can be embedded with <Price />) */
+/** blog posts and guides (MDX); covers live in src/assets/blog/ */
 const guides = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/guides' }),
   schema: z.object({
@@ -17,6 +17,13 @@ const guides = defineCollection({
     updated: z.coerce.date(),
     service: z.string().optional(),
     readingMinutes: z.number(),
+    category: z.enum(['guide', 'ideas']).default('guide'),
+    /** file name in src/assets/blog/ */
+    cover: z.string().optional(),
+    coverAlt: z.string().optional(),
+    /** photographer credit for stock photos, e.g. "Luis Redondo / Unsplash" */
+    coverCredit: z.string().optional(),
+    coverCreditUrl: z.string().url().optional(),
   }),
 });
 

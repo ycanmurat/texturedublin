@@ -17,7 +17,7 @@ export const SEG = {
   about: { en: 'about', ga: 'fuinn' },
   contact: { en: 'contact', ga: 'teagmhail' },
   standards: { en: 'standards-certifications', ga: 'caighdeain-deimhnithe' },
-  guides: { en: 'guides', ga: 'treoracha' },
+  guides: { en: 'blog', ga: 'blag' },
   privacy: { en: 'privacy-policy', ga: 'polasai-priobhaideachta' },
   cookies: { en: 'cookie-policy', ga: 'polasai-fianan' },
   terms: { en: 'terms', ga: 'tearmai' },

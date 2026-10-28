@@ -1,16 +1,19 @@
 ---
 import { ogPath } from '../lib/paths.ts';
 import { getCollection, render } from 'astro:content';
+import { getImage, Image } from 'astro:assets';
 import type { Locale } from '../data/types.ts';
 import type { RouteEntry } from '../lib/routes.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Price from '../components/Price.astro';
+import PostCard from '../components/PostCard.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import Icon from '../components/Icon.astro';
 import { serviceById } from '../data/services.ts';
 import { ui } from '../i18n/ui.ts';
 import { alternates, href } from '../lib/routes.ts';
+import { cover } from '../lib/covers.ts';
 import { article, breadcrumbs, business, graph, webPage, website } from '../lib/schema.ts';
 import { waLink, waData } from '../lib/wa.ts';
 import { words } from '../lib/text.ts';
@@ -33,31 +36,54 @@ const crumbs = [
   { name: g.title, href: path },
 ];
 const og = ogPath(path);
+const img = cover(g.cover);
+const coverJpg = img ? await getImage({ src: img, width: 1600, format: 'jpg' }) : undefined;
 const title = g.title.length + 17 <= 65 ? `${g.title} | Texture Dublin` : g.title;
 const schema = graph([
   business(locale),
   website(),
   webPage({ path, title: g.title, description: g.description, locale, breadcrumb: true, image: og, modified: g.updated.toISOString().slice(0, 10) }),
   breadcrumbs(path, crumbs),
-  article({ path, title: g.title, description: g.description, locale, published: g.published, updated: g.updated, image: og }),
+  article({ path, title: g.title, description: g.description, locale, published: g.published, updated: g.updated, image: coverJpg ? [og, coverJpg.src] : og, section: t.guides.categories[g.category] }),
 ]);
 const toc = headings.filter((h) => h.depth === 2);
 const fmtDate = (d: Date) => d.toLocaleDateString(locale === 'ga' ? 'ga-IE' : 'en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
 const wa = waLink(locale, { service });
+const more = all
+  .filter((x) => x.data.locale === locale && x.data.slug !== g.slug)
+  .sort((a, b) => Number(b.data.service === g.service) - Number(a.data.service === g.service) || +b.data.published - +a.data.published)
+  .slice(0, 3);
+const link = (slug: string) => href(locale, 'guide', { guide: { en: slug, ga: slug } });
 ---
 
-<BaseLayout {locale} {title} description={g.description} {path} alternates={alternates(route)} {schema} ogType="article" ogImage={og} {service} page="guide">
+<BaseLayout {locale} {title} description={g.description} {path} alternates={alternates(route)} {schema} ogType="article" ogImage={og} ogImageAlt={g.coverAlt} {service} page="guide">
   <section class="page-hero">
     <div class="container">
       <Breadcrumbs {locale} items={crumbs} />
       <div style="max-width:980px">
-        <p class="eyebrow" data-reveal style="margin-top:28px">{t.guides.title} · {g.readingMinutes} {t.guides.read}</p>
+        <p class="eyebrow" data-reveal style="margin-top:28px">{t.guides.categories[g.category]} · {g.readingMinutes} {t.guides.read}</p>
         <h1 class="h-xl words" data-words set:html={words(g.title)} />
         <p class="lede" data-reveal style="--d:2">{g.description}</p>
-        <p class="small muted" data-reveal style="--d:3;margin-top:18px">{t.guides.updated} <time datetime={g.updated.toISOString().slice(0, 10)}>{fmtDate(g.updated)}</time> · Texture Dublin</p>
+        <p class="small muted" data-reveal style="--d:3;margin-top:18px">
+          {t.guides.published} <time datetime={g.published.toISOString().slice(0, 10)}>{fmtDate(g.published)}</time>
+          {+g.updated > +g.published && <> · {t.guides.updated} <time datetime={g.updated.toISOString().slice(0, 10)}>{fmtDate(g.updated)}</time></>} · Texture Dublin
+        </p>
       </div>
     </div>
   </section>
+
+  {
+    img && (
+      <figure class="post-cover container" style="max-width:1100px">
+        <Image src={img} alt={g.coverAlt ?? ''} widths={[640, 960, 1280, 1600, 2000]} sizes="(min-width: 1200px) 1100px, 92vw" loading="eager" fetchpriority="high" />
+        {g.coverCredit && (
+          <figcaption>
+            {t.guides.photo}: {g.coverCreditUrl ? <a href={g.coverCreditUrl} target="_blank" rel="noopener">{g.coverCredit}</a> : g.coverCredit}
+          </figcaption>
+        )}
+      </figure>
+    )
+  }
 
   <section class="section section--tight" style="padding-top:0">
     <div class="container article-grid">
@@ -84,4 +110,16 @@ const wa = waLink(locale, { service });
       </section>
     )
   }
+
+  <section class="section section--tight" aria-labelledby="more-title">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <h2 id="more-title" class="h-l words" data-words set:html={words(t.home.guidesTitle)} />
+        <a class="arrow-link" href={href(locale, 'guides')} style="justify-self:end">{t.guides.all} <Icon name="arrow" /></a>
+      </div>
+      <div class="post-grid">
+        {more.map((p, i) => <PostCard {locale} post={p.data} href={link(p.data.slug)} index={i} />)}
+      </div>
+    </div>
+  </section>
 </BaseLayout>

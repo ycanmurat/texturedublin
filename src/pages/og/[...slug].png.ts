@@ -9,12 +9,13 @@ import { site } from '../../config/site.ts';
 import { ui } from '../../i18n/ui.ts';
 import { href, LOCALES } from '../../lib/routes.ts';
 import { fromLabel, leadItem } from '../../lib/pricing.ts';
-import { ogSvg, type OgInput } from '../../lib/og.ts';
+import { ogPhotoOverlay, ogSvg, type OgInput } from '../../lib/og.ts';
+import path from 'node:path';
 
 const slugOf = (path: string) => withoutBase(path).replace(/^\/|\/$/g, '');
 
 export const getStaticPaths = (async () => {
-  const out: Array<{ params: { slug: string }; props: OgInput }> = [];
+  const out: Array<{ params: { slug: string }; props: OgInput & { photo?: string } }> = [];
   const host = site.url.replace(/^https?:\/\//, '');
   const guides = await getCollection('guides');
   for (const l of LOCALES) {
@@ -42,7 +43,7 @@ export const getStaticPaths = (async () => {
     for (const g of guides.filter((x) => x.data.locale === l)) {
       out.push({
         params: { slug: slugOf(href(l, 'guide', { guide: { en: g.data.slug, ga: g.data.slug } })) },
-        props: { eyebrow: t.guides.title, title: g.data.title, cta, url: host },
+        props: { eyebrow: t.guides.title, title: g.data.title, cta, url: host, ...(g.data.cover ? { photo: path.join(process.cwd(), 'src/assets/blog', g.data.cover) } : {}) },
       });
     }
   }
@@ -50,6 +51,9 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ props }) => {
-  const png = await sharp(Buffer.from(ogSvg(props as OgInput))).png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
+  const o = props as OgInput & { photo?: string };
+  const png = o.photo
+    ? await sharp(o.photo).resize(1200, 630, { fit: 'cover', position: sharp.strategy.attention }).composite([{ input: Buffer.from(ogPhotoOverlay(o)) }]).png({ compressionLevel: 9 }).toBuffer()
+    : await sharp(Buffer.from(ogSvg(o))).png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
   return new Response(new Uint8Array(png), { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' } });
 };

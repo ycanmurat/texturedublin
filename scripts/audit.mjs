@@ -68,6 +68,7 @@ try{
  if(unknown.status!==404||!(await unknown.text()).includes('noindex'))problems.push(['404','unknown pages must return a noindex 404']);
  const slash=await fetch(`${local}${base}/contact?source=audit`,{redirect:'manual'});
  if(slash.status!==308||slash.headers.get('location')!==`${base}/contact/?source=audit`)problems.push(['redirect','canonical trailing slash must preserve query']);
+ for(const [from,to] of [['/guides/','/blog/'],['/guides/fitted-wardrobe-prices-dublin/?a=1','/blog/fitted-wardrobe-prices-dublin/?a=1'],['/ga/treoracha','/ga/blag/']]){const r=await fetch(`${local}${base}${from}`,{redirect:'manual'});if(r.status!==308||r.headers.get('location')!==`${base}${to}`)problems.push([from,`old guide URL must redirect to ${to}: ${r.status} ${r.headers.get('location')}`]);}
  const robots=await(await fetch(`${local}${base}/robots.txt`)).text();
  if(!robots.includes(`Sitemap: ${origin}${base}/sitemap.xml`))problems.push(['robots.txt','incorrect sitemap URL']);
  for(const host of ['www.'+new URL(origin).hostname,'canmurat.com','www.canmurat.com']) {
