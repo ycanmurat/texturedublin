@@ -65,6 +65,7 @@ Local production build: **788 public HTML pages**, **91,110 internal link/resour
 - Long-form sections and additional FAQs on all 15 service pages, both hub pages and the home page; local FAQs (distance from the Dunboyne workshop, nearby areas, how to get a quote) on every area and area-service page. New area pages: Dunboyne, Clonee, Ratoath, Leixlip.
 - Structured data: `HomeAndConstructionBusiness` with email, map link, counties served and `knowsAbout`; service offer catalogues; FAQPage on hub pages; `dateModified` and sitemap `lastmod` from `site.updated`.
 - Local production build: **844 public HTML pages**, 104,190 internal link/resource references, 844 JSON-LD blocks, 6,474 FAQ entries. Build audit and consent tests pass.
+- Footer credit "Powered by Hill Bilişim" (https://www.hillbilisim.com/) added under the legal links; the footer keeps clear space below for the fixed WhatsApp button.
 - Deployed commit `cb99934` with Coolify deployment `aat7n3lpdjyydcbk7l6kt6m6` (manual redeploy; pushing to `main` does not deploy automatically). Live checks: home, new area and service pages return 200, unknown pages 404, `www` 308 to the apex, sitemap lists 844 URLs with `lastmod`, structured data carries the email and 16 home FAQs, the opening animation and centred menu render in the browser.
 
 ## Organic acquisition priorities

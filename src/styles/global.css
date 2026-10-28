@@ -716,7 +716,7 @@ a.card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var
 .cta-band .phone a { color: var(--paper); }
 
 /* ---------- footer ---------- */
-.site-footer { background: var(--ink); color: var(--paper); padding: clamp(64px, 8vw, 110px) 0 28px; --text: var(--paper); --muted: #a99e8f; --line: rgb(243 238 230 / 0.12); --accent: var(--oak); }
+.site-footer { background: var(--ink); color: var(--paper); padding: clamp(64px, 8vw, 110px) 0 calc(clamp(14px, 2.4vw, 28px) + 84px); --text: var(--paper); --muted: #a99e8f; --line: rgb(243 238 230 / 0.12); --accent: var(--oak); }
 .footer-top { display: grid; gap: 40px; padding-bottom: 56px; border-bottom: 1px solid var(--line); }
 @media (min-width: 1000px) { .footer-top { grid-template-columns: 1.4fr repeat(3, 1fr); } }
 .site-footer h2 { font-family: var(--f-sans); font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500; color: var(--oak); margin-bottom: 16px; }
@@ -736,6 +736,11 @@ a.card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-size: 0.82rem; color: var(--muted); }
 .footer-bottom nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .footer-bottom button { text-decoration: underline; color: #ddd3c5; font-size: inherit; }
+/* agency credit: one quiet line under the legal links */
+.footer-credit { display: flex; align-items: baseline; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: #8d8274; }
+.footer-credit a { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.04em; text-transform: none; color: #cfc4b5; transition: color 0.25s; }
+.footer-credit a:hover { color: var(--oak); text-decoration: none; }
+@media (min-width: 700px) { .footer-credit { justify-content: flex-end; } }
 
 /* ---------- WhatsApp FAB ---------- */
 .wa-fab { position: fixed; right: clamp(14px, 2.4vw, 28px); bottom: clamp(14px, 2.4vw, 28px); z-index: 55; display: flex; align-items: center; gap: 12px; view-transition-name: wa-fab; }
