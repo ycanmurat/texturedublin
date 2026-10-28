@@ -53,6 +53,10 @@ Recommended setup for this service website:
 
 Prefer the **Domain property** `texturedublin.com`, verified using a DNS TXT token so both apex and www are covered. Add the production URL-prefix property if useful for stream linking and URL inspections. Submit `https://texturedublin.com/sitemap.xml` once production is reachable. Inspect the homepage, furniture hub, signage hub and primary service pages; request indexing of the most important pages when live tests pass. Submission does not guarantee or instantly produce indexing.
 
+## Bing and IndexNow
+
+`public/<key>.txt` holds the IndexNow key and is served from the site root; the build audit checks that it is plain text containing only the key. After each deploy that adds or changes pages, run `npm run indexnow` from a checkout (Node 24+). It confirms the live key file matches, then submits every URL in the live sitemap to `api.indexnow.org`, which shares submissions with Bing, Yandex, Seznam, Naver and Yep. Pass paths to submit only those pages, for example `npm run indexnow -- /blog/new-post/ /ga/blag/post-nua/`. A submission is a crawl hint, not a guarantee of indexing. For Bing reports, add the site in Bing Webmaster Tools with **Import from Google Search Console**; no extra verification tag is needed.
+
 ## Launch evidence
 
 Local production build: **788 public HTML pages**, **91,110 internal link/resource references**, **788 JSON-LD blocks**. Build audit and category-consent tests pass. External publication, DNS, Google IDs and browser evidence are recorded below.
@@ -73,6 +77,8 @@ Local production build: **788 public HTML pages**, **91,110 internal link/resour
 ## Organic acquisition priorities
 
 Technical setup supports discovery and measurement. The immediate content priorities are verified project photos/case studies, clear service scopes, genuine customer reviews and consistent business name/address/phone across the site and Google Business Profile. The previous email, hello@texturedublin.ie, was removed because its domain returned NXDOMAIN; info@texturedublin.com is now the default and needs working mail DNS (see above). Confirm the business hours and address with the customer. Do not publish invented projects, reviews, credentials or guaranteed delivery times.
+
+A free-listing plan with ready copy and images (Google Business Profile, Bing Places, Apple Business Connect, Irish directories, Houzz, local Facebook groups, Pinterest, LinkedIn) was handed to the client in `outputs/texture-dublin-ucretsiz-tanitim/` (local, not in Git). When the profiles exist, add their URLs to `site.socials` (feeds `sameAs` and the footer), the Google review link to `googleReviewUrl` and the Eircode to `address.postalCode` in `src/config/site.ts`.
 
 Focus initial acquisition on fitted wardrobes, bespoke kitchens, built-in units, furniture assembly and signage pages. Use Search Console queries and actual enquiries to decide which services and areas deserve more original content; page count alone is not an organic-growth strategy. Review index coverage and conversion quality after data is available. Do not claim that the launch guarantees rankings or immediate traffic.
 

@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "brand": "node scripts/build-brand.mjs",
     "audit": "node scripts/audit.mjs",
-    "test:tracking": "node scripts/test-tracking.mjs"
+    "test:tracking": "node scripts/test-tracking.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.1",

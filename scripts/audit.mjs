@@ -71,6 +71,9 @@ try{
  for(const [from,to] of [['/guides/','/blog/'],['/guides/fitted-wardrobe-prices-dublin/?a=1','/blog/fitted-wardrobe-prices-dublin/?a=1'],['/ga/treoracha','/ga/blag/']]){const r=await fetch(`${local}${base}${from}`,{redirect:'manual'});if(r.status!==308||r.headers.get('location')!==`${base}${to}`)problems.push([from,`old guide URL must redirect to ${to}: ${r.status} ${r.headers.get('location')}`]);}
  const robots=await(await fetch(`${local}${base}/robots.txt`)).text();
  if(!robots.includes(`Sitemap: ${origin}${base}/sitemap.xml`))problems.push(['robots.txt','incorrect sitemap URL']);
+ // IndexNow validates submissions against this file, so it must be plain text containing only the key.
+ const indexNowKey=fs.readdirSync(path.join(root,'public')).find(f=>/^[0-9a-f]{32}\.txt$/.test(f));
+ if(indexNowKey){const r=await fetch(`${local}${base}/${indexNowKey}`);if(!r.ok||!r.headers.get('content-type')?.startsWith('text/plain')||(await r.text())!==indexNowKey.slice(0,-4))problems.push([indexNowKey,'IndexNow key file must be served as plain text containing only the key']);}
  for(const host of ['www.'+new URL(origin).hostname,'canmurat.com','www.canmurat.com']) {
   const legacyHost=host.includes('canmurat.com');
   const response=await new Promise((resolve,reject)=>{const req=request(`${local}${legacyHost?'/texturedublin':base}/contact/?source=audit`,{headers:{host}},res=>{res.resume();resolve({status:res.statusCode,location:res.headers.location});});req.on('error',reject);req.end();});
